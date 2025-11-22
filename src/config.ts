@@ -96,9 +96,9 @@ export const siteConfig: SiteConfig = {
 				"/assets/desktop-banner/1.jpg",
 				"/assets/desktop-banner/2.jpg",
 				"/assets/desktop-banner/3.jpg",
-				"/assets/desktop-banner/4.jpg",
-				"/assets/desktop-banner/5.jpg",
-				"/assets/desktop-banner/6.jpg",
+				"/assets/desktop-banner/4.png",
+				"/assets/desktop-banner/5.png",
+				"/assets/desktop-banner/6.png",
 			], // 桌面横幅图片
 			mobile: [
 				"/assets/mobile-banner/1.jpg",
@@ -220,9 +220,9 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 			"/assets/desktop-banner/1.jpg",
 			"/assets/desktop-banner/2.jpg",
 			"/assets/desktop-banner/3.jpg",
-			"/assets/desktop-banner/4.jpg",
-			"/assets/desktop-banner/5.jpg",
-			"/assets/desktop-banner/6.jpg",
+			"/assets/desktop-banner/4.png",
+			"/assets/desktop-banner/5.png",
+			"/assets/desktop-banner/6.png",
 		], // 桌面横幅图片
 		mobile: [
 			"/assets/mobile-banner/1.jpg",
