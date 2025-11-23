@@ -3,7 +3,7 @@ title: "§1.1 集合"
 date: 2025-11-24
 categories: "analysis"
 tags: [math, analysis, notes]
-description: 数学分析1.1笔记
+description: Analysis note
 ---
 # §1.1 集合
 
