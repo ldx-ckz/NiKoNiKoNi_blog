@@ -1,8 +1,14 @@
 ---
-title: "§1.4 映射的乘积与特殊映射"
-date: 2025-11-24
-categories: ["analysis"]
-tags: ["math", "analysis", "notes"]
+title: 1.4 映射的乘积与特殊映射
+pubDate: 2025-11-24
+pinned: false
+description: Analysis note
+published: 2025-11-24  
+tags: [math,analysis,notes]
+category: Analysis
+licenseName: "Unlicensed"
+author: nikonikoni
+draft: false
 ---
 # §1.4 映射的乘积与特殊映射
 
@@ -182,4 +188,5 @@ $$
 6. **物理变换**：Galileo变换（经典力学）与Lorentz变换（相对论）
 
 ---
+
 
