@@ -1,9 +1,13 @@
 ---
-title: "1.1 集合"
-date: 2025-11-24
-categories: "analysis"
-tags: [math, analysis, notes]
-description: 数学分析1.1笔记
+title: 1.1 集合
+published: 2025-11-24
+pinned: false
+description: Analysis note
+tags: [math,analysis,notes]
+category: Analysis
+licenseName: "Unlicensed"
+author: nikonikoni
+draft: false
 ---
 # §1.1 集合
 
