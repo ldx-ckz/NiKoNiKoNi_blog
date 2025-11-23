@@ -1,6 +1,6 @@
 ---
 title: 1.1 集合
-published: 2025-11-24
+date: 2025-11-24
 pinned: false
 description: Analysis note
 published: true
