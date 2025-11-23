@@ -3,6 +3,7 @@ title: 1.1 集合
 published: 2025-11-24
 pinned: false
 description: Analysis note
+published: true
 tags: [math,analysis,notes]
 category: Analysis
 licenseName: "Unlicensed"
