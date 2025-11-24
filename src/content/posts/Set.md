@@ -1,9 +1,9 @@
 ---
 title: 1.1 集合
-pubDate: 2025-11-24T08：00：00
+pubDate: 2025-11-24
 pinned: false
 description: Analysis note
-published: 2025-11-24T08：00：00
+published: 2025-11-24
 tags: [math,analysis,notes]
 category: Analysis
 licenseName: "Unlicensed"
