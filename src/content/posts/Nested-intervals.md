@@ -1,9 +1,9 @@
 ---
 title: 2.3 区间套法
-pubDate: 2025-11-24
+pubDate: 2025-11-25
 pinned: false
 description: Analysis note
-published: 2025-11-24  
+published: 2025-11-25  
 tags: [math,analysis,notes]
 category: Analysis
 licenseName: "Unlicensed"
@@ -147,5 +147,6 @@ $$
    - 若 $s \in B$，则 $s$ 是 $B$ 的最小数。
 
 ---
+
 
 
