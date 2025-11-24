@@ -1,14 +1,20 @@
 ---
-title: "2.1 实数域的完备性"
-date: 2025-11-24
-categories: ["analysis"]
-tags: ["math", "analysis", "notes"]
+title: 2.1 实数域的完备性
+pubDate: 2025-11-25
+pinned: false
+description: Analysis note
+published: 2025-11-25
+tags: [math,analysis,notes]
+category: Analysis
+licenseName: "Unlicensed"
+author: nikonikoni
+draft: false
 ---
 # 2.1 实数域的完备性
 
-## 📌 戴德金分割
+## 1.戴德金分割
 
-### 定义
+### 1.1定义
 将所有实数划分为 $A$, $B$ 两组，满足：
 - $A$ 中的每一个数都小于 $B$ 中的每一个数
 - 任一实数必属于且仅属于 $A$ 或 $B$ 之一
@@ -16,7 +22,7 @@ tags: ["math", "analysis", "notes"]
 
 称这样的划分 $(A, B)$ 为**戴德金分割**，$A$ 称为**下类**，$B$ 称为**上类**。
 
-### 戴德金定理
+### 1.2戴德金定理
 
 **定理 2.1.1（戴德金定理）** 实数的分割确定某数为下类和上类的边界。
 
@@ -28,9 +34,9 @@ tags: ["math", "analysis", "notes"]
 
 ---
 
-## 📌 上下确界
+## 2.上下确界
 
-### 基本概念
+### 2.1基本概念
 **定义 2.1.2** 设集合 $A \subset \mathbb{R}$：
 - $M \in \mathbb{R}$ 是 $A$ 的**上界**：$\forall x \in A (x \leq M)$
 - $m \in \mathbb{R}$ 是 $A$ 的**下界**：$\forall x \in A (x \geq m)$
@@ -40,7 +46,7 @@ tags: ["math", "analysis", "notes"]
 - $\alpha = \sup A$（上确界）：$\alpha$ 是 $A$ 的上界，且对 $A$ 的任何上界 $\beta$，有 $\alpha \leq \beta$
 - $\alpha = \inf A$（下确界）：$\alpha$ 是 $A$ 的下界，且对 $A$ 的任何下界 $\beta$，有 $\alpha \geq \beta$
 
-### 确界存在定理
+### 2.2确界存在定理
 **定理 2.1.2（魏尔斯特拉斯定理）** 
 - 若数集 $S$ 在上方有界，则 $S$ 的上确界存在
 - 若数集 $S$ 在下方有界，则 $S$ 的下确界存在
@@ -61,9 +67,9 @@ tags: ["math", "analysis", "notes"]
 
 ---
 
-## 📌 实数域的完备性
+## 3.实数域的完备性
 
-### 完备性公理
+### 3.1完备性公理
 任何有上界的非空实数集都有在实数域中的上确界。
 
 **意义**：此性质将实数域与有理数域区分开。
@@ -83,9 +89,9 @@ tags: ["math", "analysis", "notes"]
 
 ---
 
-## 📌 阿基米德原理
+## 4.阿基米德原理
 
-### 定理与推论
+### 4.1定理与推论
 **定理 2.1.3（阿基米德原理）** 自然数集合 $\mathbb{N}$ 是无上界的。
 
 **证明**：
@@ -102,22 +108,13 @@ tags: ["math", "analysis", "notes"]
 
 ---
 
-## 📌 补充约定
+## 5.补充约定
 
 为方便起见，约定：
 - 无上界的非空实数集 $E$：$\sup E = \infty$
 - 无下界的非空实数集 $E$：$\inf E = -\infty$
 - 空集：$\sup \emptyset = -\infty$，$\inf \emptyset = \infty$
 
----
 
-## 📌 核心要点总结
 
-1. **戴德金分割**：实数连续性的本质表述
-2. **上下确界**：最小上界和最大下界的精确定义
-3. **完备性公理**：实数域区别于有理数域的关键性质
-4. **阿基米德原理**：自然数无上界的重要结论
-5. **逻辑关系**：完备性 ⇒ 阿基米德原理 ⇒ 极限理论基础
-
----
 
