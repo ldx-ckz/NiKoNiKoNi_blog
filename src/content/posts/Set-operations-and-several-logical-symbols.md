@@ -1,9 +1,9 @@
 ---
 title: 1.2 集合运算及几个逻辑符号
-pubDate: 2025-11-24T09：00：00
+pubDate: 2025-11-24
 pinned: false
 description: Analysis note
-published: 2025-11-24T09：00：00
+published: 2025-11-24
 tags: [math,analysis,notes]
 category: Analysis
 licenseName: "Unlicensed"
@@ -162,6 +162,7 @@ $$
 
 - **空间**：在一个数学问题中，使得问题中出现的所有集合都是其子集的集合 $X$
 - **余集**总是相对于某个特定的空间而言的
+
 
 
 
