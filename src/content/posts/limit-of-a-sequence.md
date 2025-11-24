@@ -1,37 +1,43 @@
 ---
-title: "2.2 数列的极限"
-date: 2025-11-24
-categories: ["analysis"]
-tags: ["math", "analysis", "notes"]
+title: 2.2 数列的极限
+pubDate: 2025-11-25
+pinned: false
+description: Analysis note
+published: 2025-11-25
+tags: [math,analysis,notes]
+category: Analysis
+licenseName: "Unlicensed"
+author: nikonikoni
+draft: false
 ---
 # 2.2 数列的极限
 
-## 📌 数列极限的定义
+## 1.数列极限的定义
 
-### 基本定义
+### 1.1基本定义
 **定义 2.2.1** 实数列 $\{a_n\}$ 收敛于极限 $\alpha \in \mathbb{R}$，如果：
 $$
 \forall \varepsilon > 0 \exists N \in \mathbb{N} \forall n \geq N (|a_n - \alpha| < \varepsilon)
 $$
 记作 $\lim_{n \to \infty} a_n = \alpha$ 或 $a_n \to \alpha$。
 
-### 等价表述
+### 1.2等价表述
 - 任给 $\varepsilon > 0$，使得 $|a_n - \alpha| \geq \varepsilon$ 的项只有有限个
 - 对于复数列，定义类似，要求实部和虚部分别收敛
 
-### 发散情形
+### 1.3发散情形
 **定义 2.2.2** 
 - $\lim_{n \to \infty} a_n = \infty$：$\forall M \in \mathbb{R} \exists N \in \mathbb{N} \forall n \geq N (a_n > M)$
 - $\lim_{n \to \infty} a_n = -\infty$：$\forall M \in \mathbb{R} \exists N \in \mathbb{N} \forall n \geq N (a_n < M)$
 
 ---
 
-## 📌 基本性质
+## 2.基本性质
 
-### 唯一性
+### 2.1唯一性
 **定理 2.2.1** 收敛数列的极限唯一
 
-### 有界性
+### 2.2有界性
 **定理 2.2.2** 收敛数列必有界
 
 **证明**：
@@ -41,7 +47,7 @@ $$
 $$
 令 $M = \max(|a_1|, \cdots, |a_{N-1}|, |\alpha| + 1)$，则 $\forall n \in \mathbb{N} (|a_n| \leq M)$。
 
-### 保序性
+### 2.3保序性
 **定理 2.2.3** 若 $a_n \to \alpha$，$b_n \to \beta$，且 $a_n \leq b_n$，则 $\alpha \leq \beta$
 
 **证明**：
@@ -54,9 +60,9 @@ $$
 
 ---
 
-## 📌 极限运算法则
+## 3.极限运算法则
 
-### 四则运算
+### 3.1四则运算
 **定理 2.2.4** 设 $a_n \to \alpha$，$b_n \to \beta$，则：
 
 **(1)** $\lim_{n \to \infty} (a_n + b_n) = \alpha + \beta$
@@ -96,9 +102,9 @@ $$
 
 ---
 
-## 📌 重要定理
+## 4.重要定理
 
-### 夹逼定理
+### 4.1夹逼定理
 **定理 2.2.5** 设 $a_n \to \alpha$，$b_n \to \alpha$，且 $a_n \leq c_n \leq b_n$，则 $c_n \to \alpha$
 
 **证明**：
@@ -107,7 +113,7 @@ $$
 a_n, b_n \in (\alpha - \varepsilon, \alpha + \varepsilon) \implies c_n \in (a_n, b_n) \subset (\alpha - \varepsilon, \alpha + \varepsilon)
 $$
 
-### 子列定理
+### 4.2子列定理
 **定理 2.2.6** 收敛数列的任意子列收敛于同一极限
 **证明**：
 设 $\{a_n\}$ 是收敛数列，$\lim_{n \to \infty} a_n = \alpha$，$\{a_{n_k}\}$ 是 $\{a_n\}$ 的任意子列。
@@ -128,15 +134,15 @@ $$
 
 ---
 
-## 📌 单调数列收敛定理
+## 5.单调数列收敛定理
 
-### 单调数列定义
+### 5.1单调数列定义
 - **单调递增**：$\forall n \in \mathbb{N} (a_n < a_{n+1})$
 - **单调不减**：$\forall n \in \mathbb{N} (a_n \leq a_{n+1})$
 - **单调递减**：$\forall n \in \mathbb{N} (a_n > a_{n+1})$
 - **单调不增**：$\forall n \in \mathbb{N} (a_n \geq a_{n+1})$
 
-### 收敛定理
+### 5.2收敛定理
 **定理 2.2.7** 
 - 单调不减且有上界的数列收敛于其上确界
 - 单调不增且有下界的数列收敛于其下确界
@@ -153,24 +159,13 @@ $$
 
 ---
 
-## 📌 无穷小序列
+## 6.无穷小序列
 
-### 定义
+### 6.1定义
 **定义 2.2.3** 极限为零的序列称为无穷小序列
 
-### 性质
+### 6.2性质
 - 无穷小序列的和、差、积仍为无穷小
 - 有界序列与无穷小序列的乘积为无穷小
 
----
-
-## 📌 核心要点总结
-
-1. **极限定义**：$\varepsilon$-$N$ 语言的精确定义
-2. **基本性质**：唯一性、有界性、保序性
-3. **运算法则**：四则运算在极限下的保持性
-4. **重要定理**：夹逼定理、单调收敛定理
-5. **发散情形**：趋于无穷大的严格定义
-
----
 
