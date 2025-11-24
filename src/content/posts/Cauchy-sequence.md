@@ -1,9 +1,9 @@
 ---
 title: 2.4 柯西收敛准则
-pubDate: 2025-11-24
+pubDate: 2025-11-25
 pinned: false
 description: Analysis note
-published: 2025-11-24  
+published: 2025-11-25  
 tags: [math,analysis,notes]
 category: Analysis
 licenseName: "Unlicensed"
@@ -203,5 +203,6 @@ $$
 $$
 P_n \to A \iff x_n \to a, \quad y_n \to b
 $$
+
 
 
