@@ -33,6 +33,9 @@ const postsCollection = defineCollection({
 const specCollection = defineCollection({
 	schema: z.object({}),
 });
+const sortedPosts = allPosts.sort(
+	(a, b) => new Date(b.data.pubDate) - new Date(a.data.pubDate)
+)：
 export const collections = {
 	posts: postsCollection,
 	spec: specCollection,
