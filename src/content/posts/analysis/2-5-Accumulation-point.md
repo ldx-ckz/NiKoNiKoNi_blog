@@ -67,7 +67,7 @@ draft: false
   \lim_{n \to \infty} a_n = \alpha, \quad \lim_{n \to \infty} b_n = \beta
   $$
 
-![Figure 1](Figure 2.5.1.png)
+![Figure 1](Figure2.5.1.png)
 
 **第三步：验证聚点性质**
 
@@ -178,5 +178,6 @@ draft: false
 - 各点在圆内部：保证 $F_n$ 能完全落入圆内
 
 ---
+
 
 
