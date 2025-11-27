@@ -203,6 +203,205 @@ $$
 
 因此 $ L = a $，即 $\limsup_{n \to \infty} a_n = a$。
 
+**命题 3** 设 $$\{x_n\}$$ 和 $$\{y_n\}$$ 是实数序列，则以下不等式在右边有意义（即不是 $$+\infty$$ 与 $$-\infty$$ 之和）时成立：
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) \leq \limsup_{n \to \infty} x_n + \limsup_{n \to \infty} y_n,
+$$
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) \geq \liminf_{n \to \infty} x_n + \liminf_{n \to \infty} y_n.
+$$
+
+**证明**
+(i)
+记 $$A' = \limsup_{n \to \infty} (x_n + y_n)$$，$$B' = \limsup_{n \to \infty} x_n$$，$$C' = \limsup_{n \to \infty} y_n$$。
+
+由于 $$A'$$ 是数列 $$\{x_n + y_n\}$$ 的极限点，因此有子列 $$\{x_{m_k} + y_{m_k}\}$$ 收敛于 $$A'$$，即
+$$
+\lim_{k \to \infty} (x_{m_k} + y_{m_k}) = A'.
+$$
+
+这时可不妨假定 $$\{x_{m_k}\}$$ 也收敛，否则由于 $$\{x_{m_k}\}$$ 为有界数列，由凝聚定理知它有收敛子列 $$\{x_{m_{k_j}}\}$$，于是可以用 $$\{x_{m_{k_j}} + y_{m_{k_j}}\}$$ 代替 $$\{x_{m_k} + y_{m_k}\}$$ 作以下讨论。
+
+在 $$\{x_{m_k}\}$$ 收敛时，$$\{y_{m_k}\}$$ 也收敛。又因为 $$B'$$ 是 $$\{x_n\}$$ 的最大极限点，$$C'$$ 是 $$\{y_n\}$$ 的最大极限点，因此就得到
+$$
+\lim_{k \to \infty} x_{m_k} \leq B' \quad \text{和} \quad \lim_{k \to \infty} y_{m_k} \leq C'.
+$$
+
+将两式相加就有所要的不等式 $$A' \leq B' + C'$$，即
+$$
+\limsup_{n \to \infty} (x_n + y_n) \leq \limsup_{n \to \infty} x_n + \limsup_{n \to \infty} y_n.
+$$
+(ii)
+记 $$A = \liminf_{n \to \infty} (x_n + y_n)$$，$$B = \liminf_{n \to \infty} x_n$$，$$C = \liminf_{n \to \infty} y_n$$。
+
+由于 $$A$$ 是数列 $$\{x_n + y_n\}$$ 的极限点，因此有子列 $$\{x_{n_k} + y_{n_k}\}$$ 收敛于 $$A$$，即
+$$
+\lim_{k \to \infty} (x_{n_k} + y_{n_k}) = A.
+$$
+
+这时可不妨假定 $$\{x_{n_k}\}$$ 也收敛，否则由于 $$\{x_{n_k}\}$$ 为有界数列，由凝聚定理（波尔查诺-魏尔斯特拉斯定理）知它有收敛子列 $$\{x_{n_{k_j}}\}$$，于是可以用 $$\{x_{n_{k_j}} + y_{n_{k_j}}\}$$ 代替 $$\{x_{n_k} + y_{n_k}\}$$ 作以下讨论。
+
+在 $$\{x_{n_k}\}$$ 收敛时，$$\{y_{n_k}\}$$ 也收敛。又因为 $$B$$ 是 $$\{x_n\}$$ 的最小极限点，$$C$$ 是 $$\{y_n\}$$ 的最小极限点，因此就得到
+$$
+\lim_{k \to \infty} x_{n_k} \geq B \quad \text{和} \quad \lim_{k \to \infty} y_{n_k} \geq C.
+$$
+
+将两式相加就有所要的不等式 $$A \geq B + C$$，即
+$$
+\liminf_{n \to \infty} (x_n + y_n) \geq \liminf_{n \to \infty} x_n + \liminf_{n \to \infty} y_n.
+$$
+
+**命题 4** 不等式
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) \leq \liminf_{n \to \infty} x_n + \limsup_{n \to \infty} y_n \leq \limsup_{n \to \infty} (x_n + y_n)
+$$
+
+在中间的和式有意义时成立。
+
+**证明**
+
+合并命题 3就得到以下一组不等式：
+
+$$
+\begin{aligned}
+\liminf_{n \to \infty} x_n + \liminf_{n \to \infty} y_n &\leq \liminf_{n \to \infty} (x_n + y_n) \\
+&\leq \liminf_{n \to \infty} x_n + \limsup_{n \to \infty} y_n \\
+&\leq \limsup_{n \to \infty} (x_n + y_n) \\
+&\leq \limsup_{n \to \infty} x_n + \limsup_{n \to \infty} y_n,
+\end{aligned}
+$$
+
+只要假定其中的和式均有意义。
+
+**命题 5**若在数列 $$\{x_n\}$$ 和 $$\{y_n\}$$ 中已知 $$\{y_n\}$$ 收敛，或为带有确定符号的无穷大量时，则成立
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) = \liminf_{n \to \infty} x_n + \lim_{n \to \infty} y_n, 
+$$
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) = \limsup_{n \to \infty} x_n + \lim_{n \to \infty} y_n.
+$$
+
+（在 $$\{y_n\}$$ 为无穷大量时要求所出现的和式有意义。）
+
+**证明**
+
+设 $$L = \lim_{n \to \infty} y_n$$（$$L$$ 可以是有限数或 $$\pm\infty$$，但要求相关和式有意义）。
+
+(i)$$\{y_n\}$$ 收敛于有限数 $$L \in \mathbb{R}$$
+
+1. 对于下极限的等式证明
+
+由命题 3的第二个不等式有：
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) \geq \liminf_{n \to \infty} x_n + \liminf_{n \to \infty} y_n = \liminf_{n \to \infty} x_n + L \tag{1}
+$$
+
+另一方面，考虑 $$(x_n + y_n) - y_n = x_n$$，由命题 3的第一个不等式有：
+
+$$
+\liminf_{n \to \infty} x_n \geq \liminf_{n \to \infty} (x_n + y_n) + \liminf_{n \to \infty} (-y_n)
+$$
+
+由于 $$\{y_n\}$$ 收敛于 $$L$$，有 $$\liminf_{n \to \infty} (-y_n) = -L$$，因此：
+
+$$
+\liminf_{n \to \infty} x_n \geq \liminf_{n \to \infty} (x_n + y_n) - L
+$$
+
+整理得：
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) \leq \liminf_{n \to \infty} x_n + L \tag{2}
+$$
+
+结合 (1) 和 (2)，得到：
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) = \liminf_{n \to \infty} x_n + L
+$$
+
+2. 对于上极限的等式证明
+
+由命题 3的第一个不等式有：
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) \leq \limsup_{n \to \infty} x_n + \limsup_{n \to \infty} y_n = \limsup_{n \to \infty} x_n + L \tag{3}
+$$
+
+另一方面，考虑 $$(x_n + y_n) - y_n = x_n$$，由命题 3的第二个不等式有：
+
+$$
+\limsup_{n \to \infty} x_n \leq \limsup_{n \to \infty} (x_n + y_n) + \limsup_{n \to \infty} (-y_n)
+$$
+
+由于 $$\{y_n\}$$ 收敛于 $$L$$，有 $$\limsup_{n \to \infty} (-y_n) = -L$$，因此：
+
+$$
+\limsup_{n \to \infty} x_n \leq \limsup_{n \to \infty} (x_n + y_n) - L
+$$
+
+整理得：
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) \geq \limsup_{n \to \infty} x_n + L \tag{4}
+$$
+
+结合 (3) 和 (4)，得到：
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) = \limsup_{n \to \infty} x_n + L
+$$
+
+(ii)$$\{y_n\}$$ 为带有确定符号的无穷大量
+
+1. $$y_n \to +\infty$$
+
+由于 $$y_n \to +\infty$$，且要求所出现的和式有意义，因此 $$\liminf_{n \to \infty} x_n \neq -\infty$$，$$\limsup_{n \to \infty} x_n \neq -\infty$$。
+
+对于任意 $$M > 0$$，存在 $$N$$ 使得当 $$n \geq N$$ 时，$$y_n > M$$。
+
+因此：
+
+- 对于下极限：$$x_n + y_n > x_n + M$$，故 $$\liminf_{n \to \infty} (x_n + y_n) \geq \liminf_{n \to \infty} x_n + M$$
+- 对于上极限：$$x_n + y_n > x_n + M$$，故 $$\limsup_{n \to \infty} (x_n + y_n) \geq \limsup_{n \to \infty} x_n + M$$
+
+由于 $$M$$ 可以任意大，且 $$x_n$$ 的上下极限不是 $$-\infty$$，因此：
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) = +\infty = \liminf_{n \to \infty} x_n + (+\infty)
+$$
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) = +\infty = \limsup_{n \to \infty} x_n + (+\infty)
+$$
+
+2. $$y_n \to -\infty$$
+
+由于 $$y_n \to -\infty$$，且要求所出现的和式有意义，因此 $$\liminf_{n \to \infty} x_n \neq +\infty$$，$$\limsup_{n \to \infty} x_n \neq +\infty$$。
+
+对于任意 $$M > 0$$，存在 $$N$$ 使得当 $$n \geq N$$ 时，$$y_n < -M$$。
+
+因此：
+
+- 对于下极限：$$x_n + y_n < x_n - M$$，故 $$\liminf_{n \to \infty} (x_n + y_n) \leq \liminf_{n \to \infty} x_n - M$$
+- 对于上极限：$$x_n + y_n < x_n - M$$，故 $$\limsup_{n \to \infty} (x_n + y_n) \leq \limsup_{n \to \infty} x_n - M$$
+
+由于 $$M$$ 可以任意大，且 $$x_n$$ 的上下极限不是 $$+\infty$$，因此：
+
+$$
+\liminf_{n \to \infty} (x_n + y_n) = -\infty = \liminf_{n \to \infty} x_n + (-\infty)
+$$
+
+$$
+\limsup_{n \to \infty} (x_n + y_n) = -\infty = \limsup_{n \to \infty} x_n + (-\infty)
+$$
+
 ---
 
 ###  等价刻画
@@ -382,4 +581,5 @@ $$
 
 
 该子列收敛于有限实数 $L$，故 $\{a_n\}$ 存在收敛子列。
+
 
