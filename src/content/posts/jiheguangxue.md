@@ -1,3 +1,15 @@
+---
+title: Markdown Extended Features
+published: 2024-05-01
+updated: 2024-11-29
+description: 'Read more about Markdown features in Mizuki'
+image: ''
+tags: [Demo, Example, Markdown, mizuki]
+category: 'Examples'
+draft: false 
+---
+
+
 # 几何光学基本原理
 
 ## 1. 概论 - 光学的发展
@@ -423,4 +435,5 @@ nuy = n'u'y' = J
 #### 6. 拉赫不受量
 - **定义**：也称Lagrange Invariant或Helmholtz-Lagrange Invariant，J = n u y = n' u' y'（常数）。
 - **物理意义**：在整个光学系统中不变，表征系统的“通光能力”或étendue。J的大小决定像差校正难度：J越大，像差越大，系统设计越复杂、成本越高。结合孔径角u（aperture）和视场y（field），用于评估系统性能。
+
 - **应用示例**：在设计中，J用于计算光通量或衍射极限。像差与u和y相关，J帮助平衡孔径（亮度）和视场（覆盖范围）。
