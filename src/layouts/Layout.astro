@@ -36,6 +36,7 @@ import "../styles/panel-animations.css";
 
 interface Props {
 	title?: string;
+	titleEn?: string;
 	banner?: string;
 	description?: string;
 	lang?: string;
@@ -43,7 +44,7 @@ interface Props {
 	postSlug?: string;
 }
 
-let { title, banner, description, lang, setOGTypeArticle, postSlug } =
+let { title, titleEn, banner, description, lang, setOGTypeArticle, postSlug } =
 	Astro.props;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
@@ -101,12 +102,15 @@ banner = getDefaultBanner();
 const enableBanner = siteConfig.banner.enable;
 
 let pageTitle: string;
+let pageTitleEn: string;
 if (title) {
 	pageTitle = `${title} - ${siteConfig.title}`;
+	pageTitleEn = `${titleEn || title} - ${siteConfig.title}`;
 } else {
 	pageTitle = siteConfig.subtitle
 		? `${siteConfig.title} - ${siteConfig.subtitle}`
 		: siteConfig.title;
+	pageTitleEn = pageTitle;
 }
 
 let ogImageUrl: string | undefined;
@@ -198,7 +202,7 @@ if (siteConfig.font) {
 			}
 		</script>
 
-		<title>{pageTitle}</title>
+		<title data-ui-title-zh={pageTitle} data-ui-title-en={pageTitleEn}>{pageTitle}</title>
 
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || pageTitle}>
@@ -742,6 +746,8 @@ const setup = () => {
 		}
 	})
 	window.swup.hooks.on('content:replace', () => {
+		(window as any).applyUiLanguage?.();
+
 		// 只处理新的katex元素的滚动条，使用原生CSS滚动条
 		initCustomScrollbar();
 		
@@ -853,6 +859,8 @@ const setup = () => {
 		}
 	});
 	window.swup.hooks.on('page:view', () => {
+		(window as any).applyUiLanguage?.();
+
 		// hide the temp high element when the transition is done
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {

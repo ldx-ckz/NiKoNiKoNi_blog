@@ -1,8 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte";
 
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug, getPostUrlByPermalink } from "../utils/url-utils";
 
 export let tags: string[];
@@ -113,7 +111,8 @@ onMount(async () => {
                     ></div>
                 </div>
                 <div class="w-[70%] md:w-[80%] transition text-left text-50">
-                    {group.posts.length} {i18n(group.posts.length === 1 ? I18nKey.postCount : I18nKey.postsCount)}
+                    <span class="ui-lang-zh">{group.posts.length} 篇文章</span>
+                    <span class="ui-lang-en">{group.posts.length} {group.posts.length === 1 ? "post" : "posts"}</span>
                 </div>
             </div>
 

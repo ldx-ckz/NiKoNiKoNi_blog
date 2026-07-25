@@ -27,6 +27,7 @@ import Layout from "./Layout.astro";
 
 interface Props {
 	title?: string;
+	titleEn?: string;
 	banner?: string;
 	description?: string;
 	lang?: string;
@@ -96,6 +97,7 @@ const bannerImages = await getBannerImages();
 
 const {
 	title,
+	titleEn,
 	banner,
 	description,
 	lang,
@@ -104,6 +106,14 @@ const {
 	headings = [],
 	hideSidebar = false,
 } = Astro.props;
+const pageTitle = title
+	? `${title} - ${siteConfig.title}`
+	: siteConfig.subtitle
+		? `${siteConfig.title} - ${siteConfig.subtitle}`
+		: siteConfig.title;
+const pageTitleEn = title
+	? `${titleEn || title} - ${siteConfig.title}`
+	: pageTitle;
 const hasBannerCredit = siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
 
@@ -204,7 +214,7 @@ const transparentClass = shouldEnableTransparency
 	: "";
 ---
 
-<Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
+<Layout title={title} titleEn={titleEn} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
 <script is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list"}}>
 	// 立即执行，在页面渲染前应用壁纸模式和布局模式，避免闪烁
@@ -725,7 +735,12 @@ const transparentClass = shouldEnableTransparency
             {/* 右侧边栏 - 在双侧边栏模式下渲染，CSS控制显示隐藏 */}
             {isBothSidebarMode && hasRightSidebarComponents && <div class={`right-sidebar-container ${rightSidebarClass} ${transparentClass}`}><RightSideBar headings={headings}></RightSideBar></div>}
 
-            <main id="swup-container" class={`${mainContentClass} transition-main`}>
+            <main
+                id="swup-container"
+                class={`${mainContentClass} transition-main`}
+                data-ui-title-zh={pageTitle}
+                data-ui-title-en={pageTitleEn}
+            >
                 <div id="content-wrapper" class="onload-animation transition-leaving">
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->

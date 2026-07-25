@@ -3,6 +3,7 @@ import type { GetStaticPaths } from "astro";
 import AxiPostCard from "../../../components/AxiPostCard.astro";
 import BlogSectionSidebar from "../../../components/BlogSectionSidebar.astro";
 import Pagination from "../../../components/control/Pagination.astro";
+import UiText from "../../../components/UiText.astro";
 import MainGridLayout from "../../../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../../../utils/content-utils";
 
@@ -13,14 +14,17 @@ export const getStaticPaths = (async ({ paginate }) => {
 	const sections = [
 		{
 			slug: "notes",
+			zh: "笔记",
 			en: "Notes",
 		},
 		{
 			slug: "technical",
+			zh: "技术",
 			en: "Technical",
 		},
 		{
 			slug: "daily-life",
+			zh: "日常",
 			en: "Daily Life",
 		},
 	];
@@ -67,10 +71,12 @@ const { section, totalPosts, page } = Astro.props;
 const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 ---
 
-<MainGridLayout title={section.en} hideSidebar>
+<MainGridLayout title={section.zh} titleEn={section.en} hideSidebar>
 	<header class="section-hero onload-animation">
-		<h1>{section.en}</h1>
-		<span class="post-count">{totalPosts} posts</span>
+		<h1><UiText zh={section.zh} en={section.en} /></h1>
+		<span class="post-count">
+			<UiText zh={`${totalPosts} 篇文章`} en={`${totalPosts} posts`} />
+		</span>
 	</header>
 
 	<div class="section-layout">

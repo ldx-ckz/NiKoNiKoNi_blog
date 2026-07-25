@@ -1,11 +1,12 @@
 ---
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
+import UiText from "@components/UiText.astro";
 import Icon from "../components/misc/Icon.astro";
 import { siteConfig } from "../config";
 import { getFriendsList, getShuffledFriendsList } from "../data/friends";
 import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
+import { i18n, uiI18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 
 // 检查友链页面是否启用
@@ -26,26 +27,28 @@ const friendsList = getShuffledFriendsList();
 const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 ---
 
-<MainGridLayout title={i18n(I18nKey.friends)} description={i18n(I18nKey.friends)}>
+<MainGridLayout
+	title={uiI18n(I18nKey.friends).zh}
+	titleEn={uiI18n(I18nKey.friends).en}
+	description={uiI18n(I18nKey.friendsSubtitle).zh}
+	hideSidebar
+>
 	<!-- 只在友情链接页面加载脚本 -->
 	<script is:inline>
 		// 标记当前页面为友情链接页面
 		window.isFriendsPage = true;
 	</script>
-  <script>
-    import('/src/scripts/right-sidebar-layout.js');
-  </script>
-	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+	<div class="mx-auto w-full max-w-5xl rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
 		<div class="card-base z-10 px-9 py-6 relative w-full">
       <!-- 页面标题 -->
       <div class="flex flex-col items-start justify-center mb-8">
         <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
                   before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
                   before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-          {i18n(I18nKey.friends)}
+          <UiText {...uiI18n(I18nKey.friends)} />
         </h1>
         <p class="text-lg text-black/60 dark:text-white/60">
-          {i18n(I18nKey.friendsSubtitle)}
+          <UiText {...uiI18n(I18nKey.friendsSubtitle)} />
         </p>
 			</div>
 
@@ -57,7 +60,9 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 						<input 
 							type="text" 
 							id="friend-search"
-							placeholder={i18n(I18nKey.friendsSearchPlaceholder)}
+							placeholder={uiI18n(I18nKey.friendsSearchPlaceholder).zh}
+							data-ui-placeholder-zh={uiI18n(I18nKey.friendsSearchPlaceholder).zh}
+							data-ui-placeholder-en={uiI18n(I18nKey.friendsSearchPlaceholder).en}
 							class="w-full px-4 py-2 pl-10 rounded-lg bg-[var(--btn-regular-bg)] 
 									text-black/90 dark:text-white/90
 									border border-black/10 dark:border-white/10
@@ -78,7 +83,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 						class="filter-tag active"
 						data-tag="all"
 					>
-						{i18n(I18nKey.friendsFilterAll)}
+						<UiText {...uiI18n(I18nKey.friendsFilterAll)} />
 					</button>
 					{allTags.map(tag => (
 						<button 
@@ -169,7 +174,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
 											d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
 									</svg>
-									{i18n(I18nKey.friendsVisit)}
+									<UiText {...uiI18n(I18nKey.friendsVisit)} />
 								</a>
 								<button 
 									class="copy-link-btn px-3 py-2 rounded-lg 
@@ -178,7 +183,9 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 											 active:scale-95 transition-all duration-200
 											 text-black/70 dark:text-white/70"
 									data-url={item.siteurl}
-									title={i18n(I18nKey.friendsCopyLink)}
+									title={uiI18n(I18nKey.friendsCopyLink).zh}
+									data-ui-tooltip-zh={uiI18n(I18nKey.friendsCopyLink).zh}
+									data-ui-tooltip-en={uiI18n(I18nKey.friendsCopyLink).en}
 								>
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -202,7 +209,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
 						d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 				</svg>
-				<p class="text-black/50 dark:text-white/50 text-lg">{i18n(I18nKey.friendsNoResults)}</p>
+				<p class="text-black/50 dark:text-white/50 text-lg"><UiText {...uiI18n(I18nKey.friendsNoResults)} /></p>
 			</div>
 
 			<!-- 说明文档 -->

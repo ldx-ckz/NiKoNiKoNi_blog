@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { getFileDirFromPath, getPostUrl, getTagUrl } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
+import UiText from "./UiText.astro";
 
 interface Props {
 	entry: CollectionEntry<"posts">;
@@ -62,7 +63,7 @@ const postUrl = getPostUrl(entry);
 		{excerpt && <p class="post-excerpt">{excerpt}</p>}
 		<p class="read-time">
 			<Icon name="material-symbols:schedule-outline-rounded" />
-			<span>{readingMinutes} min read</span>
+			<UiText zh={`${readingMinutes} 分钟阅读`} en={`${readingMinutes} min read`} />
 		</p>
 
 		<div class="tag-list">

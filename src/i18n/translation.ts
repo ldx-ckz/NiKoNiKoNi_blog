@@ -30,3 +30,10 @@ export function i18n(key: I18nKey): string {
 	const lang = siteConfig.lang || "en";
 	return getTranslation(lang)[key];
 }
+
+export function uiI18n(key: I18nKey): { zh: string; en: string } {
+	return {
+		zh: zh_CN[key],
+		en: en[key],
+	};
+}

@@ -2,39 +2,38 @@
 
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
+import UiText from "@components/UiText.astro";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 
 const aboutPost = await getEntry("spec", "about-me");
+const aboutPostEn = await getEntry("spec", "about-me-en");
 
-if (!aboutPost) {
+if (!aboutPost || !aboutPostEn) {
 	throw new Error("About page content not found");
 }
 
 const { Content } = await render(aboutPost);
-const title = "关于我";
+const { Content: ContentEn } = await render(aboutPostEn);
 ---
-<MainGridLayout title={title}>
-	<!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('/src/scripts/right-sidebar-layout.js');
-  </script>
-    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+<MainGridLayout title="关于我" titleEn="About Me" hideSidebar>
+    <div class="mx-auto w-full max-w-5xl rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full">
             <!-- 页面标题 -->
             <div class="flex flex-col items-start justify-center mb-8">
                 <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
                           before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
                           before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-                    {title}
+                    <UiText zh="关于我" en="About Me" />
                 </h1>
             </div>
             
             
             <!-- 从MD文件读取的内容 -->
-            <Markdown class="mt-2">
+            <Markdown class="ui-lang-zh mt-2">
                 <Content />
+            </Markdown>
+            <Markdown class="ui-lang-en mt-2">
+                <ContentEn />
             </Markdown>
         </div>
     </div>

@@ -25,7 +25,7 @@ export const en: Translation = {
 	[Key.announcementClose]: "Close",
 
 	[Key.comments]: "Comments",
-	[Key.friends]: "Friends",
+	[Key.friends]: "Links",
 	[Key.friendsSubtitle]: "Discover more excellent websites",
 	[Key.friendsSearchPlaceholder]: "Search friend name or description...",
 	[Key.friendsFilterAll]: "All",
