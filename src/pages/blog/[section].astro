@@ -1,8 +1,11 @@
 ---
 import type { GetStaticPaths } from "astro";
-import PostPage from "../../components/PostPage.astro";
+import { Icon } from "astro-icon/components";
+import AxiPostCard from "../../components/AxiPostCard.astro";
+import BlogSectionSidebar from "../../components/BlogSectionSidebar.astro";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../../utils/content-utils";
+import { url } from "../../utils/url-utils";
 
 export const getStaticPaths = (() => {
 	const sections = [
@@ -63,8 +66,8 @@ const sectionPosts = posts.filter((post) => {
 });
 ---
 
-<MainGridLayout title={`${section.en} - nikonikoni's blog`}>
-	<header class="section-hero card-base onload-animation">
+<MainGridLayout title={`${section.en} - nikonikoni's blog`} hideSidebar>
+	<header class="section-hero onload-animation">
 		<p>Blog / {section.en}</p>
 		<h1>
 			<span class="ui-lang-zh">{section.zh}</span>
@@ -81,34 +84,49 @@ const sectionPosts = posts.filter((post) => {
 		</span>
 	</header>
 
-	{sectionPosts.length > 0 ? (
-		<PostPage page={{ data: sectionPosts }} />
-	) : (
-		<div class="empty-state card-base onload-animation">
-			<span class="ui-lang-zh">这个栏目还没有文章，下一篇也许就在路上。</span>
-			<span class="ui-lang-en">No posts here yet. The first one may already be on its way.</span>
-		</div>
-	)}
+	<div class="section-layout">
+		<section class="post-stream" aria-label={`${section.en} posts`}>
+			<div class="stream-toolbar">
+				<p>
+					<span class="ui-lang-zh">共 {sectionPosts.length} 篇文章</span>
+					<span class="ui-lang-en">{sectionPosts.length} posts</span>
+				</p>
+				<a href={url("/archive/")}>
+					<span class="ui-lang-zh">按年份查看</span>
+					<span class="ui-lang-en">View by year</span>
+					<Icon name="material-symbols:arrow-forward-rounded" />
+				</a>
+			</div>
+
+			{sectionPosts.length > 0 ? (
+				<div class="post-list">
+					{sectionPosts.map((entry, index) => (
+						<AxiPostCard entry={entry} index={index} />
+					))}
+				</div>
+			) : (
+				<div class="empty-state card-base onload-animation">
+					<span class="ui-lang-zh">这个栏目还没有文章，下一篇也许就在路上。</span>
+					<span class="ui-lang-en">No posts here yet. The first one may already be on its way.</span>
+				</div>
+			)}
+		</section>
+
+		<BlogSectionSidebar />
+	</div>
 </MainGridLayout>
 
 <style>
 	.section-hero {
-		@apply relative mb-4 overflow-hidden rounded-[var(--radius-large)] p-7 md:p-9;
-	}
-
-	.section-hero::after {
-		content: "";
-		@apply absolute -right-12 -top-20 h-48 w-48 rounded-full opacity-15;
-		background: var(--primary);
-		filter: blur(45px);
+		@apply relative mb-7 px-1 py-2;
 	}
 
 	.section-hero > p {
-		@apply mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--primary)];
+		@apply mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--primary)];
 	}
 
 	.section-hero h1 {
-		@apply mb-3 text-3xl font-black text-black/90 dark:text-white/90 md:text-4xl;
+		@apply mb-2 text-3xl font-black text-black/90 dark:text-white/90 md:text-4xl;
 	}
 
 	.section-hero > div {
@@ -116,10 +134,38 @@ const sectionPosts = posts.filter((post) => {
 	}
 
 	.post-count {
-		@apply mt-5 inline-flex rounded-lg bg-[var(--btn-plain-bg-hover)] px-3 py-1.5 text-xs font-bold text-black/60 dark:text-white/60;
+		@apply mt-3 inline-flex rounded-lg bg-[var(--btn-plain-bg-hover)] px-3 py-1.5 text-xs font-bold text-black/60 dark:text-white/60;
 	}
 
 	.empty-state {
 		@apply rounded-[var(--radius-large)] p-10 text-center text-black/50 dark:text-white/50;
+	}
+
+	.section-layout {
+		@apply grid items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(15rem,1fr)];
+	}
+
+	.post-stream {
+		@apply min-w-0;
+	}
+
+	.stream-toolbar {
+		@apply mb-4 flex items-center justify-between gap-4 px-1 text-sm text-black/50 dark:text-white/50;
+	}
+
+	.stream-toolbar a {
+		@apply flex shrink-0 items-center gap-1 font-semibold text-black/70 transition hover:text-[var(--primary)] dark:text-white/70;
+	}
+
+	.stream-toolbar a > :global(svg) {
+		@apply text-xl transition-transform;
+	}
+
+	.stream-toolbar a:hover > :global(svg) {
+		@apply translate-x-1;
+	}
+
+	.post-list {
+		@apply flex flex-col gap-4;
 	}
 </style>

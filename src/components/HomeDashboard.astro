@@ -156,9 +156,37 @@ if (
 		</div>
 	</section>
 
-	<section class="dashboard-section" aria-labelledby="focus-title">
+	<section class="dashboard-section" aria-labelledby="education-title">
 		<div class="section-heading">
 			<p class="section-index">02</p>
+			<h2 id="education-title">
+				<span class="ui-lang-zh">教育经历</span>
+				<span class="ui-lang-en">Education</span>
+			</h2>
+		</div>
+		<div class="education-list">
+			<article class="education-card">
+				<div>
+					<h3>
+						<span class="ui-lang-zh">人工智能专业</span>
+						<span class="ui-lang-en">Artificial Intelligence</span>
+					</h3>
+					<p>
+						<span class="ui-lang-zh">本科在读</span>
+						<span class="ui-lang-en">Undergraduate</span>
+					</p>
+				</div>
+				<span class="education-time">
+					<span class="ui-lang-zh">在读</span>
+					<span class="ui-lang-en">Present</span>
+				</span>
+			</article>
+		</div>
+	</section>
+
+	<section class="dashboard-section" aria-labelledby="focus-title">
+		<div class="section-heading">
+			<p class="section-index">03</p>
 			<h2 id="focus-title">
 				<span class="ui-lang-zh">学习方向</span>
 				<span class="ui-lang-en">Current Focus</span>
@@ -191,7 +219,7 @@ if (
 
 	<section class="dashboard-section" aria-labelledby="stats-title">
 		<div class="section-heading">
-			<p class="section-index">03</p>
+			<p class="section-index">04</p>
 			<h2 id="stats-title">
 				<span class="ui-lang-zh">博客数据</span>
 				<span class="ui-lang-en">Statistics</span>
@@ -224,7 +252,7 @@ if (
 
 	<section class="dashboard-section activity-section" aria-labelledby="activity-title">
 		<div class="section-heading">
-			<p class="section-index">04</p>
+			<p class="section-index">05</p>
 			<h2 id="activity-title">
 				<span class="ui-lang-zh">写作活动</span>
 				<span class="ui-lang-en">Writing Activity</span>
@@ -364,6 +392,26 @@ if (
 
 	.focus-list {
 		@apply flex flex-col gap-3;
+	}
+
+	.education-list {
+		@apply flex flex-col gap-3;
+	}
+
+	.education-card {
+		@apply flex items-start justify-between gap-5 rounded-2xl border border-black/10 bg-black/[0.018] p-5 dark:border-white/10 dark:bg-white/[0.025];
+	}
+
+	.education-card h3 {
+		@apply mb-1 text-lg font-bold text-black/85 dark:text-white/85;
+	}
+
+	.education-card p {
+		@apply text-sm text-black/55 dark:text-white/55;
+	}
+
+	.education-time {
+		@apply shrink-0 font-mono text-xs uppercase tracking-wider text-black/45 dark:text-white/45;
 	}
 
 	.focus-card {

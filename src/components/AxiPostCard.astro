@@ -1,0 +1,188 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { getFileDirFromPath, getPostUrl, getTagUrl } from "../utils/url-utils";
+import ImageWrapper from "./misc/ImageWrapper.astro";
+
+interface Props {
+	entry: CollectionEntry<"posts">;
+	index: number;
+}
+
+const { entry, index } = Astro.props;
+const { remarkPluginFrontmatter } = await render(entry);
+const fallbackCovers = [
+	"/assets/desktop-banner/1.jpg",
+	"/assets/desktop-banner/2.jpg",
+	"/assets/desktop-banner/3.jpg",
+	"/assets/desktop-banner/4.png",
+	"/assets/desktop-banner/5.png",
+	"/assets/desktop-banner/6.png",
+];
+const cover = entry.data.image || fallbackCovers[index % fallbackCovers.length];
+const excerpt = entry.data.description || remarkPluginFrontmatter.excerpt;
+const words = Number(remarkPluginFrontmatter.words || 0);
+const readingMinutes = Math.max(1, Math.ceil(words / 300));
+const publishedZh = new Intl.DateTimeFormat("zh-CN", {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+}).format(entry.data.published);
+const publishedEn = new Intl.DateTimeFormat("en-US", {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+}).format(entry.data.published);
+const postUrl = getPostUrl(entry);
+---
+
+<article
+	class="post-preview onload-animation"
+	style={`animation-delay: calc(var(--content-delay) + ${index * 45}ms);`}
+>
+	<ImageWrapper
+		src={cover}
+		basePath={getFileDirFromPath(entry.filePath || "")}
+		alt=""
+		class="cover-image"
+	/>
+	<div class="cover-shade" aria-hidden="true"></div>
+	<a class="post-hit-area" href={postUrl} aria-label={entry.data.title}></a>
+
+	<div class="post-copy">
+		<p class="post-date">
+			<span class="ui-lang-zh">{publishedZh}</span>
+			<span class="ui-lang-en">{publishedEn}</span>
+		</p>
+		<h2>
+			{entry.data.pinned && <Icon name="mdi:pin" />}
+			<span>{entry.data.title}</span>
+			<Icon class="post-arrow" name="material-symbols:arrow-forward-rounded" />
+		</h2>
+		{excerpt && <p class="post-excerpt">{excerpt}</p>}
+		<p class="read-time">
+			<Icon name="material-symbols:schedule-outline-rounded" />
+			<span>{readingMinutes} min read</span>
+		</p>
+
+		<div class="tag-list">
+			{entry.data.tags.map((tag) => (
+				<a href={getTagUrl(tag)} aria-label={`View all posts tagged ${tag}`}>
+					{tag}
+				</a>
+			))}
+		</div>
+	</div>
+</article>
+
+<style>
+	.post-preview {
+		@apply relative min-h-52 overflow-hidden rounded-2xl border border-black/10 bg-[var(--card-bg)] transition duration-200 dark:border-white/10;
+	}
+
+	.post-preview:hover {
+		@apply -translate-y-0.5 border-[var(--primary)] shadow-lg;
+	}
+
+	:global(.cover-image) {
+		@apply z-0 opacity-80;
+		position: absolute !important;
+		inset: 0 0 0 auto !important;
+		width: 62% !important;
+		height: 100% !important;
+		mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+		-webkit-mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+	}
+
+	.cover-shade {
+		@apply absolute inset-0 z-[1];
+		background: linear-gradient(
+			90deg,
+			var(--card-bg) 0%,
+			var(--card-bg) 36%,
+			color-mix(in srgb, var(--card-bg) 76%, transparent) 57%,
+			transparent 100%
+		);
+	}
+
+	.post-hit-area {
+		@apply absolute inset-0 z-10;
+	}
+
+	.post-copy {
+		@apply relative z-20 flex min-h-52 max-w-[74%] flex-col items-start p-6 pointer-events-none;
+	}
+
+	.post-date {
+		@apply mb-2 font-mono text-xs text-black/50 dark:text-white/50;
+	}
+
+	h2 {
+		@apply mb-2 flex w-full items-center gap-2 text-xl font-bold leading-snug text-black/90 transition dark:text-white/90;
+	}
+
+	h2 > :global(svg) {
+		@apply shrink-0 text-lg text-[var(--primary)];
+	}
+
+	h2 .post-arrow {
+		@apply ml-auto text-2xl transition-transform;
+	}
+
+	.post-preview:hover h2 {
+		@apply text-[var(--primary)];
+	}
+
+	.post-preview:hover .post-arrow {
+		@apply translate-x-1;
+	}
+
+	.post-excerpt {
+		@apply mb-3 line-clamp-2 text-sm leading-6 text-black/60 dark:text-white/60;
+	}
+
+	.read-time {
+		@apply mb-4 flex items-center gap-1.5 text-sm italic text-black/50 dark:text-white/50;
+	}
+
+	.read-time > :global(svg) {
+		@apply text-lg;
+	}
+
+	.tag-list {
+		@apply mt-auto flex flex-wrap gap-2 pointer-events-auto;
+	}
+
+	.tag-list a {
+		@apply relative z-20 rounded-full border border-black/10 bg-black/[0.035] px-3 py-1 text-xs text-black/60 transition hover:border-[var(--primary)] hover:text-[var(--primary)] dark:border-white/10 dark:bg-white/[0.06] dark:text-white/60;
+	}
+
+	@media (max-width: 767px) {
+		.post-preview {
+			@apply min-h-80;
+		}
+
+		:global(.cover-image) {
+			@apply opacity-70;
+			inset: 0 0 auto 0 !important;
+			width: 100% !important;
+			height: 11rem !important;
+			mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+			-webkit-mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+		}
+
+		.cover-shade {
+			background: linear-gradient(
+				180deg,
+				transparent 0%,
+				color-mix(in srgb, var(--card-bg) 70%, transparent) 30%,
+				var(--card-bg) 52%,
+				var(--card-bg) 100%
+			);
+		}
+
+		.post-copy {
+			@apply min-h-80 max-w-none p-5 pt-32;
+		}
+	}
+</style>

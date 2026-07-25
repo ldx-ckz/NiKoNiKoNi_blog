@@ -25,8 +25,9 @@
 <button
 	aria-label={language === "zh" ? "Switch interface to English" : "将界面切换为中文"}
 	title={language === "zh" ? "English" : "中文"}
-	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90"
+	class="btn-plain scale-animation rounded-lg h-11 px-3 active:scale-90"
 	onclick={toggleLanguage}
 >
 	<Icon icon="material-symbols:translate-rounded" class="text-[1.25rem]" />
+	<span class="ml-1 text-sm font-semibold">{language === "zh" ? "EN" : "中文"}</span>
 </button>

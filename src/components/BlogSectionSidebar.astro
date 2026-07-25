@@ -1,0 +1,108 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCategoryList, getTagList } from "../utils/content-utils";
+import { getTagUrl, url } from "../utils/url-utils";
+
+const categories = await getCategoryList();
+const tags = await getTagList();
+---
+
+<aside class="blog-sidebar" aria-label="Post filters">
+	<section>
+		<h2>
+			<Icon name="material-symbols:category-outline-rounded" />
+			<span class="ui-lang-zh">分类</span>
+			<span class="ui-lang-en">Categories</span>
+		</h2>
+		<div class="category-list">
+			{categories.map((category) => (
+				<a href={category.url}>
+					<span>{category.name}</span>
+					<span class="category-count">{category.count}</span>
+					<Icon name="material-symbols:chevron-right-rounded" />
+				</a>
+			))}
+		</div>
+		<a class="view-all" href={url("/archive/")}>
+			<span class="ui-lang-zh">查看全部</span>
+			<span class="ui-lang-en">View all</span>
+			<Icon name="material-symbols:arrow-forward-rounded" />
+		</a>
+	</section>
+
+	<section>
+		<h2>
+			<Icon name="material-symbols:tag-rounded" />
+			<span class="ui-lang-zh">标签</span>
+			<span class="ui-lang-en">Tags</span>
+		</h2>
+		<div class="sidebar-tags">
+			{tags.map((tag) => (
+				<a href={getTagUrl(tag.name)}>
+					{tag.name}
+					<span>{tag.count}</span>
+				</a>
+			))}
+		</div>
+	</section>
+</aside>
+
+<style>
+	.blog-sidebar {
+		@apply flex flex-col gap-8;
+	}
+
+	.blog-sidebar section {
+		@apply min-w-0;
+	}
+
+	h2 {
+		@apply mb-4 flex items-center gap-2 text-xl font-black text-black/90 dark:text-white/90;
+	}
+
+	h2 > :global(svg) {
+		@apply text-2xl;
+	}
+
+	.category-list {
+		@apply flex flex-col gap-2;
+	}
+
+	.category-list a {
+		@apply flex min-h-16 items-center rounded-xl border border-black/10 bg-[var(--card-bg)] px-4 text-sm font-semibold text-black/75 transition hover:border-[var(--primary)] hover:text-[var(--primary)] dark:border-white/10 dark:text-white/75;
+	}
+
+	.category-list a > :global(svg) {
+		@apply ml-2 shrink-0 text-xl transition-transform;
+	}
+
+	.category-list a:hover > :global(svg) {
+		@apply translate-x-1;
+	}
+
+	.category-count {
+		@apply ml-auto rounded-full bg-black/[0.05] px-2 py-0.5 text-xs text-black/45 dark:bg-white/[0.08] dark:text-white/45;
+	}
+
+	.view-all {
+		@apply mt-4 flex items-center justify-end gap-1 text-sm font-semibold text-black/65 transition hover:text-[var(--primary)] dark:text-white/65;
+	}
+
+	.sidebar-tags {
+		@apply flex flex-wrap gap-2;
+	}
+
+	.sidebar-tags a {
+		@apply inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-[var(--card-bg)] px-3 py-2 text-sm text-black/60 transition hover:border-[var(--primary)] hover:text-[var(--primary)] dark:border-white/10 dark:text-white/60;
+	}
+
+	.sidebar-tags a span {
+		@apply text-xs opacity-55;
+	}
+
+	@media (min-width: 1024px) {
+		.blog-sidebar {
+			@apply sticky top-24 self-start;
+		}
+	}
+</style>

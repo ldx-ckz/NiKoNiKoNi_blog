@@ -110,9 +110,6 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 // 检查是否为首页
 const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
 const showHomeText = siteConfig.banner.homeText?.enable && isHomePage;
-// 手机端非首页不显示banner的CSS类
-const mobileNonHomeBannerClass = !isHomePage ? "mobile-hide-banner" : "";
-
 // 计算主内容区域位置，考虑手机端非首页时banner被隐藏
 // 当默认模式为 banner 时，使用banner高度；否则使用顶栏高度
 // 让主内容区域紧贴波浪线下方，波浪线高度约为10-15vh，所以主内容从banner顶部开始
@@ -538,7 +535,11 @@ const transparentClass = shouldEnableTransparency
 </div>
 
 <!-- Banner - 始终渲染，通过 JS 控制显示隐藏 -->
-<div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
+<div
+    id="banner-wrapper"
+    class={`absolute z-10 w-full transition duration-700 overflow-hidden ${!isHomePage ? "full-nonhome-banner" : ""}`}
+    style={`top: ${isHomePage ? `-${BANNER_HEIGHT_EXTEND}vh` : "0"}`}
+>
 
     {(bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1) ? (
         <!-- Carousel mode for multiple images -->
@@ -696,7 +697,7 @@ const transparentClass = shouldEnableTransparency
 </div>
 
 <!-- Main content -->
-<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
+<div class={`absolute w-full z-30 pointer-events-none ${!isHomePage ? 'nonhome-banner-main' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
@@ -797,6 +798,15 @@ body.no-banner-mode .absolute.w-full.z-30 {
 @media (min-width: 1280px) {
     body.enable-banner .absolute.w-full.z-30 {
         top: 35vh !important;
+    }
+
+    body.enable-banner #banner-wrapper.full-nonhome-banner {
+        top: 0 !important;
+        transform: none !important;
+    }
+
+    body.enable-banner .absolute.w-full.z-30.nonhome-banner-main {
+        top: 65vh !important;
     }
 }
 
