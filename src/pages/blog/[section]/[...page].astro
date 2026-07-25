@@ -15,21 +15,15 @@ export const getStaticPaths = (async ({ paginate }) => {
 	const sections = [
 		{
 			slug: "notes",
-			zh: "学习笔记",
-			en: "Notes",
-			description: "数学、概率与人工智能基础知识的系统整理。",
+			
 		},
 		{
 			slug: "technical",
-			zh: "技术文章",
-			en: "Technical",
-			description: "模型、代码、工具与工程实践中的方法和复盘。",
+			
 		},
 		{
 			slug: "daily-life",
-			zh: "日常记录",
-			en: "Daily Life",
-			description: "学习之外的观察、生活片段与阶段性思考。",
+			
 		},
 	];
 	const containsAny = (values: string[], keywords: string[]) =>
