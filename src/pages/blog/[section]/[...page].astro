@@ -1,12 +1,10 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { Icon } from "astro-icon/components";
 import AxiPostCard from "../../../components/AxiPostCard.astro";
 import BlogSectionSidebar from "../../../components/BlogSectionSidebar.astro";
 import Pagination from "../../../components/control/Pagination.astro";
 import MainGridLayout from "../../../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../../../utils/content-utils";
-import { url } from "../../../utils/url-utils";
 
 const PAGE_SIZE = 10;
 
@@ -15,15 +13,15 @@ export const getStaticPaths = (async ({ paginate }) => {
 	const sections = [
 		{
 			slug: "notes",
-			
+			en: "Notes",
 		},
 		{
 			slug: "technical",
-			
+			en: "Technical",
 		},
 		{
 			slug: "daily-life",
-			
+			en: "Daily Life",
 		},
 	];
 	const containsAny = (values: string[], keywords: string[]) =>
@@ -69,36 +67,14 @@ const { section, totalPosts, page } = Astro.props;
 const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 ---
 
-<MainGridLayout title={`${section.zh} - nikonikoni's blog`} hideSidebar>
+<MainGridLayout title={section.en} hideSidebar>
 	<header class="section-hero onload-animation">
-		<p>Blog / {section.en}</p>
-		<h1>{section.zh}</h1>
-		<div>{section.description}</div>
-		<span class="post-count">
-			{totalPosts}
-			<span class="ui-lang-zh"> 篇文章</span>
-			<span class="ui-lang-en"> posts</span>
-		</span>
+		<h1>{section.en}</h1>
+		<span class="post-count">{totalPosts} posts</span>
 	</header>
 
 	<div class="section-layout">
 		<section class="post-stream" aria-label={`${section.en} posts`}>
-			<div class="stream-toolbar">
-				<p>
-					<span class="ui-lang-zh">
-						第 {page.currentPage} / {page.lastPage} 页
-					</span>
-					<span class="ui-lang-en">
-						Page {page.currentPage} of {page.lastPage}
-					</span>
-				</p>
-				<a href={url("/archive/")}>
-					<span class="ui-lang-zh">按年份查看</span>
-					<span class="ui-lang-en">View by year</span>
-					<Icon name="material-symbols:arrow-forward-rounded" />
-				</a>
-			</div>
-
 			{page.data.length > 0 ? (
 				<div class="post-list">
 					{page.data.map((entry, index) => (
@@ -114,7 +90,7 @@ const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 
 			{page.lastPage > 1 && (
 				<Pagination
-					class="pagination onload-animation"
+					class="mx-auto mt-12 w-full onload-animation"
 					page={page}
 					baseUrl={`/blog/${section.slug}/`}
 				/>
@@ -130,20 +106,12 @@ const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 		@apply relative mb-7 px-1 py-2;
 	}
 
-	.section-hero > p {
-		@apply mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--primary)];
-	}
-
 	.section-hero h1 {
-		@apply mb-2 text-3xl font-black text-black/90 dark:text-white/90 md:text-4xl;
-	}
-
-	.section-hero > div {
-		@apply max-w-2xl text-sm leading-7 text-black/55 dark:text-white/55;
+		@apply mb-3 text-3xl font-black text-black/90 dark:text-white/90 md:text-4xl;
 	}
 
 	.post-count {
-		@apply mt-3 inline-flex rounded-lg bg-[var(--btn-plain-bg-hover)] px-3 py-1.5 text-xs font-bold text-black/60 dark:text-white/60;
+		@apply inline-flex rounded-lg bg-[var(--btn-plain-bg-hover)] px-3 py-1.5 text-xs font-bold text-black/60 dark:text-white/60;
 	}
 
 	.empty-state {
@@ -158,27 +126,7 @@ const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 		@apply min-w-0;
 	}
 
-	.stream-toolbar {
-		@apply mb-4 flex items-center justify-between gap-4 px-1 text-sm text-black/50 dark:text-white/50;
-	}
-
-	.stream-toolbar a {
-		@apply flex shrink-0 items-center gap-1 font-semibold text-black/70 transition hover:text-[var(--primary)] dark:text-white/70;
-	}
-
-	.stream-toolbar a > :global(svg) {
-		@apply text-xl transition-transform;
-	}
-
-	.stream-toolbar a:hover > :global(svg) {
-		@apply translate-x-1;
-	}
-
 	.post-list {
 		@apply flex flex-col gap-4;
-	}
-
-	.pagination {
-		@apply mt-7;
 	}
 </style>
