@@ -13,12 +13,22 @@ interface Props {
 const { entry, index } = Astro.props;
 const { remarkPluginFrontmatter } = await render(entry);
 const fallbackCovers = [
-	"/assets/desktop-banner/1.jpg",
-	"/assets/desktop-banner/2.jpg",
-	"/assets/desktop-banner/3.jpg",
-	"/assets/desktop-banner/4.png",
-	"/assets/desktop-banner/5.png",
-	"/assets/desktop-banner/6.png",
+	"/assets/post-card/post-card-01.jpg",
+	"/assets/post-card/post-card-02.jpg",
+	"/assets/post-card/post-card-03.jpg",
+	"/assets/post-card/post-card-04.png",
+	"/assets/post-card/post-card-05.png",
+	"/assets/post-card/post-card-06.png",
+	"/assets/post-card/post-card-07.jpg",
+	"/assets/post-card/post-card-08.png",
+	"/assets/post-card/post-card-09.jpg",
+	"/assets/post-card/post-card-10.jpg",
+	"/assets/post-card/post-card-11.jpg",
+	"/assets/post-card/post-card-12.jpg",
+	"/assets/post-card/post-card-13.jpg",
+	"/assets/post-card/post-card-14.jpg",
+	"/assets/post-card/post-card-15.png",
+	"/assets/post-card/post-card-16.jpg",
 ];
 const cover = entry.data.image || fallbackCovers[index % fallbackCovers.length];
 const excerpt = entry.data.description || remarkPluginFrontmatter.excerpt;
