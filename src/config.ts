@@ -21,10 +21,10 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
 export const siteConfig: SiteConfig = {
 	title: "nikonikoni's blog",
-	subtitle: "人工智能专业本科生的学习、技术与生活记录",
+	subtitle: "重在记录",
 	siteURL: "https://miku.nikonikoni.blog/", // 请替换为你的站点URL，以斜杠结尾
-	siteStartDate: "2025-11-22", // 站点开始运行日期，用于站点统计组件计算运行天数
-	keywords: ["人工智能", "学习笔记", "技术博客", "数学分析", "概率论", "Astro"],
+	siteStartDate: "2026-7-25", // 站点开始运行日期，用于站点统计组件计算运行天数
+
 
 	timeZone: SITE_TIMEZONE,
 
@@ -291,7 +291,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
 	name: "nikonikoni",
-	bio: "人工智能专业本科生，记录学习、技术与生活。",
+	bio: "",
 	typewriter: {
 		enable: true, // 启用个人简介打字机效果
 		speed: 80, // 打字速度（毫秒）
