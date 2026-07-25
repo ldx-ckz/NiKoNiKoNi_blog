@@ -38,6 +38,22 @@ const getLocalizedName = (name: string): string => {
 	return name;
 };
 
+const navNameZh: Record<string, string> = {
+	Blog: "博客",
+	Notes: "笔记",
+	Technical: "技术",
+	"Daily Life": "日常",
+	Archive: "归档",
+	Project: "项目",
+	Link: "友链",
+	About: "关于",
+};
+
+const getUiName = (name: string) => ({
+	zh: navNameZh[name] || getLocalizedName(name),
+	en: name,
+});
+
 // 转换子菜单中的LinkPreset为NavBarLink
 const processedLink = {
 	...link,
@@ -62,7 +78,8 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 		>
 			<div class="flex items-center">
 				{processedLink.icon && <Icon name={processedLink.icon} class="text-[1.1rem] mr-2" />}
-				{getLocalizedName(processedLink.name)}
+				<span class="ui-lang-zh">{getUiName(processedLink.name).zh}</span>
+				<span class="ui-lang-en">{getUiName(processedLink.name).en}</span>
 				<Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1" />
 			</div>
 		</button>
@@ -77,7 +94,8 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 					>
 						<div class="flex items-center">
 							{child.icon && <Icon name={child.icon} class="text-[1rem] mr-2" />}
-							<span>{getLocalizedName(child.name)}</span>
+							<span class="ui-lang-zh">{getUiName(child.name).zh}</span>
+							<span class="ui-lang-en">{getUiName(child.name).en}</span>
 						</div>
 						{child.external && (
 							<Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.75rem] text-black/25 dark:text-white/25" />
@@ -95,7 +113,8 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 		>
 			<div class="flex items-center">
 				{processedLink.icon && <Icon name={processedLink.icon} class="text-[1.1rem] mr-2" />}
-				{getLocalizedName(processedLink.name)}
+				<span class="ui-lang-zh">{getUiName(processedLink.name).zh}</span>
+				<span class="ui-lang-en">{getUiName(processedLink.name).en}</span>
 				{processedLink.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]" />}
 			</div>
 		</a>

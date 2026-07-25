@@ -666,3 +666,11 @@ html {
 :root:not(.dark) .custom-md spoiler {
   --_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
 }
+
+html[data-ui-lang="en"] .ui-lang-zh {
+  display: none !important;
+}
+
+html:not([data-ui-lang="en"]) .ui-lang-en {
+  display: none !important;
+}

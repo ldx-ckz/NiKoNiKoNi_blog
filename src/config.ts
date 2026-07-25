@@ -17,13 +17,14 @@ import { LinkPreset } from "./types/config";
 // 移除i18n导入以避免循环依赖
 
 // 定义站点语言
-const SITE_LANG = "en"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
+const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
 export const siteConfig: SiteConfig = {
-	title: "NiKoNiKoNi",
-	subtitle: "A blog website",
+	title: "nikonikoni's blog",
+	subtitle: "人工智能专业本科生的学习、技术与生活记录",
 	siteURL: "https://miku.nikonikoni.blog/", // 请替换为你的站点URL，以斜杠结尾
 	siteStartDate: "2025-11-22", // 站点开始运行日期，用于站点统计组件计算运行天数
+	keywords: ["人工智能", "学习笔记", "技术博客", "数学分析", "概率论", "Astro"],
 
 	timeZone: SITE_TIMEZONE,
 
@@ -36,20 +37,20 @@ export const siteConfig: SiteConfig = {
 
 	// 特色页面开关配置(关闭不在使用的页面有助于提升SEO,关闭后直接在顶部导航删除对应的页面就行)
 	featurePages: {
-		anime: true, // 番剧页面开关
-		diary: true, // 日记页面开关
+		anime: false, // 番剧页面开关
+		diary: false, // 日记页面开关
 		friends: true, // 友链页面开关
 		projects: true, // 项目页面开关
-		skills: true, // 技能页面开关
-		timeline: true, // 时间线页面开关
-		albums: true, // 相册页面开关
+		skills: false, // 技能页面开关
+		timeline: false, // 时间线页面开关
+		albums: false, // 相册页面开关
 		devices: false, // 设备页面开关
 	},
 
 	// 顶栏标题配置
 	navbarTitle: {
 		// 顶栏标题文本
-		text: "NiKoNiKoNiUI",
+		text: "nikonikoni's blog",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home_.png
 		icon: "assets/home/home_.png",
 	},
@@ -68,7 +69,7 @@ export const siteConfig: SiteConfig = {
 		// 注意：如果侧边栏配置启用了"both"双侧边栏，则无法使用文章列表"grid"网格（双列）布局
 		defaultMode: "list",
 		// 是否允许用户切换布局
-		allowSwitch: true,
+		allowSwitch: false,
 	},
 
 	// 标签样式配置
@@ -86,7 +87,7 @@ export const siteConfig: SiteConfig = {
 		// "mobile" = 仅在移动端显示
 		// "desktop" = 仅在桌面端显示
 		// "both" = 在所有设备上显示
-		showModeSwitchOnMobile: "desktop",
+		showModeSwitchOnMobile: "off",
 	},
 
 	banner: {
@@ -134,7 +135,7 @@ export const siteConfig: SiteConfig = {
 		// 请自行搭建API
 
 		homeText: {
-			enable: true, // 在主页显示自定义文本
+			enable: false, // 在主页显示自定义文本
 			title: "The fallen leaves tell a story", // 主页横幅主标题
 
 			subtitle: [
@@ -250,77 +251,47 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 
 export const navBarConfig: NavBarConfig = {
 	links: [
-		LinkPreset.Home,
-		LinkPreset.Archive,
-		// 支持自定义导航栏链接,并且支持多级菜单,3.1版本新加
 		{
-			name: "My",
-			url: "/content/",
-			icon: "material-symbols:person",
+			name: "Blog",
+			url: "/blog/notes/",
 			children: [
 				{
-					name: "Anime",
-					url: "/anime/",
-					icon: "material-symbols:movie",
-				},
-				{
 					name: "Notes",
-					url: "/notes/",
-					icon: "material-symbols:book",
+					url: "/blog/notes/",
 				},
 				{
-					name: "Gallery",
-					url: "/albums/",
-					icon: "material-symbols:photo-library",
+					name: "Technical",
+					url: "/blog/technical/",
+				},
+				{
+					name: "Daily Life",
+					url: "/blog/daily-life/",
 				},
 			],
+		},
+		{
+			name: "Archive",
+			url: "/archive/",
+		},
+		{
+			name: "Project",
+			url: "/projects/",
+		},
+		{
+			name: "Link",
+			url: "/friends/",
 		},
 		{
 			name: "About",
-			url: "/content/",
-			icon: "material-symbols:info",
-			children: [
-				{
-					name: "About Me",
-					url: "/about/",
-					icon: "material-symbols:person",
-				},
-				{
-					name: "Friends",
-					url: "/friends/",
-					icon: "material-symbols:group",
-				},
-			],
-		},
-		{
-			name: "Others",
-			url: "#",
-			icon: "material-symbols:more-horiz",
-			children: [
-				{
-					name: "Projects",
-					url: "/projects/",
-					icon: "material-symbols:work",
-				},
-				{
-					name: "Skills",
-					url: "/skills/",
-					icon: "material-symbols:psychology",
-				},
-				{
-					name: "Timeline",
-					url: "/timeline/",
-					icon: "material-symbols:timeline",
-				},
-			],
+			url: "/about/",
 		},
 	],
 };
 
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
-	name: "NiKoNiKoNi",
-	bio: "Greetings.Travellers from bryond the fog.",
+	name: "nikonikoni",
+	bio: "人工智能专业本科生，记录学习、技术与生活。",
 	typewriter: {
 		enable: true, // 启用个人简介打字机效果
 		speed: 80, // 打字速度（毫秒）
@@ -329,7 +300,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa6-brands:github",
-			url: "https://github.com/matsuzaka-yuki",
+			url: "https://github.com/ldx-ckz",
 		},
 	],
 };
@@ -369,7 +340,7 @@ export const announcementConfig: AnnouncementConfig = {
 };
 
 export const musicPlayerConfig: MusicPlayerConfig = {
-	enable: true, // 启用音乐播放器功能
+	enable: false, // 启用音乐播放器功能
 	mode: "meting", // 音乐播放器模式，可选 "local" 或 "meting"
 	meting_api:
 		"https://www.bilibili.uno/api?server=netease&type=playlist&id=79510274", // Meting API 地址
@@ -393,7 +364,7 @@ export const footerConfig: FooterConfig = {
  */
 export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	// 侧边栏位置：单侧(unilateral)或双侧(both)
-	position: "both",
+	position: "unilateral",
 
 	// 侧边栏组件配置列表
 	components: [
@@ -401,7 +372,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：用户资料组件
 			type: "profile",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 组件显示顺序（数字越小越靠前）
 			order: 1,
 			// 组件位置："top" 表示固定在顶部
@@ -417,7 +388,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：公告组件
 			type: "announcement",
 			// 是否启用该组件（现在通过统一配置控制）
-			enable: true,
+			enable: false,
 			// 组件显示顺序
 			order: 2,
 			// 组件位置："top" 表示固定在顶部
@@ -475,7 +446,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：站点统计组件
 			type: "site-stats",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 组件显示顺序
 			order: 5,
 			// 组件位置
@@ -491,7 +462,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：日历组件(移动端不显示)
 			type: "calendar",
 			// 是否启用该组件
-			enable: true,
+			enable: false,
 			// 组件显示顺序
 			order: 6,
 			// 组件位置
@@ -540,7 +511,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 };
 
 export const sakuraConfig: SakuraConfig = {
-	enable: true, // 默认关闭樱花特效
+	enable: false, // 默认关闭樱花特效
 	sakuraNum: 21, // 樱花数量
 	limitTimes: -1, // 樱花越界限制次数，-1为无限循环
 	size: {
@@ -569,7 +540,7 @@ export const sakuraConfig: SakuraConfig = {
 // Pio 看板娘配置
 export const pioConfig: import("./types/config").PioConfig = {
 	closable: false,
-	enable: true, // 启用看板娘
+	enable: false, // 保持首页内容区域简洁，关闭看板娘
 	models: ["/pio/models/pio/model.json"], // 默认模型路径
 	position: "left", // 默认位置在右侧
 	width: 280, // 默认宽度
@@ -577,7 +548,7 @@ export const pioConfig: import("./types/config").PioConfig = {
 	mode: "draggable", // 默认为可拖拽模式
 	hiddenOnMobile: true, // 默认在移动设备上隐藏
 	dialog: {
-		welcome: "Welcome to NiKoNiKoNi Website!", // 欢迎词
+		welcome: "Welcome to nikonikoni's blog!", // 欢迎词
 		touch: [
 			"What are you doing?",
 			"Stop touching me!",

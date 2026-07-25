@@ -1,0 +1,125 @@
+---
+import type { GetStaticPaths } from "astro";
+import PostPage from "../../components/PostPage.astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import { getSortedPosts } from "../../utils/content-utils";
+
+export const getStaticPaths = (() => {
+	const sections = [
+		{
+			slug: "notes",
+			zh: "学习笔记",
+			en: "Notes",
+			descriptionZh: "数学、概率与人工智能基础知识的系统整理。",
+			descriptionEn: "Structured notes on mathematics, probability, and AI foundations.",
+		},
+		{
+			slug: "technical",
+			zh: "技术文章",
+			en: "Technical",
+			descriptionZh: "模型、代码、工具与工程实践中的方法和复盘。",
+			descriptionEn: "Models, code, tools, and lessons from engineering practice.",
+		},
+		{
+			slug: "daily-life",
+			zh: "日常记录",
+			en: "Daily Life",
+			descriptionZh: "学习之外的观察、生活片段与阶段性思考。",
+			descriptionEn: "Observations, moments, and reflections beyond technical study.",
+		},
+	];
+
+	return sections.map((section) => ({
+		params: { section: section.slug },
+		props: { section },
+	}));
+}) satisfies GetStaticPaths;
+
+const { section } = Astro.props;
+const posts = await getSortedPosts();
+
+const containsAny = (values: string[], keywords: string[]) =>
+	values.some((value) => {
+		const normalized = value.toLowerCase();
+		return keywords.some((keyword) => normalized.includes(keyword));
+	});
+
+const isNotesPost = (post: (typeof posts)[number]) =>
+	containsAny(
+		[post.id, post.data.category || "", ...post.data.tags],
+		["analysis", "probability", "propability", "math", "notes", "数学", "概率", "笔记"],
+	);
+
+const isDailyPost = (post: (typeof posts)[number]) =>
+	containsAny(
+		[post.id, post.data.category || "", ...post.data.tags],
+		["daily", "life", "diary", "生活", "日常", "随笔"],
+	);
+
+const sectionPosts = posts.filter((post) => {
+	if (section.slug === "notes") return isNotesPost(post);
+	if (section.slug === "daily-life") return isDailyPost(post);
+	return !isNotesPost(post) && !isDailyPost(post);
+});
+---
+
+<MainGridLayout title={`${section.en} - nikonikoni's blog`}>
+	<header class="section-hero card-base onload-animation">
+		<p>Blog / {section.en}</p>
+		<h1>
+			<span class="ui-lang-zh">{section.zh}</span>
+			<span class="ui-lang-en">{section.en}</span>
+		</h1>
+		<div>
+			<span class="ui-lang-zh">{section.descriptionZh}</span>
+			<span class="ui-lang-en">{section.descriptionEn}</span>
+		</div>
+		<span class="post-count">
+			{sectionPosts.length}
+			<span class="ui-lang-zh"> 篇文章</span>
+			<span class="ui-lang-en"> posts</span>
+		</span>
+	</header>
+
+	{sectionPosts.length > 0 ? (
+		<PostPage page={{ data: sectionPosts }} />
+	) : (
+		<div class="empty-state card-base onload-animation">
+			<span class="ui-lang-zh">这个栏目还没有文章，下一篇也许就在路上。</span>
+			<span class="ui-lang-en">No posts here yet. The first one may already be on its way.</span>
+		</div>
+	)}
+</MainGridLayout>
+
+<style>
+	.section-hero {
+		@apply relative mb-4 overflow-hidden rounded-[var(--radius-large)] p-7 md:p-9;
+	}
+
+	.section-hero::after {
+		content: "";
+		@apply absolute -right-12 -top-20 h-48 w-48 rounded-full opacity-15;
+		background: var(--primary);
+		filter: blur(45px);
+	}
+
+	.section-hero > p {
+		@apply mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--primary)];
+	}
+
+	.section-hero h1 {
+		@apply mb-3 text-3xl font-black text-black/90 dark:text-white/90 md:text-4xl;
+	}
+
+	.section-hero > div {
+		@apply max-w-2xl text-sm leading-7 text-black/55 dark:text-white/55;
+	}
+
+	.post-count {
+		@apply mt-5 inline-flex rounded-lg bg-[var(--btn-plain-bg-hover)] px-3 py-1.5 text-xs font-bold text-black/60 dark:text-white/60;
+	}
+
+	.empty-state {
+		@apply rounded-[var(--radius-large)] p-10 text-center text-black/50 dark:text-white/50;
+	}
+</style>
