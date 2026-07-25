@@ -5,6 +5,10 @@ import { getTagUrl, url } from "../utils/url-utils";
 
 const categories = await getCategoryList();
 const tags = await getTagList();
+const CATEGORY_LIMIT = 5;
+const TAG_LIMIT = 12;
+const visibleCategories = categories.slice(0, CATEGORY_LIMIT);
+const visibleTags = tags.slice(0, TAG_LIMIT);
 ---
 
 <aside class="blog-sidebar" aria-label="Post filters">
@@ -15,7 +19,7 @@ const tags = await getTagList();
 			<span class="ui-lang-en">Categories</span>
 		</h2>
 		<div class="category-list">
-			{categories.map((category) => (
+			{visibleCategories.map((category) => (
 				<a href={category.url}>
 					<span>{category.name}</span>
 					<span class="category-count">{category.count}</span>
@@ -23,11 +27,13 @@ const tags = await getTagList();
 				</a>
 			))}
 		</div>
-		<a class="view-all" href={url("/archive/")}>
-			<span class="ui-lang-zh">查看全部</span>
-			<span class="ui-lang-en">View all</span>
-			<Icon name="material-symbols:arrow-forward-rounded" />
-		</a>
+		{categories.length > CATEGORY_LIMIT && (
+			<a class="view-all" href={url("/categories/")}>
+				<span class="ui-lang-zh">查看全部</span>
+				<span class="ui-lang-en">View all</span>
+				<Icon name="material-symbols:arrow-forward-rounded" />
+			</a>
+		)}
 	</section>
 
 	<section>
@@ -37,13 +43,20 @@ const tags = await getTagList();
 			<span class="ui-lang-en">Tags</span>
 		</h2>
 		<div class="sidebar-tags">
-			{tags.map((tag) => (
+			{visibleTags.map((tag) => (
 				<a href={getTagUrl(tag.name)}>
 					{tag.name}
 					<span>{tag.count}</span>
 				</a>
 			))}
 		</div>
+		{tags.length > TAG_LIMIT && (
+			<a class="view-all" href={url("/tags/")}>
+				<span class="ui-lang-zh">查看全部</span>
+				<span class="ui-lang-en">View all</span>
+				<Icon name="material-symbols:arrow-forward-rounded" />
+			</a>
+		)}
 	</section>
 </aside>
 

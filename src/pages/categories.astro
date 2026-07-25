@@ -1,0 +1,77 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getCategoryList } from "@utils/content-utils";
+import { Icon } from "astro-icon/components";
+
+const categories = await getCategoryList();
+---
+
+<MainGridLayout title="分类" hideSidebar>
+	<main class="taxonomy-page card-base onload-animation mx-auto w-full max-w-4xl">
+		<header>
+			<Icon name="material-symbols:category-outline-rounded" />
+			<div>
+				<h1>
+					<span class="ui-lang-zh">分类</span>
+					<span class="ui-lang-en">Categories</span>
+				</h1>
+				<p>
+					<span class="ui-lang-zh">共 {categories.length} 个分类</span>
+					<span class="ui-lang-en">{categories.length} categories</span>
+				</p>
+			</div>
+		</header>
+
+		<div class="taxonomy-list">
+			{categories.map((category) => (
+				<a href={category.url}>
+					<span>{category.name}</span>
+					<small>{category.count}</small>
+					<Icon name="material-symbols:chevron-right-rounded" />
+				</a>
+			))}
+		</div>
+	</main>
+</MainGridLayout>
+
+<style>
+	.taxonomy-page {
+		@apply rounded-[var(--radius-large)] p-6 md:p-8;
+	}
+
+	header {
+		@apply mb-6 flex items-center gap-4 border-b border-black/10 pb-6 dark:border-white/10;
+	}
+
+	header > :global(svg) {
+		@apply text-4xl text-[var(--primary)];
+	}
+
+	h1 {
+		@apply text-3xl font-black text-black/90 dark:text-white/90;
+	}
+
+	p {
+		@apply mt-1 text-sm text-black/50 dark:text-white/50;
+	}
+
+	.taxonomy-list {
+		@apply grid grid-cols-1 gap-3 sm:grid-cols-2;
+	}
+
+	.taxonomy-list a {
+		@apply flex min-h-16 items-center rounded-xl border border-black/10 bg-[var(--card-bg)] px-4 font-semibold text-black/75 transition hover:border-[var(--primary)] hover:text-[var(--primary)] dark:border-white/10 dark:text-white/75;
+	}
+
+	.taxonomy-list small {
+		@apply ml-auto rounded-full bg-black/[0.05] px-2.5 py-1 text-xs font-medium text-black/45 dark:bg-white/[0.08] dark:text-white/45;
+	}
+
+	.taxonomy-list a > :global(svg) {
+		@apply ml-2 shrink-0 text-xl transition-transform;
+	}
+
+	.taxonomy-list a:hover > :global(svg) {
+		@apply translate-x-1;
+	}
+</style>

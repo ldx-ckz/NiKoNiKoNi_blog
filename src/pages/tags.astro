@@ -1,0 +1,69 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getTagList } from "@utils/content-utils";
+import { getTagUrl } from "@utils/url-utils";
+import { Icon } from "astro-icon/components";
+
+const tags = await getTagList();
+---
+
+<MainGridLayout title="标签" hideSidebar>
+	<main class="taxonomy-page card-base onload-animation mx-auto w-full max-w-4xl">
+		<header>
+			<Icon name="material-symbols:tag-rounded" />
+			<div>
+				<h1>
+					<span class="ui-lang-zh">标签</span>
+					<span class="ui-lang-en">Tags</span>
+				</h1>
+				<p>
+					<span class="ui-lang-zh">共 {tags.length} 个标签</span>
+					<span class="ui-lang-en">{tags.length} tags</span>
+				</p>
+			</div>
+		</header>
+
+		<div class="tag-list">
+			{tags.map((tag) => (
+				<a href={getTagUrl(tag.name)}>
+					<span># {tag.name}</span>
+					<small>{tag.count}</small>
+				</a>
+			))}
+		</div>
+	</main>
+</MainGridLayout>
+
+<style>
+	.taxonomy-page {
+		@apply rounded-[var(--radius-large)] p-6 md:p-8;
+	}
+
+	header {
+		@apply mb-6 flex items-center gap-4 border-b border-black/10 pb-6 dark:border-white/10;
+	}
+
+	header > :global(svg) {
+		@apply text-4xl text-[var(--primary)];
+	}
+
+	h1 {
+		@apply text-3xl font-black text-black/90 dark:text-white/90;
+	}
+
+	p {
+		@apply mt-1 text-sm text-black/50 dark:text-white/50;
+	}
+
+	.tag-list {
+		@apply flex flex-wrap gap-3;
+	}
+
+	.tag-list a {
+		@apply inline-flex items-center gap-2 rounded-full border border-black/10 bg-[var(--card-bg)] px-4 py-2.5 text-sm font-semibold text-black/65 transition hover:border-[var(--primary)] hover:text-[var(--primary)] dark:border-white/10 dark:text-white/65;
+	}
+
+	.tag-list small {
+		@apply text-xs font-medium opacity-55;
+	}
+</style>
