@@ -51,8 +51,8 @@ export const siteConfig: SiteConfig = {
 	navbarTitle: {
 		// 顶栏标题文本
 		text: "nikonikoni's blog",
-		// 顶栏标题图标路径，默认使用 public/assets/home/home_.png
-		icon: "assets/home/home_.png",
+		// 顶栏标题图标路径
+		icon: "/assets/logo/nikonikoni-logo.png",
 	},
 
 	bangumi: {
@@ -201,12 +201,9 @@ export const siteConfig: SiteConfig = {
 	},
 	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
 	favicon: [
-		// 留空以使用默认 favicon
-		// {
-		//   src: '/favicon/icon.png',    // 图标文件路径
-		//   theme: 'light',              // 可选，指定主题 'light' | 'dark'
-		//   sizes: '32x32',              // 可选，图标大小
-		// }
+		{
+			src: "/assets/logo/nikonikoni-logo.png",
+		},
 	],
 
 	// 字体配置
