@@ -32,9 +32,6 @@ const formatDate = (date: Date, locale: string) =>
 
 const formatCount = (count: number) =>
 	new Intl.NumberFormat("zh-CN", { notation: "compact" }).format(count);
-const formatCountEn = (count: number) =>
-	new Intl.NumberFormat("en-US", { notation: "compact" }).format(count);
-
 const toDateKey = (date: Date) => {
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -107,19 +104,16 @@ if (
 		</div>
 		<div class="profile-copy">
 			<p class="eyebrow">
-				<span class="ui-lang-zh">你好，我是</span>
-				<span class="ui-lang-en">Hello, I am</span>
+				你好，我是
 			</p>
 			<h1 id="profile-name">nikonikoni</h1>
 			<p class="profile-lead">
-				<span class="ui-lang-zh">人工智能专业本科生，正在把数学基础、模型原理和工程实践整理成一份持续生长的公开笔记。</span>
-				<span class="ui-lang-en">An AI undergraduate turning mathematical foundations, model ideas, and engineering practice into an evolving public notebook.</span>
+				人工智能专业本科生，正在把数学基础、模型原理和工程实践整理成一份持续生长的公开笔记。
 			</p>
 			<div class="profile-actions">
 				<span class="info-chip">
 					<Icon name="material-symbols:school-outline-rounded" />
-					<span class="ui-lang-zh">人工智能本科生</span>
-					<span class="ui-lang-en">AI Undergraduate</span>
+					西安交通大学 · 人工智能本科生
 				</span>
 				<a class="info-chip" href="https://github.com/ldx-ckz" target="_blank" rel="noreferrer">
 					<Icon name="fa6-brands:github" />
@@ -145,8 +139,7 @@ if (
 		</div>
 		<div class="section-content">
 			<p>
-				<span class="ui-lang-zh">这里记录我学习人工智能的过程：从数学与概率基础，到机器学习方法、代码实验，以及偶尔的生活观察。内容优先追求可复现、可回顾，而不是追逐短暂的热点。</span>
-				<span class="ui-lang-en">This site documents my path through AI—from mathematics and probability to machine-learning methods, coding experiments, and occasional notes on daily life. The focus is reproducible, reviewable knowledge.</span>
+				这里记录我学习人工智能的过程：从数学与概率基础，到机器学习方法、代码实验，以及偶尔的生活观察。内容优先追求可复现、可回顾，而不是追逐短暂的热点。
 			</p>
 			<a class="text-link" href={url("/about/")}>
 				<span class="ui-lang-zh">更多关于我与博客</span>
@@ -167,19 +160,10 @@ if (
 		<div class="education-list">
 			<article class="education-card">
 				<div>
-					<h3>
-						<span class="ui-lang-zh">人工智能专业</span>
-						<span class="ui-lang-en">Artificial Intelligence</span>
-					</h3>
-					<p>
-						<span class="ui-lang-zh">本科在读</span>
-						<span class="ui-lang-en">Undergraduate</span>
-					</p>
+					<h3>西安交通大学</h3>
+					<p>人工智能专业 · 本科</p>
 				</div>
-				<span class="education-time">
-					<span class="ui-lang-zh">在读</span>
-					<span class="ui-lang-en">Present</span>
-				</span>
+				<span class="education-time">2026.09 — 至今</span>
 			</article>
 		</div>
 	</section>
@@ -196,22 +180,22 @@ if (
 			<article class="focus-card">
 				<Icon name="material-symbols:function-rounded" />
 				<div>
-					<h3><span class="ui-lang-zh">数学基础</span><span class="ui-lang-en">Mathematical Foundations</span></h3>
-					<p><span class="ui-lang-zh">数学分析、概率论与支撑模型理解的基本工具。</span><span class="ui-lang-en">Analysis, probability, and the tools behind model understanding.</span></p>
+					<h3>数学基础</h3>
+					<p>数学分析、概率论与支撑模型理解的基本工具。</p>
 				</div>
 			</article>
 			<article class="focus-card">
 				<Icon name="material-symbols:neurology-outline-rounded" />
 				<div>
-					<h3><span class="ui-lang-zh">机器学习</span><span class="ui-lang-en">Machine Learning</span></h3>
-					<p><span class="ui-lang-zh">从原理、论文阅读到小型实验，建立完整知识链路。</span><span class="ui-lang-en">Connecting principles, papers, and small experiments.</span></p>
+					<h3>机器学习</h3>
+					<p>从原理、论文阅读到小型实验，建立完整知识链路。</p>
 				</div>
 			</article>
 			<article class="focus-card">
 				<Icon name="material-symbols:code-rounded" />
 				<div>
-					<h3><span class="ui-lang-zh">工程实践</span><span class="ui-lang-en">Engineering Practice</span></h3>
-					<p><span class="ui-lang-zh">用代码验证想法，并记录实现过程中的判断与复盘。</span><span class="ui-lang-en">Testing ideas in code and recording the decisions behind them.</span></p>
+					<h3>工程实践</h3>
+					<p>用代码验证想法，并记录实现过程中的判断与复盘。</p>
 				</div>
 			</article>
 		</div>
@@ -242,8 +226,7 @@ if (
 			<article class="stat-card">
 				<Icon name="material-symbols:description-outline-rounded" />
 				<strong>
-					<span class="ui-lang-zh">{formatCount(totalWords)}</span>
-					<span class="ui-lang-en">{formatCountEn(totalWords)}</span>
+					{formatCount(totalWords)}
 				</strong>
 				<span class="ui-lang-zh">累计字数</span><span class="ui-lang-en">Total Words</span>
 			</article>

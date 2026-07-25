@@ -8,11 +8,9 @@ import { getSortedPostsList } from "../utils/content-utils";
 const sortedPostsList = await getSortedPostsList();
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
-    <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('/src/scripts/right-sidebar-layout.js');
-  </script>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+<MainGridLayout title={i18n(I18nKey.archive)} hideSidebar>
+    <div class="mx-auto w-full max-w-4xl">
+        <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+    </div>
 </MainGridLayout>
 

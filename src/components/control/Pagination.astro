@@ -5,11 +5,12 @@ import { url } from "../../utils/url-utils";
 
 interface Props {
 	page: Page;
+	baseUrl?: string;
 	class?: string;
 	style?: string;
 }
 
-const { page, style } = Astro.props;
+const { page, style, baseUrl = "/" } = Astro.props;
 
 const HIDDEN = -1;
 
@@ -46,8 +47,9 @@ if (r === page.lastPage - 2) pages.push(page.lastPage - 1);
 if (r < page.lastPage) pages.push(page.lastPage);
 
 const getPageUrl = (p: number) => {
-	if (p === 1) return "/";
-	return `/${p}/`;
+	const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+	if (p === 1) return normalizedBase;
+	return `${normalizedBase}${p}/`;
 };
 ---
 

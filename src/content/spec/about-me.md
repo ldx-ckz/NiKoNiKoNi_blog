@@ -1,6 +1,6 @@
 ## 关于我
 
-你好，我是 nikonikoni，一名人工智能专业本科生。
+你好，我是 nikonikoni，现为西安交通大学人工智能专业本科生（2026.09—至今）。
 
 目前我主要学习数学分析、概率论、机器学习与人工智能工程相关内容。我希望不仅知道一个模型“怎么用”，也能理解它为什么有效、如何验证，以及实现过程中有哪些值得记录的判断。
 
@@ -14,10 +14,4 @@
 
 文章会持续修订。相比追求更新频率，我更在意内容能否在未来被自己和读者重新理解、复现和使用。
 
-本站基于 Astro 与 Mizuki 构建，界面和内容会随着我的学习继续演进。
-
-## About
-
-Hi, I am nikonikoni, an undergraduate student majoring in artificial intelligence. This blog is a public learning archive for notes, technical experiments, and occasional reflections on daily life.
-
-You can find the source and my other work on [GitHub](https://github.com/ldx-ckz).
+本站基于 Astro 与 Mizuki 构建，界面和内容会随着我的学习继续演进。项目源码与其他作品可以在 [GitHub](https://github.com/ldx-ckz) 查看。

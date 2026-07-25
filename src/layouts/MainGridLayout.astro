@@ -117,11 +117,14 @@ const mainPanelTop =
 	siteConfig.wallpaperMode.defaultMode === "banner"
 		? `${BANNER_HEIGHT}vh`
 		: "5.5rem";
-const mobileNonHomeMainTop = !isHomePage ? "5.5rem" : mainPanelTop;
 
 // 当默认模式不是 banner 时，主内容区域应该始终从顶栏下面开始
 const finalMainPanelTop =
-	siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
+	!isHomePage
+		? "5.5rem"
+		: siteConfig.wallpaperMode.defaultMode === "banner"
+			? mainPanelTop
+			: "5.5rem";
 
 // 检查侧边栏是否启用，动态调整网格布局
 // 响应式配置：不同设备上的侧边栏显示状态
@@ -537,8 +540,8 @@ const transparentClass = shouldEnableTransparency
 <!-- Banner - 始终渲染，通过 JS 控制显示隐藏 -->
 <div
     id="banner-wrapper"
-    class={`absolute z-10 w-full transition duration-700 overflow-hidden ${!isHomePage ? "full-nonhome-banner" : ""}`}
-    style={`top: ${isHomePage ? `-${BANNER_HEIGHT_EXTEND}vh` : "0"}`}
+    class={`absolute z-10 w-full transition duration-700 overflow-hidden ${!isHomePage ? "nonhome-hidden-banner" : ""}`}
+    style={`top: -${BANNER_HEIGHT_EXTEND}vh`}
 >
 
     {(bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1) ? (
@@ -697,7 +700,7 @@ const transparentClass = shouldEnableTransparency
 </div>
 
 <!-- Main content -->
-<div class={`absolute w-full z-30 pointer-events-none ${!isHomePage ? 'nonhome-banner-main' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
+<div class={`absolute w-full z-30 pointer-events-none ${!isHomePage ? 'nonhome-main' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
@@ -794,19 +797,22 @@ body.no-banner-mode .absolute.w-full.z-30 {
     top: 5.5rem !important;
 }
 
+.nonhome-hidden-banner {
+    display: none !important;
+}
+
+body.enable-banner .absolute.w-full.z-30.nonhome-main {
+    top: 5.5rem !important;
+}
+
 /* 桌面端 banner 模式下的主内容区域位置 */
 @media (min-width: 1280px) {
     body.enable-banner .absolute.w-full.z-30 {
         top: 35vh !important;
     }
 
-    body.enable-banner #banner-wrapper.full-nonhome-banner {
-        top: 0 !important;
-        transform: none !important;
-    }
-
-    body.enable-banner .absolute.w-full.z-30.nonhome-banner-main {
-        top: 65vh !important;
+    body.enable-banner .absolute.w-full.z-30.nonhome-main {
+        top: 5.5rem !important;
     }
 }
 
@@ -1620,4 +1626,9 @@ body.no-banner-mode .absolute.w-full.z-30 {
         min-height: 30px !important;
         max-height: 40px !important;
     }
+}
+
+/* 非首页始终紧接导航栏，覆盖旧版各尺寸 banner 定位规则。 */
+body.enable-banner .absolute.w-full.z-30.nonhome-main {
+    top: 5.5rem !important;
 }
