@@ -3,8 +3,13 @@ title: MIT Missing Semester 2026 第一课：Shell 入门
 image: /assets/post-card/post-card-10.jpg
 published: 2026-07-26
 description: MIT Missing Semester 2026 第一课学习笔记，介绍 Shell、路径、文本工具、管道、重定向与 Bash 脚本基础。
-tags: [Shell, Bash, CLI]
-category: [MIT Missing Semester, Tutorial]
+tags:
+  - Shell
+  - Bash
+  - CLI
+category:
+  - MIT Missing Semester
+  - Tutorial
 section: notes
 author: nikonikoni
 draft: false
@@ -207,6 +212,77 @@ awk -F, '{print $2}' data.csv
 
 第一条命令按空白分隔字段，第二条使用逗号作为分隔符。除字段提取外，`awk` 还可以过滤记录、计算统计值和重组输出。
 
+`awk` 通常逐行读取输入。一行称为一个记录，记录再按字段分隔符拆成字段：
+
+| 写法 | 含义 |
+|---|---|
+| `$0` | 当前完整记录 |
+| `$1`、`$2`…… | 当前记录的第 1、2……个字段 |
+| `NF` | 当前记录的字段数 |
+| `NR` | 从程序开始到现在读取的记录数 |
+| `-F ','` | 将字段分隔符设置为逗号 |
+
+默认字段分隔符是一个具有特殊语义的空格：连续的空格、Tab 等空白序列会被作为一个分隔区域，而不是产生多个空字段。
+
+`awk` 程序的基本结构是：
+
+```text
+pattern { action }
+```
+
+`pattern` 决定当前记录是否匹配，`action` 决定匹配后执行的动作。省略 `pattern` 时，动作应用于每条记录；只有 `pattern` 而省略动作时，默认打印整条记录 `$0`。
+
+以下示例依次完成字段选择、条件过滤、求和与计数：
+
+```bash
+awk -F ',' '{print $1, $3}' people.csv
+awk -F ',' 'NR > 1 && $2 > 18 {print $1, $3}' people.csv
+awk -F ',' 'NR > 1 {sum += $2} END {print sum}' people.csv
+awk 'END {print NR}' data.txt
+```
+
+`$2` 是 `awk` 语言中的字段引用，不是 Shell 变量。将 `awk` 程序放在单引号内，可以防止 Shell 提前展开其中的 `$`。
+
+`-F ','` 适合不包含带引号逗号、换行或转义引号的简单数据。完整 CSV 格式允许这些结构，不能一概按逗号机械切分。支持相应功能的新版 GNU `gawk` 可以使用 `--csv`；对可移植程序或复杂 CSV，更稳妥的做法是使用专门的 CSV 解析器。
+
+### 拆解 SSH 日志分析管道
+
+课程使用了一个较长的组合示例：
+
+```bash
+ssh myserver 'journalctl -u sshd -b-1 | grep "Disconnected from"' \
+  | sed -E 's/.*Disconnected from .* user (.*) [^ ]+ port.*/\1/' \
+  | sort | uniq -c \
+  | sort -nk1,1 | tail -n10 \
+  | awk '{print $2}' | paste -sd,
+```
+
+这条命令把远程 SSH 日志逐步转换为出现频率最高的十个用户名：
+
+| 阶段 | 作用 |
+|---|---|
+| `ssh myserver '…'` | 在远程主机执行引号中的命令；引号外的管道在本地继续处理 |
+| `journalctl -u sshd -b-1` | 读取 `sshd` 单元在上一次启动期间的日志；也可写成更易读的 `-b -1` |
+| `grep "Disconnected from"` | 只保留断开连接的日志行 |
+| `sed -E 's/…/\1/'` | 用扩展正则的捕获组提取用户名，`\1` 引用第一个捕获组 |
+| `sort` | 把相同用户名排列到一起 |
+| `uniq -c` | 统计每组相邻相同行的数量 |
+| `sort -nk1,1` | 仅按第一字段进行数值升序排列 |
+| `tail -n10` | 取升序结果末尾的十项，即频次最高的十项 |
+| `awk '{print $2}'` | 去掉计数，只保留用户名 |
+| `paste -sd,` | 将多行以逗号连接成一行 |
+
+`sed` 中的 `(.*)` 是贪婪匹配，整个表达式也依赖具体的日志格式。日志格式改变时，提取结果可能不再正确。因此，长管道应从左向右逐段构建：
+
+```bash
+producer
+producer | filter
+producer | filter | extract
+producer | filter | extract | sort
+```
+
+每加入一个阶段，都应检查当前数据的字段、排序状态和下一阶段的输入假设。
+
 ## 标准输入、标准输出与标准错误
 
 命令行程序通常使用三条标准流：
@@ -236,6 +312,36 @@ command > all.txt 2>&1
 - `2>&1` 让标准错误指向当前标准输出的目标。
 
 重定向会从左到右处理，因此调整顺序可能改变最终结果。对重要文件使用 `>` 前，应确认目标文件是否允许被覆盖。
+
+如果命令没有收到文件参数，它通常会从 stdin 读取。例如：
+
+```bash
+grep apple
+```
+
+可以逐行键入文本，最后按 `Ctrl+D` 发送 EOF，表示输入流结束。EOF 不是实际输入的字符，而是“不会再有后续数据”的状态。
+
+输入重定向与文件参数有时产生相同输出，但文件由不同主体打开：
+
+```bash
+sort < hello.txt   # Shell 打开文件，并把文件连接到 sort 的 stdin
+sort hello.txt     # sort 收到文件名参数，并自行打开文件
+```
+
+`>` 会在命令运行前创建目标文件；如果文件已存在，则先把它截断为零长度。因此，单独执行以下语句也会清空文件：
+
+```bash
+> result.txt
+```
+
+重定向的顺序可以通过文件描述符模型理解：
+
+```bash
+command > all.log 2>&1
+command 2>&1 > out.log
+```
+
+第一条命令先让 stdout 指向文件，再让 stderr 复制 stdout 的当前目标，因此两者都进入文件。第二条命令先让 stderr 复制仍指向终端的 stdout，随后才改变 stdout，因此 stderr 仍显示在终端。Bash 还提供 `command &> all.log` 作为同时重定向两者的专有简写。
 
 ## 管道与程序组合
 
@@ -279,6 +385,14 @@ command | tee full.log | grep CRITICAL
 
 完整输出进入 `full.log`，而终端只显示经过筛选的行。
 
+`tee` 默认覆盖目标文件，追加写入需要 `-a`：
+
+```bash
+command | tee -a full.log | grep CRITICAL
+```
+
+`tee` 只复制进入其 stdin 的数据。若上游程序的 stderr 也需要保存，必须先显式合并或单独重定向。
+
 ## 退出状态与条件执行
 
 Unix 程序通常使用退出状态报告执行结果：
@@ -319,6 +433,66 @@ fi
 
 `test` 或 `[` 可以判断文件、字符串和数值条件。变量通常应放在双引号中，避免空值或空格导致参数结构发生变化。
 
+`if` 判断的是条件命令的退出状态。例如：
+
+```bash
+if grep -q "apple" hello.txt; then
+    echo "found"
+else
+    echo "not found"
+fi
+```
+
+`grep -q` 不打印匹配行，只通过退出状态报告是否找到。`if command; then` 中的分号是命令分隔符；如果把 `then` 放在下一行，换行本身就可以结束前一条命令：
+
+```bash
+if grep -q "apple" hello.txt
+then
+    echo "found"
+fi
+```
+
+`test`、`[` 与 `[[` 的关系如下：
+
+| 写法 | 性质 | 适用范围 |
+|---|---|---|
+| `test -f "$file"` | 条件测试命令 | POSIX Shell |
+| `[ -f "$file" ]` | `test` 的另一种形式，`]` 是最后一个参数 | POSIX Shell |
+| `[[ -f $file ]]` | Bash 条件复合命令，不进行普通的分词与文件名展开 | Bash/Ksh 等，非 POSIX |
+
+在 `[` 形式中，各操作符和操作数必须是独立参数，因此 `[` 后和 `]` 前必须保留空格：
+
+```bash
+[ -f "$file" ]      # 正确
+[-f "$file"]        # 错误
+```
+
+常见文件测试包括：
+
+| 测试 | 含义 |
+|---|---|
+| `-e path` | 路径存在 |
+| `-f path` | 存在且为普通文件 |
+| `-d path` | 存在且为目录 |
+| `-r path` | 当前进程可读 |
+| `-w path` | 当前进程可写 |
+
+字符串相等的可移植写法是：
+
+```bash
+[ "$name" = "Alice" ]
+```
+
+在 `[` 中引用变量，可以防止空值或空格改变参数个数。Bash 的 `[[ ... ]]` 还支持模式匹配；当 `==` 右侧未引用时，右侧可作为模式：
+
+```bash
+if [[ $filename == *.txt ]]; then
+    echo "text file"
+fi
+```
+
+需要 `#!/bin/sh` 可移植性时应使用 `[ ... ]`；明确使用 Bash 时可以使用 `[[ ... ]]`。
+
 ### for 循环
 
 ```bash
@@ -337,6 +511,28 @@ done
 
 只要条件命令持续返回成功状态，`while` 就会继续执行。
 
+例如：
+
+```bash
+count=1
+while [[ $count -le 5 ]]; do
+    echo "$count"
+    ((count++))
+done
+```
+
+这里的 `((count++))` 是 Bash 算术命令。连续整数循环还可以写成：
+
+```bash
+for i in {1..10}; do
+    echo "$i"
+done
+
+for ((i = 1; i <= 10; i++)); do
+    echo "$i"
+done
+```
+
 ### 命令替换
 
 `$(...)` 会执行内部命令，并把 stdout 替换到原位置：
@@ -345,7 +541,41 @@ done
 backup="notes_$(date +%Y-%m-%d).txt"
 ```
 
+例如，`seq 1 10` 逐行输出 1 到 10，命令替换可以把这些输出放进 `for` 的值列表：
+
+```bash
+for i in $(seq 1 10); do
+    echo "$i"
+done
+```
+
 与旧式反引号相比，`$(...)` 更容易阅读并且支持嵌套。
+
+旧式写法 `` `command` `` 仍然是命令替换，但边界不清晰，嵌套时需要额外转义。命令替换会删除末尾换行；未引用的结果还会经历分词和文件名展开。因此，`for file in $(find ...)` 无法可靠处理包含空格或换行的文件名。
+
+## 后台任务与进程清理
+
+命令末尾的 `&` 会异步启动命令，使 Shell 不等待其完成就继续执行。特殊参数 `$!` 是最近放入后台的作业的进程 ID：
+
+```bash
+long_running_command &
+worker_pid=$!
+
+# 执行其他工作
+
+kill "$worker_pid"
+```
+
+`kill` 默认发送 `SIGTERM`，请求进程有序终止。若脚本可能在中途退出，只在正常路径末尾调用 `kill` 无法保证清理，可以使用退出陷阱：
+
+```bash
+cleanup() {
+    kill "$worker_pid" 2>/dev/null || true
+}
+trap cleanup EXIT
+```
+
+`trap ... EXIT` 会在 Shell 退出前执行清理函数。实际脚本仍需处理后台进程已经结束、变量尚未赋值等边界。
 
 ## Shell 脚本执行
 
@@ -372,6 +602,19 @@ chmod +x script.sh
 
 直接执行依赖正确的 shebang 和执行权限。
 
+三种运行方式的解释器选择不同：
+
+- `./script.sh` 直接执行文件，由 shebang 指定解释器；
+- `bash script.sh` 明确让 Bash 读取文件，不依赖执行权限，也不依赖 shebang 选择 Bash；
+- `sh script.sh` 明确使用 `sh`，不会因为脚本的 Bash shebang 自动切换。
+
+因此，使用 `[[ ... ]]`、`(( ... ))` 等 Bash 语法的脚本不应通过 `sh script.sh` 运行。变量赋值的等号两侧也不能加空格：
+
+```bash
+LOGFILE="test.log"     # 正确
+LOGFILE = "test.log"   # 错误：会被解析为执行 LOGFILE 命令
+```
+
 ## 更严格的 Bash 模式
 
 常见脚本会启用：
@@ -387,6 +630,83 @@ set -euo pipefail
 - `pipefail`：管道中的关键命令失败时让整个管道报告失败。
 
 严格模式可以减少静默错误，但不能代替测试和错误处理。ShellCheck 等静态分析工具可以发现许多常见的引用、条件和可移植性问题。
+
+这些选项有更精确的边界：
+
+- `set -e` 有控制流例外。命令作为 `if`、`while`、`until` 的条件，或位于某些 `&&`、`||`、`!` 上下文时，非零状态不会直接使脚本退出；
+- `set -u` 会把未定义变量视为错误。有意使用默认值时可以写 `${name:-unknown}`；
+- `set -o pipefail` 使管道返回最右侧非零命令的状态；如果所有命令成功，则返回 0；
+- 算术命令 `(( expression ))` 在表达式结果为 0 时返回状态 1，因此与 `set -e` 组合时需要注意所处上下文。
+
+## 综合示例：反复运行测试直到失败
+
+下面的教学脚本组合了严格模式、后台任务、特殊参数、命令替换、循环和重定向：
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+stress --cpu 8 &
+STRESS_PID=$!
+
+LOGFILE="test_runs_$(date +%s).log"
+RUN=1
+
+while cargo test my_test > "$LOGFILE" 2>&1; do
+    echo "Run $RUN passed"
+    ((RUN++))
+done
+
+kill "$STRESS_PID"
+echo "Test failed on run $RUN"
+echo "Last 20 lines of output:"
+tail -n 20 "$LOGFILE"
+echo "Full log: $LOGFILE"
+```
+
+执行流程如下：
+
+1. `stress --cpu 8 &` 在后台启动八个 CPU 压力工作进程；
+2. `STRESS_PID=$!` 保存后台作业的 PID；
+3. `$(date +%s)` 产生 Unix 时间戳，用于生成不同的日志文件名；
+4. `while cargo test ...; do` 直接用测试命令的退出状态控制循环；
+5. `> "$LOGFILE" 2>&1` 先把 stdout 指向日志，再让 stderr 复制 stdout 的目标；
+6. 测试成功时输出轮次并递增计数，失败时退出循环；
+7. `kill` 停止后台负载，`tail` 显示失败日志的最后 20 行。
+
+该示例适合解释语义，但仍有四个工程边界：
+
+- `stress` 会显著占用 CPU，不应在不了解影响时直接运行；
+- 循环中的 `>` 会在每轮覆盖日志，因此最终只保留最后一轮输出；若要保留全部轮次，应使用 `>>` 并加入轮次分隔；
+- 如果脚本在执行 `kill` 前异常退出，后台任务可能继续运行，应使用 `trap cleanup EXIT`；
+- 如果测试始终成功，循环不会结束，实际脚本应增加最大轮数或外部超时。
+
+一个带清理和最大轮数的结构可以写成：
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+stress --cpu 8 &
+STRESS_PID=$!
+
+cleanup() {
+    kill "$STRESS_PID" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+LOGFILE="test_runs_$(date +%s).log"
+RUN=1
+MAX_RUNS=100
+
+while [[ $RUN -le $MAX_RUNS ]] &&
+      cargo test my_test > "$LOGFILE" 2>&1; do
+    echo "Run $RUN passed"
+    ((RUN++))
+done
+```
+
+这个版本保证 Shell 退出时尝试清理后台任务，并为循环设置上限。日志保留策略仍需根据目标选择覆盖或追加。
 
 ## Shell 的适用边界
 
@@ -407,3 +727,9 @@ Shell 的优势不在于替代所有编程语言，而在于用统一的输入�
 - [MIT Missing Semester 2026 课程主页](https://missing.csail.mit.edu/)
 - [简体中文社区翻译：课程概览 + Shell 入门](https://missing-semester-cn.github.io/2026/course-shell/)
 - [YouTube：Lecture 1 — Course Overview + Introduction to the Shell](https://www.youtube.com/watch?v=MSgoeuMqUmU)
+- [GNU Bash Reference Manual](https://www.gnu.org/software/bash/manual/)
+- [GNU Awk User’s Guide](https://www.gnu.org/software/gawk/manual/)
+- [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/)
+- [GNU sed Manual](https://www.gnu.org/software/sed/manual/)
+- [systemd：journalctl Manual](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html)
+- [OpenSSH：ssh(1) Manual](https://man.openbsd.org/ssh)
