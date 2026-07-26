@@ -95,7 +95,7 @@ export const siteConfig: SiteConfig = {
 		src: {
 			desktop: [
 				"/assets/desktop-banner/desktop-banner-01.jpg",
-				"/assets/desktop-banner/desktop-banner-02.jpg",
+				"/assets/desktop-banner/desktop-banner-02.png",
 				"/assets/desktop-banner/desktop-banner-03.jpg",
 				"/assets/desktop-banner/desktop-banner-04.png",
 				"/assets/desktop-banner/desktop-banner-05.png",
@@ -103,7 +103,7 @@ export const siteConfig: SiteConfig = {
 				"/assets/desktop-banner/desktop-banner-07.jpg",
 				"/assets/desktop-banner/desktop-banner-08.png",
 				"/assets/desktop-banner/desktop-banner-09.jpg",
-				"/assets/desktop-banner/desktop-banner-10.jpg",
+				"/assets/desktop-banner/desktop-banner-10.png",
 				"/assets/desktop-banner/desktop-banner-11.png",
 				"/assets/desktop-banner/desktop-banner-12.jpg",
 			], // 桌面横幅图片
@@ -124,6 +124,9 @@ export const siteConfig: SiteConfig = {
 				"/assets/mobile-banner/mobile-banner-14.jpg",
 				"/assets/mobile-banner/mobile-banner-15.jpg",
 				"/assets/mobile-banner/mobile-banner-16.jpg",
+				"/assets/mobile-banner/mobile-banner-17.jpg",
+				"/assets/mobile-banner/mobile-banner-18.jpg",
+				"/assets/mobile-banner/mobile-banner-19.jpg",
 			], // 移动横幅图片
 		}, // 使用本地横幅图片
 
@@ -232,7 +235,7 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	src: {
 		desktop: [
 			"/assets/desktop-banner/desktop-banner-01.jpg",
-			"/assets/desktop-banner/desktop-banner-02.jpg",
+			"/assets/desktop-banner/desktop-banner-02.png",
 			"/assets/desktop-banner/desktop-banner-03.jpg",
 			"/assets/desktop-banner/desktop-banner-04.png",
 			"/assets/desktop-banner/desktop-banner-05.png",
@@ -240,7 +243,7 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 			"/assets/desktop-banner/desktop-banner-07.jpg",
 			"/assets/desktop-banner/desktop-banner-08.png",
 			"/assets/desktop-banner/desktop-banner-09.jpg",
-			"/assets/desktop-banner/desktop-banner-10.jpg",
+			"/assets/desktop-banner/desktop-banner-10.png",
 			"/assets/desktop-banner/desktop-banner-11.png",
 			"/assets/desktop-banner/desktop-banner-12.jpg",
 		], // 桌面横幅图片
@@ -261,6 +264,9 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 			"/assets/mobile-banner/mobile-banner-14.jpg",
 			"/assets/mobile-banner/mobile-banner-15.jpg",
 			"/assets/mobile-banner/mobile-banner-16.jpg",
+			"/assets/mobile-banner/mobile-banner-17.jpg",
+			"/assets/mobile-banner/mobile-banner-18.jpg",
+			"/assets/mobile-banner/mobile-banner-19.jpg",
 		], // 移动横幅图片
 	}, // 使用本地横幅图片
 	position: "center", // 壁纸位置，等同于 object-position
@@ -318,7 +324,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+	avatar: "/assets/avatar/nikonikoni-avatar.gif", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
 	name: "nikonikoni",
 	bio: "",
 	typewriter: {
