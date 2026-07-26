@@ -49,11 +49,14 @@ chartEnd.setDate(chartEnd.getDate() + (6 - chartEnd.getDay()));
 const chartStart = new Date(chartEnd);
 chartStart.setDate(chartStart.getDate() - 370);
 
+const contributionStartDate = "2026-07-24";
+const contributionStart = new Date(`${contributionStartDate}T00:00:00+08:00`);
 const contributionCount = new Map<string, number>();
 const recordContribution = (date: string) => {
 	const key = new Date(date).toLocaleDateString("en-CA", {
 		timeZone: "Asia/Shanghai",
 	});
+	if (key < contributionStartDate) return;
 	contributionCount.set(key, (contributionCount.get(key) || 0) + 1);
 };
 
@@ -71,7 +74,7 @@ try {
 			"https://api.github.com/repos/ldx-ckz/NiKoNiKoNi_blog/commits",
 		);
 		endpoint.searchParams.set("sha", "master");
-		endpoint.searchParams.set("since", chartStart.toISOString());
+		endpoint.searchParams.set("since", contributionStart.toISOString());
 		endpoint.searchParams.set("per_page", "100");
 		endpoint.searchParams.set("page", String(page));
 
@@ -97,7 +100,7 @@ if (!contributionsLoaded) {
 			[
 				"log",
 				"master",
-				`--since=${chartStart.toISOString()}`,
+				`--since=${contributionStart.toISOString()}`,
 				"--format=%cI",
 			],
 			{ encoding: "utf8" },
