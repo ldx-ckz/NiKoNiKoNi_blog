@@ -1,5 +1,6 @@
 ---
 title: MIT Missing Semester 2026 第一课：Shell 入门
+image: /assets/post-card/post-card-10.jpg
 published: 2026-07-26
 description: MIT Missing Semester 2026 第一课学习笔记，介绍 Shell、路径、文本工具、管道、重定向与 Bash 脚本基础。
 tags: [Shell, Bash, CLI]
