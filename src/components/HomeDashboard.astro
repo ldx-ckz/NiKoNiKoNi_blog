@@ -1,4 +1,5 @@
 ---
+import { execFileSync } from "node:child_process";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { profileConfig, siteConfig } from "../config";
@@ -33,18 +34,13 @@ const formatDate = (date: Date, locale: string) =>
 
 const formatCount = (count: number) =>
 	new Intl.NumberFormat("zh-CN", { notation: "compact" }).format(count);
+
 const toDateKey = (date: Date) => {
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0");
 	const day = String(date.getDate()).padStart(2, "0");
 	return `${year}-${month}-${day}`;
 };
-
-const activityCount = new Map<string, number>();
-for (const post of posts) {
-	const key = toDateKey(post.data.published);
-	activityCount.set(key, (activityCount.get(key) || 0) + 1);
-}
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -53,10 +49,71 @@ chartEnd.setDate(chartEnd.getDate() + (6 - chartEnd.getDay()));
 const chartStart = new Date(chartEnd);
 chartStart.setDate(chartStart.getDate() - 370);
 
+const contributionCount = new Map<string, number>();
+const recordContribution = (date: string) => {
+	const key = new Date(date).toLocaleDateString("en-CA", {
+		timeZone: "Asia/Shanghai",
+	});
+	contributionCount.set(key, (contributionCount.get(key) || 0) + 1);
+};
+
+let contributionsLoaded = false;
+try {
+	const headers: Record<string, string> = {
+		Accept: "application/vnd.github+json",
+		"X-GitHub-Api-Version": "2026-03-10",
+	};
+	const githubToken = import.meta.env.GITHUB_TOKEN || import.meta.env.GH_TOKEN;
+	if (githubToken) headers.Authorization = `Bearer ${githubToken}`;
+
+	for (let page = 1; page <= 10; page++) {
+		const endpoint = new URL(
+			"https://api.github.com/repos/ldx-ckz/NiKoNiKoNi_blog/commits",
+		);
+		endpoint.searchParams.set("sha", "master");
+		endpoint.searchParams.set("since", chartStart.toISOString());
+		endpoint.searchParams.set("per_page", "100");
+		endpoint.searchParams.set("page", String(page));
+
+		const response = await fetch(endpoint, { headers });
+		if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
+
+		const commits = await response.json();
+		for (const commit of commits) {
+			const date = commit.commit?.committer?.date;
+			if (date) recordContribution(date);
+		}
+		if (commits.length < 100) break;
+	}
+	contributionsLoaded = true;
+} catch {
+	contributionsLoaded = false;
+}
+
+if (!contributionsLoaded) {
+	try {
+		const dates = execFileSync(
+			"git",
+			[
+				"log",
+				"master",
+				`--since=${chartStart.toISOString()}`,
+				"--format=%cI",
+			],
+			{ encoding: "utf8" },
+		);
+		for (const date of dates.split(/\r?\n/).filter(Boolean)) {
+			recordContribution(date);
+		}
+	} catch {
+		// Keep an empty contribution graph when neither source is available.
+	}
+}
+
 const activityCells = Array.from({ length: 371 }, (_, index) => {
 	const date = new Date(chartStart);
 	date.setDate(chartStart.getDate() + index);
-	const count = date > today ? 0 : activityCount.get(toDateKey(date)) || 0;
+	const count = date > today ? 0 : contributionCount.get(toDateKey(date)) || 0;
 	return {
 		date,
 		count,
@@ -64,6 +121,10 @@ const activityCells = Array.from({ length: 371 }, (_, index) => {
 		level: count === 0 ? 0 : Math.min(4, count),
 	};
 });
+const contributionTotal = activityCells.reduce(
+	(total, cell) => total + cell.count,
+	0,
+);
 
 const monthLabels: { week: number; zh: string; en: string }[] = [];
 let previousMonthKey = "";
@@ -204,6 +265,11 @@ if (
 				</strong>
 				<span class="ui-lang-zh">累计字数</span><span class="ui-lang-en">Total Words</span>
 			</article>
+			<article class="stat-card">
+				<Icon name="material-symbols:visibility-outline-rounded" />
+				<strong data-pageview-count>—</strong>
+				<span class="ui-lang-zh">累计浏览量</span><span class="ui-lang-en">Total Pageviews</span>
+			</article>
 		</div>
 	</section>
 
@@ -225,20 +291,20 @@ if (
 						</span>
 					))}
 				</div>
-				<div class="activity-grid" aria-label="Past year writing activity">
+				<div class="activity-grid" aria-label="Past year blog contributions">
 					{activityCells.map((cell) => (
 						<span
 							class:list={["activity-cell", `level-${cell.level}`, { future: cell.isFuture }]}
-							title={`${toDateKey(cell.date)} · ${cell.count} post${cell.count === 1 ? "" : "s"}`}
+							title={`${toDateKey(cell.date)} · ${cell.count} contribution${cell.count === 1 ? "" : "s"}`}
 						></span>
 					))}
 				</div>
 			</div>
 			<div class="activity-summary">
 				<p>
-					<strong>{posts.length}</strong>
-					<span class="ui-lang-zh"> 篇文章记录在案</span>
-					<span class="ui-lang-en"> posts published</span>
+					<strong>{contributionTotal}</strong>
+					<span class="ui-lang-zh"> 次贡献</span>
+					<span class="ui-lang-en"> contributions</span>
 				</p>
 				<div class="legend" aria-label="Activity intensity">
 					<span class="ui-lang-zh">少</span><span class="ui-lang-en">Less</span>
@@ -388,7 +454,7 @@ if (
 	}
 
 	.stats-grid {
-		@apply grid gap-3 sm:grid-cols-3;
+		@apply grid gap-3 sm:grid-cols-2 xl:grid-cols-4;
 	}
 
 	.stat-card {

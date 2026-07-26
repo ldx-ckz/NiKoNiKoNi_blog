@@ -8,12 +8,13 @@ import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
 import {
 	musicPlayerConfig,
+	pageviewCounterConfig,
 	pioConfig,
 	profileConfig,
 	siteConfig,
+	umamiConfig,
 } from "@/config";
 import { widgetConfigs } from "../config";
-import { umamiConfig } from "../config.ts";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
@@ -137,6 +138,8 @@ const bannerOffset =
 
 const umamiEnabled = umamiConfig.enabled || false;
 const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
+const pageviewCounterEnabled = pageviewCounterConfig.enabled;
+const pageviewCounterEndpoint = pageviewCounterConfig.endpoint.replace(/\/$/, "");
 
 // 构建字体配置的 CSS 变量
 // ASCII 字体优先级最高（用于英文、数字等），CJK 字体作为回退
@@ -289,6 +292,71 @@ if (siteConfig.font) {
 
 		<!-- Umami Analytics -->
 		{umamiEnabled && umamiScripts && <Fragment set:html={umamiScripts} />}
+
+		{pageviewCounterEnabled && (
+			<script
+				is:inline
+				define:vars={{ pageviewCounterEndpoint }}
+			>
+				(() => {
+					const state = window.__nikonikoniPageviewCounter ||= {
+						lastUrl: "",
+						swupBound: false,
+					};
+
+					const updateDisplayedCount = async () => {
+						const counter = document.querySelector("[data-pageview-count]");
+						if (!counter) return;
+
+						try {
+							const response = await fetch(`${pageviewCounterEndpoint}/api/count`, {
+								cache: "no-store",
+							});
+							if (!response.ok) return;
+
+							const data = await response.json();
+							const count = Number(data.count);
+							if (Number.isFinite(count)) {
+								counter.textContent = new Intl.NumberFormat("zh-CN", {
+									notation: "compact",
+								}).format(count);
+							}
+						} catch {}
+					};
+
+					const trackPageview = async () => {
+						const currentUrl = `${location.pathname}${location.search}`;
+						if (state.lastUrl === currentUrl) return;
+						state.lastUrl = currentUrl;
+
+						try {
+							await fetch(`${pageviewCounterEndpoint}/api/view`, {
+								method: "POST",
+								keepalive: true,
+							});
+						} catch {}
+
+						await updateDisplayedCount();
+					};
+
+					const bindSwup = () => {
+						if (state.swupBound || !window.swup?.hooks) return;
+						state.swupBound = true;
+						window.swup.hooks.on("page:view", trackPageview);
+					};
+
+					if (document.readyState === "loading") {
+						document.addEventListener("DOMContentLoaded", trackPageview, { once: true });
+					} else {
+						trackPageview();
+					}
+					bindSwup();
+					if (!state.swupBound) {
+						document.addEventListener("swup:enable", bindSwup, { once: true });
+					}
+				})();
+			</script>
+		)}
 
 </head>
 	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}

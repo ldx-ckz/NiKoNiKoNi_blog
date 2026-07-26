@@ -610,9 +610,12 @@ export const widgetConfigs = {
 
 export const umamiConfig = {
 	enabled: false, // 是否显示Umami统计
-	apiKey: import.meta.env.UMAMI_API_KEY || "api_PQVL5Lvn4GV4ACVvr6DYQm35fiICEvHW", // API密钥优先从环境变量读取，否则使用配置文件中的值
+	apiKey: import.meta.env.UMAMI_API_KEY || "", // API密钥优先从环境变量读取
 	baseUrl: "https://api.umami.is", // Umami Cloud API地址
-	scripts: `
-<script defer src="https://cloud.umami.is/script.js" data-website-id="0f4a1a9f-b249-40c4-9b14-b39e107814a2"></script>
-  `.trim(), // 上面填你要插入的Script,不用再去Layout中插入
+	scripts: "",
+} as const;
+
+export const pageviewCounterConfig = {
+	enabled: true,
+	endpoint: "https://counter.nikonikoni.blog",
 } as const;
