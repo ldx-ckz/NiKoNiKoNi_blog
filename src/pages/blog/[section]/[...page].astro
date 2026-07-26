@@ -28,37 +28,11 @@ export const getStaticPaths = (async ({ paginate }) => {
 			en: "Daily Life",
 		},
 	];
-	const containsAny = (values: string[], keywords: string[]) =>
-		values.some((value) => {
-			const normalized = value.toLowerCase();
-			return keywords.some((keyword) => normalized.includes(keyword));
-		});
-	const isNotesPost = (post: (typeof posts)[number]) =>
-		containsAny(
-			[post.id, post.data.category || "", ...post.data.tags],
-			[
-				"analysis",
-				"probability",
-				"propability",
-				"math",
-				"notes",
-				"数学",
-				"概率",
-				"笔记",
-			],
-		);
-	const isDailyPost = (post: (typeof posts)[number]) =>
-		containsAny(
-			[post.id, post.data.category || "", ...post.data.tags],
-			["daily", "life", "diary", "生活", "日常", "随笔"],
-		);
 
 	return sections.flatMap((section) => {
-		const sectionPosts = posts.filter((post) => {
-			if (section.slug === "notes") return isNotesPost(post);
-			if (section.slug === "daily-life") return isDailyPost(post);
-			return !isNotesPost(post) && !isDailyPost(post);
-		});
+		const sectionPosts = posts.filter(
+			(post) => post.data.section === section.slug,
+		);
 		return paginate(sectionPosts, {
 			pageSize: 10,
 			params: { section: section.slug },

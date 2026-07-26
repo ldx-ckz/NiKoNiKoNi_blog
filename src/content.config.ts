@@ -12,6 +12,10 @@ const postsCollection = defineCollection({
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
+		section: z
+			.enum(["notes", "technical", "daily-life"])
+			.optional()
+			.default("technical"),
 		lang: z.string().optional().default(""),
 		pinned: z.boolean().optional().default(false),
 		author: z.string().optional().default(""),

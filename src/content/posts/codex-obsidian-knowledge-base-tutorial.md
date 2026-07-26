@@ -4,6 +4,7 @@ published: 2026-07-25
 description: 从零搭建一个本地优先、可追溯、可持续维护的人工智能学术知识库。
 tags: [Codex, Obsidian, Knowledge Base, Tutorial]
 category: Tutorial
+section: technical
 author: nikonikoni
 draft: false
 ---
