@@ -150,12 +150,7 @@ Obsidian 的 vault 本质上就是本地文件夹，其中的笔记是普通 Mar
 本机不需要再创建空 vault：
 
 1. 在 Obsidian 的 vault 切换器中选择 **Open folder as vault**；
-2. 选择：
-
-```text
-C:\Users\ckz\Desktop\obsidian_program
-```
-
+2. 选择 obsidian_program 
 3. 点击打开；
 4. 打开 [知识库首页](/resources/codex-obsidian-knowledge-base/知识库首页.md)。
 
