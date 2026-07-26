@@ -125,9 +125,9 @@ export async function GET(context: APIContext) {
     </author>`;
     
     // 添加分类标签
-    if (post.data.category) {
+    for (const category of post.data.category) {
       atomFeed += `
-    <category term="${post.data.category}"></category>`;
+    <category term="${category}"></category>`;
     }
     
     atomFeed += `

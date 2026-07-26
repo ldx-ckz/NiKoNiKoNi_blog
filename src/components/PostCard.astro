@@ -18,7 +18,7 @@ interface Props {
 	published: Date;
 	updated?: Date;
 	tags: string[];
-	category: string | null;
+	category: string[];
 	image: string;
 	description: string;
 	draft: boolean;
@@ -63,7 +63,7 @@ const { remarkPluginFrontmatter } = await render(entry);
         </a>
 
         <!-- metadata (without tags) -->
-        <PostMetadata published={published} updated={updated} tags={tags} category={category || ''} hideTagsForMobile={true} hideUpdateDate={true} className="mb-4" showOnlyBasicMeta={true} words={remarkPluginFrontmatter.words} showWordCount={true}></PostMetadata>
+        <PostMetadata published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={true} className="mb-4" showOnlyBasicMeta={true} words={remarkPluginFrontmatter.words} showWordCount={true}></PostMetadata>
 
         <!-- description -->
         <div class:list={["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]}>

@@ -17,7 +17,7 @@ interface Post {
 	data: {
 		title: string;
 		tags: string[];
-		category?: string;
+		category: string[];
 		published: Date;
 		permalink?: string; // 添加 permalink 字段
 	};
@@ -63,12 +63,15 @@ onMount(async () => {
 
 	if (categories.length > 0) {
 		filteredPosts = filteredPosts.filter(
-			(post) => post.data.category && categories.includes(post.data.category),
+			(post) =>
+				post.data.category.some((category) => categories.includes(category)),
 		);
 	}
 
 	if (uncategorized) {
-		filteredPosts = filteredPosts.filter((post) => !post.data.category);
+		filteredPosts = filteredPosts.filter(
+			(post) => post.data.category.length === 0,
+		);
 	}
 
 	// 按发布时间倒序排序，确保不受置顶影响

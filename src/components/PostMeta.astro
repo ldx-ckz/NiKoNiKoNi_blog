@@ -16,7 +16,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
 export interface Props {
 	published: Date;
 	updated?: Date;
-	category?: string;
+	category?: string[];
 	tags?: string[];
 	hideUpdateDate?: boolean;
 	hideTagsForMobile?: boolean;
@@ -71,11 +71,22 @@ const {
             <Icon name="material-symbols:book-2-outline-rounded" class="text-xl"></Icon>
         </div>
         <div class="flex flex-row flex-nowrap items-center">
-            <a href={getCategoryUrl(category || '')} aria-label={`View all posts in the ${category} category`}
-               class="link-lg transition text-50 text-sm font-medium
-                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
-                {category || i18n(I18nKey.uncategorized)}
-            </a>
+            {category && category.length > 0 ? category.map((item, i) => (
+                <>
+                    <div class:list={[{"hidden": i === 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
+                    <a href={getCategoryUrl(item)} aria-label={`View all posts in the ${item} category`}
+                       class="link-lg transition text-50 text-sm font-medium
+                                    hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
+                        {item}
+                    </a>
+                </>
+            )) : (
+                <a href={getCategoryUrl("")}
+                   class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
+                    {i18n(I18nKey.uncategorized)}
+                </a>
+            )}
         </div>
     </div>
 

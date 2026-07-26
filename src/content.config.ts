@@ -11,7 +11,13 @@ const postsCollection = defineCollection({
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
-		category: z.string().optional().nullable().default(""),
+		category: z
+			.union([z.string(), z.array(z.string()), z.null()])
+			.optional()
+			.transform((value) => {
+				const categories = Array.isArray(value) ? value : value ? [value] : [];
+				return categories.map((category) => category.trim()).filter(Boolean);
+			}),
 		section: z
 			.enum(["notes", "technical", "daily-life"])
 			.optional()
