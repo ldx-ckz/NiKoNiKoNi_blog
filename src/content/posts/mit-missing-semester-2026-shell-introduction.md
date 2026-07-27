@@ -2,7 +2,8 @@
 title: MIT Missing Semester 2026 第一课：Shell 入门
 image: /assets/post-card/post-card-10.jpg
 published: 2026-07-26
-description: MIT Missing Semester 2026 第一课学习笔记，介绍 Shell、路径、文本工具、管道、重定向与 Bash 脚本基础。
+updated: 2026-07-27
+description: MIT Missing Semester 2026 第一课知识笔记，系统介绍 Shell、路径、文本工具、管道、重定向、脚本基础及讲义练习涉及的工具。
 tags:
   - Shell
   - Bash
@@ -37,6 +38,16 @@ echo hello
 
 Shell 首先解析命令，确定需要执行 `echo`，再把 `hello` 作为参数传给它。程序产生的标准输出随后由终端显示。
 
+Bash 是课程采用的共同基线。Zsh 和 Fish 具有许多人机交互改进，但不如 Bash 普遍。Windows 原生的 `cmd.exe` 和 PowerShell 不是本课使用的 Unix Shell；在 Windows 上跟随课程应使用 WSL 或 Linux 虚拟机。Shell 能力也常用于阅读开源项目安装说明、配置持续集成和诊断程序故障。
+
+常见提示符可能写成：
+
+```text
+missing:~$
+```
+
+其中 `missing` 是主机名，`~` 表示当前位于 home 目录，`$` 通常表示当前不是 root 用户。教程中的 `$`、`➜` 等提示符不属于命令本身，不应一起复制。
+
 ## 命令与参数
 
 Shell 通常使用空白字符分隔命令和参数：
@@ -58,7 +69,33 @@ cd My\ Photos
 - 双引号保留参数整体，同时允许变量与命令替换；
 - `$'...'` 支持 `\n` 等 ANSI-C 转义。
 
+```bash
+echo '$HOME !'       # 字面输出 $HOME 和 !
+echo "$HOME !"       # 展开 $HOME
+printf '%s\n' $'first\nsecond'
+```
+
 引号不仅影响显示，还决定变量、通配符和特殊字符由 Shell 如何解释。处理文件名或用户输入时，正确引用变量能够避免参数被意外拆分。
+
+### 文件名展开
+
+Shell 会在启动程序前处理未引用的文件名模式：
+
+| 模式 | 含义 | 示例 |
+|---|---|---|
+| `*` | 匹配任意长度的字符串 | `*.txt` |
+| `?` | 匹配单个字符 | `file?.txt` |
+| `[...]` | 匹配集合或范围中的一个字符 | `file[0-9].txt` |
+| `{a,b,c}` | 生成多个候选字符串；这是花括号展开 | `{a,b,c}.txt` |
+
+```bash
+ls *.txt
+ls file?.txt
+ls file[0-9].txt
+ls {a,b,c}.txt
+```
+
+glob 与正则表达式不是同一种语法。`find -name "*.zip"` 中的模式需要引用，否则当前 Shell 可能先展开 `*.zip`，使 `find` 收到与预期不同的参数。
 
 ## 使用帮助系统
 
@@ -76,7 +113,7 @@ date --help
 3. 在测试目录中使用小规模数据验证；
 4. 确认行为后再处理真实文件。
 
-这种方法比记忆固定命令更可靠，也能降低直接复制网络命令带来的风险。
+这种方法比记忆固定命令更可靠，也能降低直接复制网络命令带来的风险。`tldr` 可补充常见示例，LLM 也能解释陌生命令，但都不能替代本机手册和小样本验证。
 
 ## 工作目录与路径
 
@@ -116,6 +153,34 @@ project/data.txt
 
 相对路径是否正确取决于当前工作目录。遇到文件不存在的问题时，应先检查 `pwd`、目录内容和文件名，而不是立即使用更高权限。
 
+按 `Tab` 可以触发路径或命令补全。`pwd` 与 `echo "$PWD"` 都能查看当前工作目录。`zoxide` 是课程推荐的可选增强工具，可记录常访问的目录并提供更短的跳转方式，但不改变 `cd`、绝对路径和相对路径的基础语义。
+
+### 使用 `ls` 查看目录与权限
+
+```bash
+ls
+ls /bin
+ls -a
+ls -l
+ls -lh
+ls -la
+```
+
+- `ls` 默认列出当前目录，给出路径时列出指定目录；
+- `-a` 包含以 `.` 开头的隐藏项；
+- `-l` 使用长格式，显示类型、权限、链接数、所有者、组、大小和修改时间等；
+- `-h` 与 `-l` 组合时用易读单位显示大小；
+- `ls` 只查看内容，不会打开、修改或删除文件。
+
+长格式的权限字段例如：
+
+```text
+-rw-r--r-- 1 user group 45 Jul 26 19:20 hello.txt
+drwxr-xr-x 2 user group 4.0K Jul 26 18:00 Documents
+```
+
+最前面的十个字符中，第一个表示类型：`-` 是普通文件，`d` 是目录，`l` 是符号链接；后九个字符按所有者、所属组、其他用户分成三组 `rwx` 权限。目录的 `x` 表示可以穿越并访问其中条目。
+
 ## PATH 与命令查找
 
 输入不包含路径的命令时，Shell 会使用 `PATH` 环境变量查找可执行程序。
@@ -123,9 +188,21 @@ project/data.txt
 ```bash
 echo "$PATH"
 which echo
+type echo
+type -a echo
+command -V echo
 ```
 
-`PATH` 包含一组按顺序排列的目录。Shell 从前到后搜索与命令同名的可执行文件，并运行首先找到的版本。
+`PATH` 包含一组以冒号分隔、按顺序排列的目录。Shell 从前到后搜索与外部命令同名的可执行文件，并运行首先找到的版本。列出这些目录的内容，可以了解当前环境能够直接调用哪些外部程序。
+
+Shell 不一定一开始就查询 `PATH`。命令名还可能解析为别名、Shell 函数或内建命令。`echo`、`cd`、`pwd`、`export` 和 `alias` 都可能由 Shell 自己实现；系统中又可能同时存在 `/bin/echo` 等外部版本。
+
+```bash
+echo hello          # 通常调用 Shell 内建 echo
+/bin/echo hello     # 明确调用外部程序
+```
+
+`which` 主要面向 `PATH` 中的外部程序，对别名、函数和内建命令的行为会随实现变化。检查一个名称实际会被解释为什么时，`type` 或 `command -V` 更可靠；`type -a` 可列出全部同名实现。Zsh 还提供 `whence -a`。
 
 因此，即使程序已经安装，也可能因为以下原因出现 `command not found`：
 
@@ -139,6 +216,8 @@ which echo
 ```bash
 /bin/echo hello
 ```
+
+绝对路径只绕过命令查找，不会绕过 Shell 的参数处理。例如 `/bin/echo "$PATH"` 中的变量仍由 Shell 先展开，再交给外部程序。
 
 ## 常用文本工具
 
@@ -156,50 +235,111 @@ Unix 命令行环境强调使用功能相对单一的工具，并通过统一的
 | `find` | 按条件递归查找文件 |
 | `awk` | 按记录和字段处理文本 |
 
-### sort 与 uniq
+课程还把 `eza`、`bat`、`ripgrep` 和 `fd` 分别列为 `ls`、`cat`、`grep` 和 `find` 的可选现代替代品。它们通常更友好或更快，但可移植性不如传统工具。
 
-`uniq` 只会处理相邻的重复行，因此统计全部重复项时通常需要先排序：
+### cat、sort、uniq、head 与 tail
+
+```bash
+cat file.txt
+cat part1.txt part2.txt
+sort file.txt
+uniq file.txt
+sort file.txt | uniq
+sort -u file.txt
+head -n 3 file.txt
+tail -n 3 file.txt
+```
+
+- `cat` 的名称来自 concatenate，可按参数顺序连接并输出多个文件；
+- `sort` 按行排序，默认只输出结果，不修改原文件；
+- `uniq` 只合并相邻重复行，因此全局去重或计数前通常要先 `sort`；
+- `sort -u` 可直接排序并去重；
+- `head` 和 `tail` 默认各显示十行，`-n` 指定行数。
 
 ```bash
 sort names.txt | uniq -c
 ```
 
+`cat > hello.txt` 会让 `cat` 从 stdin 读取，Shell 再把 stdout 写入文件。交互输入结束时按 `Ctrl+D` 发送 EOF。
+
 ### grep
 
-`grep` 根据模式查找匹配行：
+`grep` 根据模式筛选匹配行，默认打印包含匹配片段的整行，不修改输入文件：
 
 ```bash
-grep "TODO" notes.txt
-grep -r "TODO" .
+grep 'apple' hello.txt
+grep -i 'apple' hello.txt
+grep -n 'apple' hello.txt
+grep -v 'apple' hello.txt
+grep -l 'TODO' *.py
+grep -q 'apple' hello.txt
+grep -rn --include='*.py' 'TODO' .
 ```
 
-模式通常可以使用正则表达式。递归搜索前应确认搜索目录，避免在过大的目录中执行不必要的扫描。
+| 选项 | 作用 |
+|---|---|
+| `-i` | 忽略大小写 |
+| `-n` | 显示原文件行号 |
+| `-v` | 反选不匹配的行 |
+| `-r` | 递归搜索目录 |
+| `-l` | 只输出包含匹配项的文件名 |
+| `-q` | 静默，只通过退出状态表示是否匹配 |
+| `--include='*.py'` | 递归时只搜索匹配该 glob 的文件 |
+
+默认模式是基本正则表达式。`^apple` 匹配以 `apple` 开头的行，`apple$` 匹配以它结尾的行。正则中的 `$`、`*`、`[` 等字符对 Shell 也可能有意义，因此模式通常用单引号保护。递归搜索前应确认起点，避免扫描过大的目录。
 
 ### sed
 
-`sed` 可以执行文本替换：
+`sed` 是流编辑器，最常见用途是按规则替换文本：
 
 ```bash
+sed 's/apple/orange/' hello.txt
+sed 's/apple/orange/g' hello.txt
 sed 's/old/new/g' file.txt
 ```
 
-加入 `-i` 后通常会直接修改原文件：
+`s/pattern/replacement/g` 中，`s` 表示替换，分隔符分开模式与替换文本，`g` 表示替换每一行中的所有匹配；没有 `g` 时只替换每行第一个匹配。没有 `-i` 时结果写到 stdout，原文件不变。
+
+加入 `-i` 后会直接修改原文件：
 
 ```bash
 sed -i 's/old/new/g' file.txt
 ```
 
-安全做法是先运行不带 `-i` 的版本，检查标准输出，再决定是否写回文件。
+安全做法是先运行不带 `-i` 的版本，检查标准输出，再决定是否写回文件。扩展正则可使用 `-E`；替换文本中的 `\1` 等反向引用对应模式中的捕获组。
 
 ### find
 
-`find` 可以按照名称、类型、大小和修改时间筛选文件：
+`find` 的基本模型是：
+
+```text
+find 起点 条件 条件 动作
+```
+
+它会递归遍历起点下的目录树，只有满足全部条件的对象才执行动作；没有显式动作时默认打印路径。
 
 ```bash
 find ~/Downloads -type f -name "*.zip" -mtime +30
+find ~ -type f -size +100M -exec ls -lh {} \;
+find . -type f -name "*.py" -exec grep -l "TODO" {} \;
 ```
 
-复杂操作中可以通过 `-exec` 对匹配文件执行命令，但在加入修改或删除动作前，应先输出匹配结果以确认范围。
+| 表达式 | 含义 |
+|---|---|
+| `-type f` / `-type d` | 普通文件 / 目录 |
+| `-name "*.zip"` | 名称匹配 glob；引号阻止 Shell 预先展开 |
+| `-mtime +30` | 按完整 24 小时时段计算，内容修改时间超过约 30 天 |
+| `-size +100M` | GNU `find` 中大于 100 MiB 单位的大小区间 |
+| `-exec command {} \;` | 每个匹配对象执行一次命令 |
+| `-exec command {} +` | 尽量把多个路径批量交给一次命令 |
+
+`{}` 是当前匹配路径的占位符；`\;` 结束 `-exec`，反斜杠防止分号被 Shell 当成命令分隔符。`+` 通常比逐文件执行更高效：
+
+```bash
+find ~ -type f -size +100M -exec ls -lh {} +
+```
+
+复杂搜索应先只打印路径，逐项增加条件，再加入修改性动作。`Permission denied` 只表示当前用户无法遍历相应路径。
 
 ### awk
 
@@ -708,6 +848,180 @@ done
 
 这个版本保证 Shell 退出时尝试清理后台任务，并为循环设置上限。日志保留策略仍需根据目标选择覆盖或追加。
 
+## 补充
+
+课程练习还涉及若干正文没有展开、但属于 Shell 基础链条的知识。
+
+### 确认当前环境
+
+```bash
+echo "$SHELL"
+```
+
+`$SHELL` 通常记录账户的登录 Shell，例如 `/bin/bash` 或 `/usr/bin/zsh`。它不保证等于当前进程实际使用的解释器；精确诊断时可结合 `ps -p $$ -o comm=`。课程要求的是 Unix 风格 Shell，而不是直接在 `cmd.exe` 或 PowerShell 中执行 Bash 语法。
+
+### 分离标准输出与标准错误
+
+```bash
+ls /nonexistent /tmp >stdout.log 2>stderr.log
+ls /nonexistent /tmp >all.log 2>&1
+```
+
+第一条命令把正常结果与错误诊断分开保存；第二条把两条流合并。重定向从左到右生效。
+
+### 退出状态与短路执行
+
+```bash
+test -d /tmp/mydir || mkdir /tmp/mydir
+```
+
+`$?` 保存上一条命令的退出状态；`&&` 只在左侧成功时执行右侧，`||` 只在左侧失败时执行右侧。创建目录这一特定需求也可直接使用 `mkdir -p /tmp/mydir`。
+
+### `cd` 为什么是内建命令
+
+外部程序作为子进程运行，不能永久修改父 Shell 的当前工作目录。若 `cd` 是普通外部程序，它只能改变自己的目录，进程退出后父 Shell 仍停留在原位置。因此 `cd` 必须由当前 Shell 进程执行。
+
+### 脚本位置参数
+
+```bash
+#!/usr/bin/env bash
+
+file=$1
+if [[ -f $file ]]; then
+    printf '%s\n' "file exists: $file"
+else
+    printf '%s\n' "file does not exist: $file"
+fi
+```
+
+| 参数 | 含义 |
+|---|---|
+| `$0` | 脚本或 Shell 名称 |
+| `$1`、`$2`…… | 第 1、2……个位置参数 |
+| `$#` | 位置参数个数 |
+| `"$@"` | 保持每个位置参数为独立参数 |
+
+把固定测试命令改为调用者传入的命令时，可以写：
+
+```bash
+if (( $# == 0 )); then
+    printf '%s\n' "usage: $0 command [arg ...]" >&2
+    exit 2
+fi
+
+while "$@" >"$LOGFILE" 2>&1; do
+    ((RUN++))
+done
+```
+
+这里使用 `"$@"` 才能保留包含空格的参数边界。
+
+### 执行权限与跟踪
+
+```bash
+chmod +x check.sh
+./check.sh somefile
+```
+
+`chmod +x` 增加执行位；`./` 明确指定当前目录中的文件。`bash check.sh` 是让 Bash 读取文件，不要求脚本本身有执行位。
+
+`set -x` 会在命令展开后、执行前输出跟踪信息，通常带 `+` 前缀；`set +x` 关闭：
+
+```bash
+set -x
+command arg
+set +x
+```
+
+执行跟踪可能把令牌或密码写入日志，因此不应无条件用于含敏感值的脚本。
+
+### 日期命名
+
+```bash
+cp -- notes.txt "notes_$(date +%Y-%m-%d).txt"
+```
+
+命令替换把当前日期嵌入目标文件名；双引号保持路径为单个参数，`--` 结束选项解析。
+
+### 统计常见扩展名
+
+```bash
+find "$HOME" -type f -name '*.*' -printf '%f\n' 2>/dev/null \
+  | sed -n 's/.*\.//p' \
+  | tr '[:upper:]' '[:lower:]' \
+  | sort \
+  | uniq -c \
+  | sort -nr \
+  | head -n 5
+```
+
+该流水线提取最后一个点后的扩展名，统一大小写，再排序、计数并取前五。扩展名不是文件系统强类型；隐藏文件、多重扩展名和无扩展名文件需要先定义统计口径。
+
+### `xargs` 与文件名安全
+
+`xargs` 从 stdin 读取项目并把它们转换成命令参数。默认空白分隔不能安全处理包含空格、Tab 或换行的路径，常见稳健组合使用 NUL 分隔：
+
+```bash
+find . -type f -name '*.sh' -print0 | xargs -0 -r wc -l
+```
+
+- `find -print0` 用 NUL 终止每个路径；
+- `xargs -0` 按 NUL 读取；
+- GNU `xargs -r` 在没有输入时不执行命令，但不是所有平台都有该选项；
+- `find ... -exec wc -l {} +` 也能批量且安全地传递路径。
+
+### `curl` 与网页响应
+
+```bash
+curl -s "$COURSE_URL" | grep -c 'href="/2026/'
+```
+
+`COURSE_URL` 表示文末列出的课程主页。`curl` 把响应正文写到 stdout，因此能直接进入文本管道。示例按当前页面中 2026 课程链接的 `href` 前缀计数；实际使用前应确认该模式确实每讲只出现一次。`-s` 隐藏进度与常规错误信息；自动化脚本通常用 `-fsS` 让 HTTP 错误产生失败状态且保留诊断，跟随重定向时再加入 `-L`。基于 HTML 字符串的计数依赖页面结构，页面更新后模式也要复核。
+
+### `jq` 与 JSON
+
+```bash
+curl -fsSL "$JSON_URL" \
+  | jq -r '.[] | select(.version > 6) | .name'
+```
+
+`JSON_URL` 表示文末列出的课程练习示例 JSON。命令中：
+
+- `.[]` 依次产生数组元素；
+- `select(.version > 6)` 保留满足条件的对象；
+- `.name` 取得字段；
+- `-r` 把 JSON 字符串按原始文本输出。
+
+与正则处理 JSON 相比，`jq` 保留数组、对象、数字和字符串的结构语义。
+
+### `awk` 过滤与重排
+
+```bash
+printf 'a 50 x\nb 150 y\nc 200 z\n' \
+  | awk '$2 > 100 {print $3, $2, $1}'
+```
+
+输出：
+
+```text
+y 150 b
+z 200 c
+```
+
+条件 `$2 > 100` 过滤第二字段，动作按第三、第二、第一字段重组输出。相关形式 `awk '$3 ~ /pattern/ {$4=""; print}'` 中，`~` 表示正则匹配；把 `$4` 设为空后使用默认 `print` 会重建整条记录。
+
+### 历史记录统计
+
+```bash
+awk '{print $1}' ~/.bash_history \
+  | sort \
+  | uniq -c \
+  | sort -nr \
+  | head -n 10
+```
+
+这只是近似统计。多行命令、前导环境变量、`sudo`、管道、时间戳和 Zsh 扩展历史格式都会改变第一字段的含义。可靠分析应先观察实际历史格式，再定义“命令”的统计口径。
+
 ## Shell 的适用边界
 
 Shell 适合：
@@ -719,7 +1033,7 @@ Shell 适合：
 
 当脚本需要复杂数据结构、大量错误处理、并发控制或系统化测试时，Python 等通用编程语言通常更容易维护。
 
-Shell 的优势不在于替代所有编程语言，而在于用统一的输入输出模型，把已有工具高效组合成新的工作流。
+Shell 的优势不在于替代所有编程语言，而在于用统一的输入输出模型，把已有工具高效组合成新的工作流。完成这些基础后，课程下一讲将继续讨论如何用 Shell 和更多命令行程序执行、组合并自动化更复杂的任务。
 
 ## 参考来源
 
@@ -730,6 +1044,11 @@ Shell 的优势不在于替代所有编程语言，而在于用统一的输入�
 - [GNU Bash Reference Manual](https://www.gnu.org/software/bash/manual/)
 - [GNU Awk User’s Guide](https://www.gnu.org/software/gawk/manual/)
 - [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/)
+- [GNU Grep Manual](https://www.gnu.org/software/grep/manual/)
+- [GNU Findutils Manual](https://www.gnu.org/software/findutils/manual/)
 - [GNU sed Manual](https://www.gnu.org/software/sed/manual/)
+- [curl Manual](https://curl.se/docs/manpage.html)
+- [jq Manual](https://jqlang.org/manual/)
+- [课程练习示例 JSON](https://microsoftedge.github.io/Demos/json-dummy-data/64KB.json)
 - [systemd：journalctl Manual](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html)
 - [OpenSSH：ssh(1) Manual](https://man.openbsd.org/ssh)
