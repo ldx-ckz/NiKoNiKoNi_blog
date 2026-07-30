@@ -10,6 +10,7 @@ const postsCollection = defineCollection({
 		draft: z.boolean().optional().default(false),
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
+		cardImagePosition: z.string().optional().default("center"),
 		tags: z.array(z.string()).optional().default([]),
 		category: z
 			.union([z.string(), z.array(z.string()), z.null()])

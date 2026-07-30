@@ -59,6 +59,7 @@ const postUrl = getPostUrl(entry);
 		src={cover}
 		basePath={getFileDirFromPath(entry.filePath || "")}
 		alt=""
+		position={entry.data.cardImagePosition}
 		class="cover-image"
 	/>
 	<div class="cover-shade" aria-hidden="true"></div>
