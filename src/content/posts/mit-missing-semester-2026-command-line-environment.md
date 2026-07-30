@@ -1,7 +1,7 @@
 ---
 title: MIT Missing Semester 2026 第二课：命令行环境
 image: /assets/post-card/post-card-12.jpg
-cardImagePosition: center 35%
+cardImagePosition: center 15%
 published: 2026-07-30
 updated: 2026-07-30
 description: MIT Missing Semester 2026 第二课笔记，介绍 CLI 接口、环境变量、信号与作业控制、SSH、tmux、dotfiles、Shell 中的 AI 及配套实践。
