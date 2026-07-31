@@ -1,9 +1,8 @@
 ---
 title: MIT Missing Semester 2026 第二课：命令行环境
 image: /assets/post-card/post-card-12.jpg
-cardImagePosition: center 15%
 published: 2026-07-30
-updated: 2026-07-30
+updated: 2026-07-31
 description: MIT Missing Semester 2026 第二课笔记，介绍 CLI 接口、环境变量、信号与作业控制、SSH、tmux、dotfiles、Shell 中的 AI 及配套实践。
 tags:
   - Shell
@@ -80,6 +79,41 @@ some_command "$@"
 - `--help`、`--version`、`--verbose`：常见但并非强制支持。
 
 `ls -la` 与 `ls -al` 对独立开关通常等价，但不能推导出所有程序的选项顺序都无关。某些程序会按顺序处理设置，后面的选项可能覆盖前面的选项。
+
+#### 从一行文本到 `argv`
+
+以 `ls -lah --color=auto /home` 为例，它会经过四层处理：
+
+1. Shell 识别引号、变量、glob、重定向等语法，并切分参数；
+2. 若命令名不含 `/`，Shell 按 `PATH` 查找 `ls`；
+3. 操作系统把参数向量交给新进程；
+4. `ls` 自己把字符串分类为选项、选项值和操作对象。
+
+程序收到的结构近似为：
+
+```text
+argv[0] = ls
+argv[1] = -lah
+argv[2] = --color=auto
+argv[3] = /home
+```
+
+Shell 不知道 `-l` 代表长格式；这是 `ls` 的选项解析器决定的。“参数”是程序收到的全部字符串，“选项”只是用于调整行为的一类参数。
+
+| 示例 | 程序名 | 选项 | 选项值 | 普通参数 |
+|---|---|---|---|---|
+| `ls -l /home` | `ls` | `-l` | 无 | `/home` |
+| `head -n 5 notes.txt` | `head` | `-n` | `5` | `notes.txt` |
+| `head --lines=5 notes.txt` | `head` | `--lines` | `5` | `notes.txt` |
+| `cp source.txt backup.txt` | `cp` | 无 | 无 | 两个路径 |
+
+短选项能否合并、值能否写成 `--name=value`、选项能否出现在普通参数之后，都由具体程序决定。路径含空格时：
+
+```bash
+ls -l "My Documents"
+```
+
+引号只在 Shell 解析阶段保护参数边界；`ls` 最终收到的是不带引号的单个字符串 `My Documents`。
 
 特殊参数 `--` 通常表示停止解析选项，因此能安全处理以 `-` 开头的文件名：
 
@@ -214,6 +248,41 @@ printf '%s\n' "$selected"
 
 `grep` 是非交互式过滤器，输出全部匹配行；`fzf` 是交互式筛选器，默认输出用户确认的选择。
 
+### `ls | fzf` 的完整数据流
+
+```text
+当前目录
+  │
+  ├─ ls 把若干行候选文本写到 stdout
+  │
+  └─ 管道把这些字节送入 fzf 的 stdin
+       │
+       ├─ 输入查询词，fzf 对候选行进行模糊排序和过滤
+       ├─ 方向键移动选择，Backspace 修改查询
+       ├─ Esc 或 Ctrl-C 取消
+       └─ Enter 确认后，只把选中行写到 stdout
+```
+
+模糊匹配通常只要求查询字符保持顺序，不要求相邻。例如 `hwt` 可以匹配 `homework.txt` 中依次出现的 `h`、`w`、`t`。具体评分仍由 `fzf` 的实现决定。
+
+`fzf` 接收的是文本行，不是特殊的“文件对象”：
+
+| 数据来源 | 候选行表示什么 | 确认后的输出 |
+|---|---|---|
+| `find . -type f | fzf` | 文件路径 | 一个路径 |
+| `history | fzf` | 历史命令文本 | 一条历史记录 |
+| `ps aux | fzf` | 进程信息行 | 一条进程记录 |
+| `fzf < notes.txt` | 文件中的各行 | 一条文本行 |
+
+在 `cat ~/.bash_history | fzf` 中，`~` 先由 Shell 展开，`cat` 再把历史文件逐行写入管道。按 Enter 只输出所选文本，不会自动执行。若要继续处理，应显式接收：
+
+```bash
+selected=$(cat ~/.bash_history | fzf)
+printf 'chosen: %s\n' "$selected"
+```
+
+生产者、交互筛选器和后续消费者各负一责，正是 Unix 工具组合的基本方式。对不可信选择结果直接使用 `eval` 会把普通文本变成代码，应避免。
+
 ## 变量、环境与两种替换
 
 ### 赋值、读取和引号
@@ -263,6 +332,36 @@ diff <(sort file1.txt) <(sort file2.txt)
 
 反向形式 `>(command)` 把写入文件式通道的数据交给命令的 stdin。进程替换是 Bash、zsh 等 Shell 的扩展，不属于严格 POSIX `sh`。
 
+#### 为什么管道不能替代两个进程替换
+
+`diff` 的典型接口需要两个独立文件操作数。若两边都由命令动态产生，单个管道只有一条 stdin，不能同时表达左输入与右输入；`diff - -` 的两个 `-` 也都指向同一标准输入，不会自动成为两条独立数据流。
+
+```bash
+diff <(ls src) <(ls docs)
+```
+
+执行过程近似为：
+
+1. Shell 分别启动 `ls src` 与 `ls docs`；
+2. 为两者 stdout 建立两个独立可读端点；
+3. 生成类似 `/dev/fd/63`、`/dev/fd/62` 的路径，某些系统也可能使用 FIFO；
+4. `diff` 像读取普通文件一样分别读取两个端点。
+
+命令替换产生字符串，进程替换产生文件名式接口：
+
+```bash
+printf '%s\n' "$(ls src)"  # 一个字符串参数
+diff <(ls src) <(ls docs)   # 两个文件名式参数
+```
+
+`diff <(ls src) <(ls docs)` 只比较目录清单文本，不会递归比较文件内容。比较目录树可使用：
+
+```bash
+diff -r src docs
+```
+
+反向进程替换 `>(command)` 给调用者一个可写路径，写入的数据成为命令的 stdin，常用于把同一输出分发给多个处理器。
+
 ### Shell 变量与环境变量
 
 ```bash
@@ -305,6 +404,41 @@ unset DEBUG
 
 `DEBUG=` 表示变量存在但为空，`unset DEBUG` 表示变量不存在；程序可能区分两者。
 
+#### 环境变量的继承时序
+
+Shell 启动外部程序时会准备参数向量 `argv` 和环境映射 `NAME=value`。两者都是字符串，但用途不同：参数是本次调用的显式输入，环境是随进程启动复制的上下文。程序必须主动读取变量，它才会影响行为。
+
+```bash
+DEBUG=1
+bash -c 'printf "%s\n" "$DEBUG"'
+```
+
+这段命令的过程是：
+
+1. 当前 Shell 创建普通变量 `DEBUG`；
+2. 单引号阻止父 Shell 提前展开 `$DEBUG`，子 Bash 收到的命令文本仍包含变量引用；
+3. `DEBUG` 尚未导出，不在子进程的环境副本中；
+4. 子 Bash 自己展开 `$DEBUG`，结果为空。
+
+执行 `export DEBUG` 后再创建子 Bash，新子进程才会收到该值。`export` 只是为当前 Shell 中的变量添加导出属性，不会追溯更新父进程、已运行进程或其他终端。
+
+```bash
+TZ=Asia/Tokyo date
+```
+
+这种前置赋值只为 `date` 的环境添加 `TZ`，命令结束后不会永久修改当前 Shell。与之相对，`export TZ=Asia/Tokyo` 会影响当前 Shell 以后创建的子进程。
+
+| 变量 | 常见用途 |
+|---|---|
+| `HOME` | 当前用户家目录 |
+| `PATH` | 命令搜索目录序列 |
+| `PWD` | 当前工作目录 |
+| `USER` | 用户名信息 |
+| `LANG` | 默认语言与区域设置 |
+| `TZ` | 时区设置 |
+
+`echo "$DEBUG"` 显示当前 Shell 展开的值，不能证明变量已经导出；`printenv DEBUG` 更适合检查环境。读取变量时使用 `$DEBUG` 或 `${DEBUG}`，赋值左侧则不加 `$`。
+
 ### `PATH` 是有顺序的搜索目录列表
 
 ```bash
@@ -329,6 +463,42 @@ hash -r
 ```
 
 `source` 在当前 Shell 中重读配置；`hash -r` 清除 Bash 的命令位置缓存。
+
+#### 把自定义脚本加入 `PATH`
+
+```bash
+mkdir -p "$HOME/mybin"
+printf '#!/usr/bin/env bash\nprintf "hello\\n"\n' > "$HOME/mybin/hello"
+chmod +x "$HOME/mybin/hello"
+```
+
+此时可通过完整路径运行 `"$HOME/mybin/hello"`。如果当前目录正是 `~/mybin`，也可运行 `./hello`。Shell 默认不搜索当前目录，所以单独输入 `hello` 通常仍找不到。
+
+应把包含可执行文件的目录加入 `PATH`：
+
+```bash
+export PATH="$PATH:$HOME/mybin"
+command -v hello
+hello
+```
+
+Shell 从左到右检查目录，遇到第一个可执行的同名命令即停止：
+
+```text
+PATH=/usr/local/bin:/usr/bin:/home/user/mybin
+       先查这里      再查这里  最后查这里
+```
+
+追加目录的优先级较低，不容易覆盖系统命令；前置目录优先级较高，但可能造成命令遮蔽。诊断时可使用：
+
+```bash
+printf '%s\n' "$PATH" | tr ':' '\n'
+command -v hello
+type -a hello
+hash -r
+```
+
+持久配置应优先使用绝对路径或 `$HOME` 派生路径。相对 `PATH` 条目会随当前目录改变含义。写入 `~/.bashrc` 只影响以后读取该文件的 Shell；当前会话需执行 `source ~/.bashrc`，父 Shell 和其他已打开终端不会自动改变。
 
 ## 返回码与条件执行
 
@@ -408,6 +578,42 @@ while True:
 
 这里是捕获 `SIGINT` 后执行处理器，不是完全忽略。完全忽略可使用 `signal.SIG_IGN`。若程序没有改变 `SIGQUIT` 的处理方式，`Ctrl-\` 仍可能触发默认终止动作。
 
+#### 从按键到信号处理器
+
+`Ctrl-C` 的典型路径是：
+
+```text
+键盘 Ctrl-C
+  → 终端驱动识别特殊控制字符
+  → 向前台进程组发送 SIGINT
+  → 内核查看每个进程对 SIGINT 的处置
+  → 执行默认动作、忽略，或调用自定义处理器
+```
+
+因此，信号不是输入流中的普通字符；前台管道中的多个进程也可能一起收到信号。
+
+Python 示例逐行说明：
+
+| 代码 | 含义 |
+|---|---|
+| `def handler(signum, frame)` | 处理器接收信号编号和当前执行帧 |
+| `signal.signal(signal.SIGINT, handler)` | 把 SIGINT 的处置改为调用处理器 |
+| `time.sleep(0.1)` | 暂停循环，信号到来时休眠可能被中断 |
+| `\r` | 把光标移回当前行开头 |
+| `end=""`、`flush=True` | 不换行并立即刷新输出 |
+| `i += 1` | 处理器返回后循环继续运行 |
+
+自定义处理器可以记录、清理、设置退出标志，也可以返回后继续；`signal.SIG_IGN` 才是忽略。常见终止信号的差异如下：
+
+| 信号 | 常见编号（Linux/Unix） | 常见来源 | 语义 |
+|---|---:|---|---|
+| `SIGINT` | 2 | `Ctrl-C`、`kill -INT` | 交互式中断，可捕获 |
+| `SIGQUIT` | 3 | `Ctrl-\`、`kill -QUIT` | 退出并可能产生 core dump，可捕获 |
+| `SIGTERM` | 15 | `kill PID` | 请求有序终止，可捕获 |
+| `SIGKILL` | 9 | `kill -KILL` | 立即终止，不可捕获或清理 |
+
+脚本中优先使用信号名称而不是数字。终端显示的 `^C`、`^\`、`^Z` 是控制字符的可视记法，不代表程序从 stdin 收到了这些文本。
+
 ## 作业控制
 
 ### 进程、作业、前台和后台
@@ -450,6 +656,29 @@ pid=$!
 wait "$pid"
 ```
 
+#### 作业状态的完整变化
+
+```bash
+sleep 1000
+# 按 Ctrl-Z
+jobs -l
+bg %1
+jobs -l
+fg %1
+# 按 Ctrl-C
+```
+
+状态依次变化为：
+
+1. `sleep` 成为前台作业，Shell 等待它；
+2. `Ctrl-Z` 触发 `SIGTSTP`，进程暂停但没有退出；
+3. `jobs -l` 同时显示作业号、PID 和 `Stopped` 状态；
+4. `bg %1` 让第 1 号作业在后台继续；
+5. `fg %1` 把它重新设为前台进程组；
+6. `Ctrl-C` 发送 `SIGINT`，采用默认动作的 `sleep` 退出。
+
+`%1` 是当前 Shell 的作业号，PID 则是操作系统标识。`&` 只让 Shell 不等待，没有切断控制终端；后台进程可继续写终端，读取终端时可能收到 `SIGTTIN` 而暂停。长期任务应显式安排 stdout 和 stderr。
+
 ### `nohup`、`disown` 与持久任务
 
 ```bash
@@ -468,6 +697,23 @@ disown %1
 
 将其从当前 Shell 作业表移除。关闭终端后进程是否存活还取决于 Shell、会话、控制终端和程序的信号处理。需要保留完整交互界面时适合使用 tmux；需要重启策略、开机启动和正式服务管理时适合 systemd 等服务管理器。
 
+普通后台任务与 `nohup` 任务可以这样比较：
+
+```bash
+sleep 1000 &
+normal_pid=$!
+nohup sleep 1000 >nohup.log 2>&1 &
+nohup_pid=$!
+jobs -l
+kill -HUP "$normal_pid" "$nohup_pid"
+jobs -l
+kill "$nohup_pid"
+```
+
+默认情况下，普通 `sleep` 因 `SIGHUP` 结束，`nohup` 任务忽略该信号；最后不带选项的 `kill` 发送 `SIGTERM`，仍可结束它。`nohup` 不提供恢复交互界面的能力。没有显式重定向时，常见实现可能写入 `nohup.out`，但指定日志路径更清楚。
+
+`disown %1` 修改当前 Shell 的作业管理关系；Bash 的 `disown -h %1` 通常保留记录但标记不向该作业发送 SIGHUP。两者都不是系统级守护进程管理器。孤儿进程也不是 `SIGKILL` 特有现象，只要父进程先结束而子进程继续运行就可能出现。
+
 ### `trap` 与退出清理
 
 ```bash
@@ -485,6 +731,8 @@ trap 'exit 143' TERM
 ```
 
 `EXIT` 是 Bash 的退出事件，不是操作系统信号。若只对 INT/TERM 安装 `cleanup`，默认终止动作会被替换，处理器返回后脚本不一定自动退出。把信号转换为 `exit`，再由唯一的 EXIT trap 清理，可降低重复清理风险。
+
+该控制流为：SIGINT → INT trap 执行 `exit 130` → Shell 开始退出 → EXIT trap 执行一次 `cleanup`。SIGTERM 对应 `exit 143`；`130=128+2`、`143=128+15` 是常见的信号退出码约定。让信号 trap 只决定退出、EXIT trap 统一清理，可以避免同一清理函数在 INT/TERM 与 EXIT 上重复运行。
 
 清理函数只能作用于脚本自己创建并验证过的精确路径。
 
@@ -578,6 +826,38 @@ ssh alice@server.example \
 
 左侧 `~` 属于本地用户，远程引号中的 `~` 属于远端账户。首次部署公钥仍需要账户密码、既有密钥或管理员协助。
 
+#### 公钥登录的两条信任链与八步时序
+
+一次 SSH 密钥登录同时包含：客户端验证服务器主机身份，以及服务器验证用户身份。
+
+```text
+客户端 ──验证主机密钥──> 这真的是目标服务器吗？
+服务器 ──验证用户签名──> 这个客户端有权登录该账户吗？
+```
+
+典型时序为：
+
+1. 客户端连接服务器；
+2. 服务器出示主机公钥，客户端与 `known_hosts` 或可信渠道提供的指纹比较；
+3. 客户端声明希望使用某个用户公钥认证；
+4. 服务器检查该远端账户的 `authorized_keys`；
+5. 服务器提供与本次连接相关的待签名数据；
+6. 客户端使用本地私钥签名，私钥本身从不发送；
+7. 服务器用已授权公钥验证签名；
+8. 成功后，服务器为指定账户创建会话。
+
+密钥口令只加密本地私钥文件，不等于远端账户密码。`ssh-agent` 能暂存已解锁密钥以减少重复输入，但也需要保护代理会话。
+
+| 文件 | 位置 | 作用 | 能否分享 |
+|---|---|---|---|
+| `id_ed25519` | 客户端 | 私钥，用于签名 | 不能 |
+| `id_ed25519.pub` | 客户端生成，可复制到远端 | 公钥，用于验证 | 可以 |
+| `authorized_keys` | 服务器的某个账户 | 允许哪些公钥登录该账户 | 谨慎管理 |
+| `known_hosts` | 客户端 | 记录服务器主机身份 | 可能暴露主机清单 |
+| `config` | 客户端 | 保存别名、用户名、端口和私钥路径 | 可能暴露网络拓扑 |
+
+完整部署闭环是：生成密钥 → 保护私钥 → 核对服务器指纹 → 用已有凭据首次登录 → 用 `ssh-copy-id -i ...pub` 部署公钥 → 在另一终端验证密钥登录 → 确认可恢复后再收紧服务器认证策略。`ssh-keygen -y -f` 是从私钥导出公钥；修改私钥口令应使用 `ssh-keygen -p -f`。
+
 ### `scp` 与 `rsync`
 
 ```bash
@@ -602,6 +882,16 @@ rsync -avP project/ alice@server.example:~/project/
 project     复制目录本身
 project/    复制目录内容
 ```
+
+判断 `scp` 方向可以看冒号在哪一侧：
+
+```bash
+scp local.txt lab:~/      # 本地源 → 远端目标，上传
+scp lab:~/remote.txt .    # 远端源 → 本地目标，下载
+scp -r project lab:~/     # 递归上传目录
+```
+
+`rsync` 重复同步时会比较状态，只传输需要更新的数据；`scp` 更接近一次直接复制。`-P` 提供进度和保留未完成部分，但不自动解决冲突。权限、所有者和符号链接能否完整保留，还受两端平台与账户权限影响。
 
 使用可能删除目标文件的 `--delete` 前，应先预演：
 
@@ -633,6 +923,8 @@ ssh lab
 scp report.pdf lab:~/
 rsync -avP project/ lab:~/project/
 ```
+
+`Host lab` 是本地别名；`HostName` 是实际地址，`User` 是默认远端账户，`Port` 是服务端口，`IdentityFile` 应指向客户端私钥而不是 `.pub` 文件。通配块可为一组主机提供设置，`Host *` 提供全局默认值；通常把更具体的块写在通用块之前更容易理解。同一配置会被 `ssh`、`scp` 和基于 SSH 的 `rsync` 复用。
 
 `LocalForward 9999 localhost:8888` 让本地端口 `9999` 通过 SSH 连接到远端视角下的 `localhost:8888`。
 
@@ -714,6 +1006,27 @@ set -g mode-keys vi
 ```
 
 常见流程是进入 copy-mode、移动、用 Space 开始选择、Enter 复制、`<C-b> ]` 粘贴，但应以实际配置为准。
+
+#### 从创建到恢复的完整工作流
+
+```bash
+tmux new -s project
+```
+
+进入后可以依次：
+
+1. `<C-b> c` 创建 window，`<C-b> ,` 重命名；
+2. `<C-b> %` 分成左右 pane，`<C-b> "` 分成上下 pane；
+3. `<C-b> 方向键` 或 `<C-b> o` 在 pane 间切换；
+4. `<C-b> 0`…`9` 选择实际编号的 window；
+5. `<C-b> z` 放大或恢复当前 pane；
+6. `<C-b> d` 分离，内部程序继续由 tmux server 托管；
+7. 在普通终端运行 `tmux ls`，再用 `tmux attach -t project` 恢复；
+8. 在 pane 中执行 `exit` 或 `Ctrl-d` 结束 Shell，不再需要时运行 `tmux kill-session -t project`。
+
+前缀键用于区分“发给 pane 内程序的按键”和“发给 tmux 的管理命令”：先按下并松开 `Ctrl-b`，再按后续键。`tmux kill-server` 会结束服务器管理的全部会话，影响范围远大于 `kill-session`。
+
+tmux 能抵抗 SSH 客户端断线，是因为会话仍留在远端 tmux server；它不能抵抗远端主机重启、tmux server 结束或会话被删除。需要开机启动、失败重启与日志轮转时，应使用服务管理器。
 
 ### 长期任务方案对比
 
@@ -834,7 +1147,7 @@ AI 可以在 Shell 中以不同层次工作：
 
 tmux pane 位于一个终端连接内部；终端模拟器自身的分栏位于 GUI 层，两者可以同时存在。
 
-## 综合实践模式
+## 综合实践
 
 ### 组合 `ls` 选项
 
