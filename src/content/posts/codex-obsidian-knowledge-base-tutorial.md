@@ -11,14 +11,14 @@ author: nikonikoni
 draft: false
 ---
 
-# 从零搭建 Codex + Obsidian 人工智能学术知识库
+# 从零搭建 Codex + Obsidian 人工智能知识库
 
 
-> 本教程以 Windows 为主，也给出 macOS / Linux 的 Obsidian 安装入口。资料与产品状态核验于 2026-07-25。软件界面可能更新；下载和安全相关步骤以文末官方链接为准。
+> 本教程以 Windows 为主，下载和安全相关步骤以文末官方链接为准。
 
-## 0. 最终会得到什么
+## 0. 最终成果
 
-完成后，你会拥有一个本地优先的 AI 学术知识库：
+完成后，你会拥有一个本地优先的 AI 知识库：
 
 - 原始论文、网页和课程资料保留为不可随意改写的事实来源；
 - Codex 把来源编译成文献笔记、概念页、主题综述和实体页；
@@ -30,7 +30,7 @@ draft: false
 
 其核心是持续维护一个可检查、可修改、会积累的 Markdown Wiki。
 
-## 1. 设计来源：Karpathy 的 LLM Wiki
+## 1. Karpathy 的 LLM Wiki
 
 Andrej Karpathy 提出的模式有三层：
 
@@ -44,7 +44,7 @@ Andrej Karpathy 提出的模式有三层：
 - **Query**：基于已积累的 Wiki 综合回答，好的回答可以写回；
 - **Lint**：查找矛盾、过时结论、孤立页面、缺失链接和知识空白。
 
-索引 `index.md` 负责按内容导航，`log.md` 负责按时间记录操作。本 vault 使用中文名称 [知识库首页](/resources/codex-obsidian-knowledge-base/知识库首页.md) 和 [变更日志](/resources/codex-obsidian-knowledge-base/变更日志.md) 实现相同职责。
+索引 `index.md` 负责按内容导航，`log.md` 负责按时间记录操作。本 vault 使用中文名称 `知识库首页` 和 `变更日志` 实现相同职责。
 
 > [!important]
 > 关键价值不是让 LLM 写更多笔记，而是让知识“可积累、可追溯、可纠错”。原始资料、模型综合与研究者判断必须保持边界。
