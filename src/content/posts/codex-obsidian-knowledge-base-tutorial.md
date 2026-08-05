@@ -1,9 +1,9 @@
 ---
-title: 从零搭建 Codex + Obsidian 人工智能学术知识库
+title: 从零搭建 Codex + Obsidian 人工智能知识库
 image: /assets/post-card/post-card-01.jpg
 cardImagePosition: center 35%
 published: 2026-07-25
-description: 从零搭建一个本地优先、可追溯、可持续维护的人工智能学术知识库。
+description: 从零搭建一个本地优先、可追溯、可持续维护的人工智能知识库。
 tags: [Codex, Obsidian, Knowledge Base, Tutorial]
 category: Tutorial
 section: technical
@@ -46,9 +46,6 @@ Andrej Karpathy 提出的模式有三层：
 
 索引 `index.md` 负责按内容导航，`log.md` 负责按时间记录操作。本 vault 使用中文名称 `知识库首页` 和 `变更日志` 实现相同职责。
 
-> [!important]
-> 关键价值不是让 LLM 写更多笔记，而是让知识“可积累、可追溯、可纠错”。原始资料、模型综合与研究者判断必须保持边界。
-
 原始构想见 [Karpathy：LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)。
 
 ## 2. 安装 Obsidian
@@ -60,7 +57,7 @@ Andrej Karpathy 提出的模式有三层：
 3. 运行下载的安装文件并完成安装。
 4. 从开始菜单打开 Obsidian。
 
-不要从不明镜像下载。官方完整说明见 [Download and install Obsidian](https://obsidian.md/help/install)。
+官方完整说明见 [Download and install Obsidian](https://obsidian.md/help/install)。
 
 ### 2.2 macOS
 
@@ -78,7 +75,7 @@ flatpak install flathub md.obsidian.Obsidian
 flatpak run md.obsidian.Obsidian
 ```
 
-不同发行版请直接参照 [Obsidian 官方安装文档](https://obsidian.md/help/install)，不要照搬其他系统的命令。
+不同发行版请直接参照 [Obsidian 官方安装文档](https://obsidian.md/help/install)。
 
 ## 3. 安装并登录 Codex
 
@@ -99,13 +96,13 @@ winget install --id 9PLM9XGG6VKS -s msstore
 2. 使用 ChatGPT 账号登录；
 3. 进入 Codex 工作界面；
 4. 点击添加项目或使用 `Ctrl+O`；
-5. 选择你的 Obsidian vault 根目录，而不是只选某个子文件夹。
+5. 选择你的 Obsidian vault 根目录。
 
 官方快速开始说明见 [Codex Quickstart](https://developers.openai.com/codex/quickstart)。
 
 ### 3.2 安全设置
 
-建议选择 **Ask for approval** / 需要时请求批准，并把工作目录限制在 vault 内。不要为了省一次确认而长期启用全磁盘访问。
+建议选择 **Ask for approval** / 需要时请求批准，并把工作目录限制在 vault 内。
 
 Codex 需要修改 vault 中的 Markdown，但通常不需要：
 
@@ -148,9 +145,9 @@ Obsidian 的 vault 本质上就是本地文件夹，其中的笔记是普通 Mar
 3. 选择保存位置；
 4. 点击 **Create**。
 
-### 4.2 打开本教程已经部署的 vault
+### 4.2 打开已部署的 vault
 
-本机不需要再创建空 vault：
+不需要再创建空 vault：
 
 1. 在 Obsidian 的 vault 切换器中选择 **Open folder as vault**；
 2. 选择 obsidian_program 
@@ -190,20 +187,13 @@ obsidian_program/
    └─ 附件/
 ```
 
-为什么不一开始安装向量数据库、复杂知识图谱和大量插件？
+## 6. Obsidian 的设置
 
-- 在中小规模时，Markdown、首页索引、全文搜索和双链已经够用；
-- 学术知识库最先需要解决的是来源追踪和稳定维护，不是搜索基础设施；
-- 只有当普通搜索确实成为瓶颈时，再加入本地混合检索；
-- 少依赖意味着更容易备份、迁移和让 Codex理解。
-
-## 6. Obsidian 已完成的设置
-
-打开 **Settings** 检查以下内容。
+打开 **Settings** 设置以下内容。
 
 ### 6.1 Files and links
 
-本 vault 已写入：
+确保 vault 已写入：
 
 - **Default location for new notes**：`00-收件箱`
 - **Attachment folder path**：`90-系统/附件`
@@ -214,7 +204,7 @@ obsidian_program/
 
 ### 6.2 Core plugins
 
-以下核心插件已经启用：
+启用以下插件：
 
 - File explorer
 - Search
@@ -227,8 +217,6 @@ obsidian_program/
 - Command palette
 - Outline
 - File recovery
-
-第三方插件默认没有安装。先运行基础流程一到两周，再根据真实痛点决定是否增加。
 
 ### 6.3 Templates
 
