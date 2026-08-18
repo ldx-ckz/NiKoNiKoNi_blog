@@ -1,6 +1,6 @@
 ---
 title: 从零搭建 Codex + Obsidian 人工智能知识库
-image: /assets/post-card/post-card-01.jpg
+image: /assets/post-card/post-card-01-v20260818.jpg
 cardImagePosition: center 35%
 published: 2026-07-25
 description: 从零搭建一个本地优先、可追溯、可持续维护的人工智能知识库。

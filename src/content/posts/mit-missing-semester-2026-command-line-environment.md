@@ -1,6 +1,6 @@
 ---
 title: MIT Missing Semester 2026 第二课：命令行环境
-image: /assets/post-card/post-card-21.jpg
+image: /assets/post-card/post-card-21-v20260818.jpg
 cardImagePosition: center 35%
 published: 2026-07-30
 updated: 2026-07-31

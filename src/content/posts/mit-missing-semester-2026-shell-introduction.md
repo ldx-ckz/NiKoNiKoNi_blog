@@ -1,6 +1,6 @@
 ---
 title: MIT Missing Semester 2026 第一课：Shell 入门
-image: /assets/post-card/post-card-10.jpg
+image: /assets/post-card/post-card-10-v20260818.jpg
 cardImagePosition: center 35%
 published: 2026-07-26
 updated: 2026-07-27
