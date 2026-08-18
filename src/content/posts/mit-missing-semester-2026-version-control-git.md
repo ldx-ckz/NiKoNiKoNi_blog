@@ -1,9 +1,7 @@
 ---
 title: MIT Missing Semester 2026 第五课：版本控制与 Git
-image: /assets/post-card/post-card-13.jpg
-cardImagePosition: center 35%
 published: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-18
 description: 从 blob、tree、commit 和 DAG 出发，系统理解 Git 的暂存区、分支、合并、远程同步、撤销操作与高级工具。
 tags:
   - Git
@@ -594,6 +592,33 @@ A <- B <- C <- D' <- E'
 
 merge 保存分叉和合并拓扑，rebase 重写开发线的基底。选择应服从团队工作流。
 
+#### merge 与 rebase 的处理单位
+
+两者在没有冲突时常能得到相同的最终文件，但过程和历史语义不同：
+
+| 维度 | merge | rebase |
+|---|---|---|
+| 处理方式 | 比较共同祖先到两端的净变化，一次整合 | 取出当前分支独有提交，按顺序逐个重放 |
+| 原提交 | 保留原 ID | 产生 `D'`、`E'` 等新提交 |
+| 拓扑 | 保留分叉，并可能创建 merge commit | 把开发线接到新基底后，历史趋于线性 |
+| 冲突粒度 | 通常在一次综合合并中处理 | 可能在多个被重放的提交上分别暂停 |
+| 共享风险 | 通常不改写已有提交 | 改写已共享提交会破坏他人的基线与哈希引用 |
+
+“净变化”和“逐提交重放”的差别在中间过程相互抵消时尤其明显。设共同祖先中 `value=1`，feature 先改成 2，下一提交又改回 1，而 main 改成 3。对 merge 而言，feature 相对祖先的最终净变化为零；对 rebase 而言，Git 仍会依次尝试重放“1→2”和“2→1”，每一步都可能需要结合新基底解释。这说明 rebase 保留并重新执行提交序列的语义，而不是只搬运分支末端的最终快照。
+
+rebase 冲突时，应在每个暂停点检查当前正在重放的提交，解决文件后继续：
+
+```bash
+git status
+git add <resolved-path>
+git rebase --continue
+
+# 放弃整次 rebase，回到开始前
+git rebase --abort
+```
+
+merge 历史可以用 `git log --first-parent` 沿主线查看某个功能何时进入当前分支。rebase 后原提交 ID 会失效，依赖这些 ID 的代码审查链接、CI 记录、签名或外部引用也可能受影响。若个人分支已经推送、团队又允许重写，更新远端时通常应在协调后使用 `git push --force-with-lease`，而不是无条件 force push。
+
 ## 远程仓库与同步
 
 remote 是命名的远程仓库配置，不是云端分支的同义词。
@@ -602,6 +627,8 @@ remote 是命名的远程仓库配置，不是云端分支的同义词。
 git remote -v
 git remote add origin git@example.com:team/project.git
 ```
+
+`git remote add` 只在本地写入 remote 名称与 URL 配置，不会自动 fetch、pull 或 push。`git remote -v` 分别显示 fetch URL 和 push URL；二者通常相同，也可以不同。一个本地仓库还可以配置多个 remote，例如 `origin` 指向自己的 fork，`upstream` 指向原项目。此处的 `upstream` 只是 remote 名称，不能和本地分支的 upstream 属性混为一谈。
 
 ### clone
 
@@ -625,6 +652,20 @@ fetch 获取对象和远端引用，并更新 `origin/main` 等远程跟踪引�
 refs/heads/main          本地分支
 refs/remotes/origin/main 本地记录的远端 main 状态
 ```
+
+远程协作需要同时区分三层引用：
+
+```text
+服务器上的 main
+        │ git fetch
+        ▼
+本地的 origin/main
+        │ git merge / git rebase
+        ▼
+本地的 main
+```
+
+`origin/main` 是最近一次与 origin 通信后，本地记录的远端 main 位置，不是服务器状态的实时镜像。fetch 后可以使用 `git log main..origin/main` 查看远程跟踪分支有而本地 main 没有的提交，或用 `git diff main origin/main` 比较两端快照。
 
 ### pull
 
@@ -663,7 +704,15 @@ push 不会直接上传尚未形成 commit 的工作区或 index 内容：
 
 因此修改文件后立即 push 不能代替 add 和 commit。
 
+`local-name:remote-name` 是 push refspec 的直观形式。例如 `git push origin feature:dev` 请求用本地 `feature` 更新远端 `dev`；`git push origin main` 在常见情形下相当于 `main:main`。若远端分支含有本地没有的提交，直接更新会让其历史无法通过父提交链 fast-forward 到新位置，服务器通常以 non-fast-forward 拒绝。此时应先 fetch，再用 merge 或 rebase 整合远端变化，而不是立即强制覆盖。
+
 upstream 是本地分支默认比较、拉取或推送的远程跟踪分支。它不是父提交，也不等同于社区常命名为 `upstream` 的 remote。
+
+```text
+本地 main ──upstream──> origin/main
+```
+
+这项本地配置使 `git status`、无参数 `git pull` 和 `git push` 知道默认与谁比较或通信，也使 Git 能报告 ahead、behind 或 diverged。`git push -u origin feature` 是推送并设置 upstream；`git branch --set-upstream-to=origin/main main` 只设置关系，不发生网络传输。`git branch -vv` 可检查每个本地分支的当前提交、upstream 与领先/落后状态。
 
 ## 撤销操作
 
@@ -684,6 +733,33 @@ upstream 是本地分支默认比较、拉取或推送的远程跟踪分支。�
 | 撤销已经共享的提交 | `git revert <commit>` | 新建反向提交 |
 | 找回最近移动的引用 | `git reflog` | 查看本地引用日志 |
 
+把 `HEAD` 快照、index 和工作区分别记作三份状态，更容易预测命令结果。假设文件当前是：
+
+```text
+HEAD     = A
+index    = B
+worktree = C
+```
+
+路径恢复命令的数据方向为：
+
+| 命令 | 数据方向 | 结果要点 |
+|---|---|---|
+| `git restore file` | index → 工作区 | 工作区 C 变回 B，而不是 A |
+| `git restore --source=HEAD file` | HEAD → 工作区 | 工作区直接变回 A |
+| `git restore --staged file` | HEAD → index | index B 变回 A，工作区 C 保留 |
+| `git reset file` | HEAD → index | 路径模式近似取消暂存，不移动分支 |
+
+reset 的提交模式先移动当前分支，再决定是否同步另外两层：
+
+| 模式 | 分支/HEAD | index | 工作区 |
+|---|---|---|---|
+| `git reset --soft <target>` | 移到 target | 保留 | 保留 |
+| `git reset --mixed <target>`（默认） | 移到 target | 重置为 target | 保留 |
+| `git reset --hard <target>` | 移到 target | 重置为 target | 重置为 target |
+
+soft 适合取消本地 commit 后重新组织提交，mixed 让改动回到未暂存状态，hard 会丢弃工作区中的相应修改。hard 是需要先确认目标与未提交内容的破坏性操作。
+
 restore 主要恢复路径而不移动当前分支；reset 可以移动分支或修改 index；revert 创建效果相反的新提交。
 
 `git commit --amend` 也不是编辑原对象。它基于当前 index、父节点和元数据创建另一个 commit，再让分支指向新对象。
@@ -696,6 +772,8 @@ git revert <commit>
 
 它保留错误和撤销过程的审计轨迹，不要求其他克隆重写历史。
 
+revert 应用的是旧提交的反向修改，而不是恢复整棵目录到某个旧快照。若后续代码已经修改同一区域，revert 也可能发生冲突；解决后继续创建反向提交，或放弃本次 revert。
+
 reflog 可以帮助找回误 reset 或 rebase 前的位置：
 
 ```bash
@@ -704,6 +782,8 @@ git branch rescue <object-id>
 ```
 
 reflog 有过期和清理策略，不同步到远端，也不能代替备份。
+
+它记录的是 HEAD 或分支曾指向哪里，不是工作区所有编辑历史。因此从未进入对象数据库的未提交内容通常不能靠 reflog 恢复；误 reset、误 rebase、误 amend 或误删分支后仍可达的旧提交，才是 reflog 最擅长的恢复对象。
 
 ## 高级 Git 工具
 
@@ -725,6 +805,13 @@ git clone --depth=1 <url>
 
 浅克隆只获取有限历史，可减少时间和空间，但 log、blame、bisect、合并基础和历史分析可能受限。
 
+需要更多或完整历史时可以执行：
+
+```bash
+git fetch --deepen=100
+git fetch --unshallow
+```
+
 ### 交互暂存
 
 ```bash
@@ -733,6 +820,8 @@ git add -p
 
 按 hunk 选择进入 index 的修改，适合把混杂的工作区拆成多个单一意图提交。
 
+常见提示 `Stage this hunk [y,n,q,a,d,...]?` 中，`y` 表示暂存当前 hunk，`n` 表示跳过当前 hunk，`q` 表示退出并停止处理后续 hunk，`a` 表示暂存当前及后续 hunk，`d` 表示当前及后续 hunk 都不暂存。它是在逐块决定哪些修改进入下一提交，不是立即 commit 或上传。
+
 ### 交互 rebase
 
 ```bash
@@ -740,6 +829,18 @@ git rebase -i HEAD~5
 ```
 
 可以重排、合并、修改或删除本地提交。它会重写相关提交，适合尚未共享的开发线。
+
+| todo 指令 | 作用 |
+|---|---|
+| `pick` | 正常重放并保留提交 |
+| 调整行顺序 | 改变重放顺序，依赖关系不成立时可能冲突 |
+| `reword` | 保留修改，只重写提交信息 |
+| `edit` | 重放该提交后暂停，允许修改并 amend |
+| `squash` | 合入前一个提交，并整理双方 message |
+| `fixup` | 合入前一个提交，通常丢弃自己的 message |
+| `drop` | 不再重放该提交 |
+
+`fixup` 和 `squash` 总是合入它们上方最近的保留提交；`edit` 是先应用再暂停。完成暂停处的修改后执行 `git rebase --continue`。由于 Git 是按新顺序重新创建提交，重排也不是简单移动原对象。
 
 ### blame
 
@@ -756,9 +857,10 @@ git stash push -m "wip: parser experiment"
 git stash list
 git stash show -p stash@{0}
 git stash pop
+git stash apply stash@{0}
 ```
 
-stash 暂存工作区与 index 变化并清理现场。默认不一定包含 untracked 或 ignored 文件，重要成果不应长期只保存在 stash。
+stash 暂存工作区与 index 变化并清理现场。`apply` 恢复指定 stash 但保留该条目，`pop` 恢复后尝试从列表移除。默认不一定包含 untracked 或 ignored 文件；需要时可用 `-u` 纳入 untracked，或用 `-a` 进一步纳入 ignored。重要成果不应长期只保存在 stash。
 
 ### bisect
 
@@ -782,6 +884,16 @@ git worktree remove ../project-hotfix
 
 worktree 允许同一仓库同时检出多个分支，适合在保留实验现场的同时处理紧急修复。
 
+worktree 是工作目录，不是新的历史线。真正前进的是各目录中检出的 branch；整合时也应 merge、rebase 或 cherry-pick 分支，而不是手工复制目录：
+
+```text
+共享对象数据库
+├── project/         → feature 分支
+└── project-hotfix/  → hotfix 分支
+```
+
+在 hotfix worktree 中提交后，可回到 feature 或 main 所在 worktree 执行 `git merge hotfix`。worktree 解决同时在哪些目录工作，分支操作解决这些提交历史如何整合。
+
 ### `.gitignore`
 
 ```text
@@ -800,6 +912,14 @@ git rm --cached path
 
 项目共同规则应写入仓库内 `.gitignore`；只与个人系统或编辑器有关的模式可以放入 global excludes。
 
+| 文件状态 | 匹配 `.gitignore` 后的行为 |
+|---|---|
+| untracked | 通常不在 `status` 中提示，也不会被 `git add .` 默认加入 |
+| tracked 且 modified | 仍会显示并可被暂存，ignore 不会停止跟踪 |
+| 远端 commit 中已 tracked | clone 或 pull 时仍会检出，ignore 不负责选择下载内容 |
+
+因此 `git add .` 可能暂存已跟踪的 `main.py` 修改，同时跳过匹配 `*.log` 的未跟踪 `debug.log`；若 `debug.log` 早已 tracked，它仍会被暂存。
+
 ## Git 托管与协作工作流
 
 Git 是分布式版本控制系统。GitHub 是提供 Git 托管、pull request、issue、权限和自动化的平台。GitLab、Bitbucket 与自建服务也可以托管 Git；pull request 属于托管平台协作界面，不是 Git 对象类型。
@@ -807,6 +927,10 @@ Git 是分布式版本控制系统。GitHub 是提供 Git 托管、pull request�
 图形客户端、命令行、Shell prompt 和编辑器集成都在操作同一仓库模型。GUI 有利于观察 diff、提交选择和历史图，命令行便于精确操作与自动化。集成显示仍可以用 `git status`、`git diff` 和 `git log` 交叉确认。
 
 大型项目也没有唯一正确的工作流。主干开发、功能分支、squash merge、保留 merge commit、本地 rebase 和发布分支都有适用条件，选择取决于团队规模、发布节奏、审计要求和工具链。
+
+常见的短生命周期功能分支闭环是：从 main 创建 feature 分支，小步开发并形成逻辑提交，push 后建立 upstream，通过 pull request 完成审查和自动检查，再选择 merge、squash 或 rebase 后 fast-forward，最后删除已完成的短期分支。分支长期脱离 main 会扩大差异和冲突成本。
+
+三种常见进入主分支的策略各保留不同信息：squash merge 把整项 PR 压为一个主线提交；merge commit 保留功能分支拓扑；本地 rebase 后 fast-forward 保留整理后的线性提交序列但改写 feature 原 ID。Git Flow 进一步设置长期 `develop`、`release/*`、`hotfix/*` 等分支，适合部分固定发布流程，但不是所有团队的默认答案。
 
 一个可维护的提交通常满足：
 
@@ -843,6 +967,8 @@ __pycache__/
 ```
 
 这些内容可能造成仓库快速膨胀、二进制历史难以比较或凭据泄露。项目应为数据与制品选择合适的独立存储，并通过 `.gitignore` 排除本地产物。`.gitignore` 不能代替密钥管理；公开示例配置只应保留变量名和说明，不包含真实凭据。
+
+环境本身和环境描述也应区分：`.venv/` 是可重建的本地环境，通常忽略；`requirements.txt`、锁文件或其他环境声明应提交。真实 `.env` 保存秘密并应忽略，而可提交的 `.env.example` 只列出变量名和无敏感值的说明。Git 由此保存如何产生结果的代码、配置与依赖描述，大型数据、checkpoint 和实验输出则交给适合的数据或制品存储系统。
 
 ## 综合实践
 
