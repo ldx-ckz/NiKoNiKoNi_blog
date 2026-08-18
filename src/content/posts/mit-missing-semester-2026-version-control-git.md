@@ -1,5 +1,7 @@
 ---
 title: MIT Missing Semester 2026 第五课：版本控制与 Git
+image: /assets/post-card/post-card-25-v20260818.jpg
+cardImagePosition: center 45%
 published: 2026-08-17
 updated: 2026-08-18
 description: 从 blob、tree、commit 和 DAG 出发，系统理解 Git 的暂存区、分支、合并、远程同步、撤销操作与高级工具。
