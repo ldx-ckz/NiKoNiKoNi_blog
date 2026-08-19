@@ -88,6 +88,9 @@ const postUrl = getPostUrl(entry);
 		</p>
 		<h2>
 			{entry.data.pinned && <Icon name="mdi:pin" />}
+			{entry.data.passwordRequired && (
+				<Icon class="post-lock" name="mdi:lock-outline" />
+			)}
 			<span>{entry.data.title}</span>
 			<Icon class="post-arrow" name="material-symbols:arrow-forward-rounded" />
 		</h2>
@@ -114,6 +117,10 @@ const postUrl = getPostUrl(entry);
 
 	.post-preview:hover {
 		@apply -translate-y-0.5 border-[var(--primary)] shadow-lg;
+	}
+
+	.post-lock {
+		@apply shrink-0 text-[var(--primary)];
 	}
 
 	:global(.cover-image) {

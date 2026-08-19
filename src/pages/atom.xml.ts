@@ -22,7 +22,9 @@ export async function GET(context: APIContext) {
 
 	// Use the same ordering as site listing (pinned first, then by published desc)
 	// 过滤掉加密文章和草稿文章
-	const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted && post.data.draft !== true);
+	const posts = (await getSortedPosts()).filter(
+		(post) => !post.data.passwordRequired && post.data.draft !== true,
+	);
 	
 	// 创建Atom feed头部
 	let atomFeed = `<?xml version="1.0" encoding="utf-8"?>

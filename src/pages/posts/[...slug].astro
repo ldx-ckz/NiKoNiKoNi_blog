@@ -8,10 +8,10 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
+import { getPostPassword } from "@utils/post-passwords";
 import { getDir, getPostUrlBySlug, removeFileExtension, getFileDirFromPath } from "@utils/url-utils";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
-import bcryptjs from "bcryptjs";
 import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -59,32 +59,55 @@ const { Content, headings } = await render(entry);
 
 const { remarkPluginFrontmatter } = await render(entry);
 
-// 处理加密逻辑
+// 处理加密逻辑。密码仅在构建阶段从本地文件或部署环境变量读取。
 let encryptedContent = "";
-let passwordHash = "";
-let isEncrypted = entry.data.encrypted && entry.data.password;
+let encryptionSalt = "";
+let encryptionIv = "";
+let authenticationTag = "";
+const encryptionIterations = 120_000;
+const protectedContentMarker = "nikonikoni-protected-post:v1\n";
+const isPasswordRequired = entry.data.passwordRequired;
 
-if (isEncrypted) {
-	// 对于加密文章，我们将使用内容进行加密
-	// 在客户端解密后，会通过JavaScript重新渲染
-	const contentToEncrypt = entry.body;
+if (isPasswordRequired) {
+	const password = getPostPassword(entry.id);
+	if (!password) {
+		throw new Error(
+			`文章“${entry.data.title}”已设置 passwordRequired: true，但 post-passwords.local.json 或 POST_PASSWORDS_JSON 中没有键“${removeFileExtension(entry.id)}”对应的密码。`,
+		);
+	}
 
-	// 生成密码哈希（使用环境变量配置盐值轮数，默认12）
-	const saltRounds = Number.parseInt(
-		import.meta.env.BCRYPT_SALT_ROUNDS || "12",
-		10,
+	const salt = CryptoJS.lib.WordArray.random(16);
+	const iv = CryptoJS.lib.WordArray.random(16);
+	const derivedKey = CryptoJS.PBKDF2(password, salt, {
+		keySize: 512 / 32,
+		iterations: encryptionIterations,
+		hasher: CryptoJS.algo.SHA256,
+	});
+	const encryptionKey = CryptoJS.lib.WordArray.create(
+		derivedKey.words.slice(0, 8),
+		32,
 	);
-	passwordHash = bcryptjs.hashSync(entry.data.password, saltRounds);
-
-	// 使用密码哈希的一部分作为加密密钥，而不是明文密码
-	// 这样即使攻击者获取到加密内容，也无法直接用原始密码解密
-	const encryptionKey = passwordHash.substring(0, 32); // 使用哈希的前32个字符作为密钥
-
-	// 使用派生密钥加密内容
-	encryptedContent = CryptoJS.AES.encrypt(
-		contentToEncrypt,
+	const authenticationKey = CryptoJS.lib.WordArray.create(
+		derivedKey.words.slice(8, 16),
+		32,
+	);
+	const cipher = CryptoJS.AES.encrypt(
+		protectedContentMarker + entry.body,
 		encryptionKey,
-	).toString();
+		{
+			iv,
+			mode: CryptoJS.mode.CBC,
+			padding: CryptoJS.pad.Pkcs7,
+		},
+	);
+
+	encryptedContent = cipher.ciphertext.toString(CryptoJS.enc.Base64);
+	encryptionSalt = salt.toString(CryptoJS.enc.Base64);
+	encryptionIv = iv.toString(CryptoJS.enc.Base64);
+	authenticationTag = CryptoJS.HmacSHA256(
+		`${encryptionIv}.${encryptedContent}`,
+		authenticationKey,
+	).toString(CryptoJS.enc.Base64);
 }
 
 dayjs.extend(utc);
@@ -118,7 +141,7 @@ const jsonLd = {
     lang={entry.data.lang}
     setOGTypeArticle={true}
     postSlug={entry.id}
-    headings={headings}
+    headings={isPasswordRequired ? [] : headings}
 >
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <!-- 引入右侧边栏布局管理器 -->
@@ -222,10 +245,13 @@ const jsonLd = {
             }
 
             {
-                isEncrypted ? (
+                isPasswordRequired ? (
                     <PasswordProtection
                         encryptedContent={encryptedContent}
-                        passwordHash={passwordHash}
+                        encryptionSalt={encryptionSalt}
+                        encryptionIv={encryptionIv}
+                        authenticationTag={authenticationTag}
+                        encryptionIterations={encryptionIterations}
                     />
                 ) : (
                     <>

@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env
 .env.production
 
+# local post passwords
+post-passwords.local.json
+
 # content repository (independent mode)
 /content/
 *.backup

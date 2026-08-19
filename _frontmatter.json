@@ -57,6 +57,12 @@
           "type": "boolean"
         },
         {
+          "title": "password required",
+          "name": "passwordRequired",
+          "type": "boolean",
+          "default": false
+        },
+        {
           "title": "language",
           "name": "language",
           "type": "string"

@@ -2,6 +2,7 @@
 title: LearnCpp 作用域、变量与命名空间
 image: /assets/post-card/post-card-33-v20260819.jpg
 cardImagePosition: center 40%
+passwordRequired: true
 published: 2026-08-19
 updated: 2026-08-19
 description: LearnCpp 作用域、变量与命名空间笔记，介绍代码块、用户命名空间、局部与全局变量、变量遮蔽、静态局部变量以及 using 语句。
