@@ -44,13 +44,12 @@ const toDateKey = (date: Date) => {
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
-const chartEnd = new Date(today);
-chartEnd.setDate(chartEnd.getDate() + (6 - chartEnd.getDay()));
-const chartStart = new Date(chartEnd);
-chartStart.setDate(chartStart.getDate() - 370);
-
 const contributionStartDate = "2026-07-24";
 const contributionStart = new Date(`${contributionStartDate}T00:00:00+08:00`);
+const chartStart = new Date(`${contributionStartDate}T00:00:00`);
+chartStart.setDate(chartStart.getDate() - chartStart.getDay());
+const chartEnd = new Date(today);
+chartEnd.setDate(chartEnd.getDate() + (6 - chartEnd.getDay()));
 const contributionCount = new Map<string, number>();
 const recordContribution = (date: string) => {
 	const key = new Date(date).toLocaleDateString("en-CA", {
@@ -113,7 +112,9 @@ if (!contributionsLoaded) {
 	}
 }
 
-const activityCells = Array.from({ length: 371 }, (_, index) => {
+const activityDayCount =
+	Math.round((chartEnd.getTime() - chartStart.getTime()) / 86_400_000) + 1;
+const activityCells = Array.from({ length: activityDayCount }, (_, index) => {
 	const date = new Date(chartStart);
 	date.setDate(chartStart.getDate() + index);
 	const count = date > today ? 0 : contributionCount.get(toDateKey(date)) || 0;
@@ -131,7 +132,7 @@ const contributionTotal = activityCells.reduce(
 
 const monthLabels: { week: number; zh: string; en: string }[] = [];
 let previousMonthKey = "";
-for (let week = 0; week < 53; week++) {
+for (let week = 0; week < activityCells.length / 7; week++) {
 	const weekStart = activityCells[week * 7]?.date;
 	if (!weekStart) continue;
 	const weekEnd = new Date(weekStart);
@@ -285,7 +286,7 @@ if (
 			</h2>
 		</div>
 		<div class="activity-panel">
-			<div class="activity-scroll">
+			<div class="activity-scroll" style={`--activity-weeks: ${activityCells.length / 7}`}>
 				<div class="month-row" aria-hidden="true">
 					{monthLabels.map((label) => (
 						<span style={`grid-column: ${label.week + 1}`}>
@@ -491,7 +492,7 @@ if (
 	.month-row,
 	.activity-grid {
 		display: grid;
-		grid-template-columns: repeat(53, 11px);
+		grid-template-columns: repeat(var(--activity-weeks), 11px);
 		column-gap: 4px;
 		width: max-content;
 		min-width: 100%;
