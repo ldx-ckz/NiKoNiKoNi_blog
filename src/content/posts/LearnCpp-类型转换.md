@@ -636,10 +636,7 @@ auto value = uint{ ch };
 
 需要转换而不是声明并初始化变量时，优先使用 `static_cast`，而不是构造一个直接列表初始化的临时对象。
 
-
 ## 参考来源
-
-以下英文原站章节均访问于 2026-08-19：
 
 1. [10.1 — Implicit type conversion](https://www.learncpp.com/cpp-tutorial/implicit-type-conversion/)
 2. [10.2 — Floating-point and integral promotion](https://www.learncpp.com/cpp-tutorial/floating-point-and-integral-promotion/)
