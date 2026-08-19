@@ -1,7 +1,7 @@
 ---
 title: LearnCpp 函数重载与函数模板
 image: /assets/post-card/post-card-27-v20260819.jpg
-cardImagePosition: center 55%
+cardImagePosition: center 65%
 published: 2026-08-19
 updated: 2026-08-19
 description: LearnCpp 函数重载与函数模板笔记，完整介绍重载区分与决议、删除函数、默认实参、函数模板、实例化、实参推导、多类型模板及模板偏序。
