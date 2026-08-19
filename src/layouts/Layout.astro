@@ -894,6 +894,8 @@ const setup = () => {
 		// Control mobile banner visibility based on page with improved staging animation
 		const bannerWrapper = document.getElementById('banner-wrapper')
 		const mainContentWrapper = document.querySelector('.absolute.w-full.z-30')
+		bannerWrapper?.classList.toggle('home-banner', isHomePage)
+		bannerWrapper?.classList.toggle('nonhome-hidden-banner', !isHomePage)
 		
 		if (bannerWrapper && mainContentWrapper) {
 			if (isHomePage) {

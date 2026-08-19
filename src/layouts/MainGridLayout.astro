@@ -829,6 +829,7 @@ body.no-banner-mode .absolute.w-full.z-30 {
     display: none !important;
 }
 
+/* 手机和平板端的非首页继续紧接导航栏。 */
 body.enable-banner .absolute.w-full.z-30.nonhome-main {
     top: 5.5rem !important;
 }
@@ -839,8 +840,14 @@ body.enable-banner .absolute.w-full.z-30.nonhome-main {
         top: 65vh !important;
     }
 
-    body.enable-banner .absolute.w-full.z-30.nonhome-main {
-        top: 5.5rem !important;
+    /* 桌面端非首页完整显示横幅，正文从横幅底部开始。 */
+    body.enable-banner #banner-wrapper.nonhome-hidden-banner {
+        display: block !important;
+        height: var(--banner-height-home) !important;
+    }
+
+    body.enable-banner #swup-page-layout.nonhome-main {
+        top: var(--banner-height-home) !important;
     }
 }
 
@@ -1654,11 +1661,6 @@ body.enable-banner .absolute.w-full.z-30.nonhome-main {
         min-height: 30px !important;
         max-height: 40px !important;
     }
-}
-
-/* 非首页始终紧接导航栏，覆盖旧版各尺寸 banner 定位规则。 */
-body.enable-banner .absolute.w-full.z-30.nonhome-main {
-    top: 5.5rem !important;
 }
 
 /* 首页完整展示横幅，不再沿用旧版的额外位移。 */
