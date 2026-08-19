@@ -237,6 +237,8 @@ export const ja: Translation = {
 	[Key.passwordProtectedDescription]:
 		"保護されたコンテンツを表示するにはパスワードを入力してください",
 	[Key.passwordPlaceholder]: "パスワードを入力",
+	[Key.passwordShow]: "パスワードを表示",
+	[Key.passwordHide]: "パスワードを非表示",
 	[Key.passwordUnlock]: "ロック解除",
 	[Key.passwordUnlocking]: "ロック解除中...",
 	[Key.passwordIncorrect]: "パスワードが間違っています。再試行してください",

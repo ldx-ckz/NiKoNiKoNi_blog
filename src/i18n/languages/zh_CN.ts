@@ -187,6 +187,8 @@ export const zh_CN: Translation = {
 	[Key.passwordProtectedTitle]: "此内容受密码保护",
 	[Key.passwordProtectedDescription]: "请输入密码以查看受保护的内容",
 	[Key.passwordPlaceholder]: "请输入密码",
+	[Key.passwordShow]: "显示密码",
+	[Key.passwordHide]: "隐藏密码",
 	[Key.passwordUnlock]: "解锁",
 	[Key.passwordUnlocking]: "解锁中...",
 	[Key.passwordIncorrect]: "密码错误，请重试",

@@ -185,6 +185,8 @@ enum I18nKey {
 	passwordProtectedTitle = "passwordProtectedTitle",
 	passwordProtectedDescription = "passwordProtectedDescription",
 	passwordPlaceholder = "passwordPlaceholder",
+	passwordShow = "passwordShow",
+	passwordHide = "passwordHide",
 	passwordUnlock = "passwordUnlock",
 	passwordUnlocking = "passwordUnlocking",
 	passwordIncorrect = "passwordIncorrect",

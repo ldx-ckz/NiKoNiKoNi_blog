@@ -241,6 +241,8 @@ export const en: Translation = {
 	[Key.passwordProtectedDescription]:
 		"Please enter the password to view the protected content",
 	[Key.passwordPlaceholder]: "Enter password",
+	[Key.passwordShow]: "Show password",
+	[Key.passwordHide]: "Hide password",
 	[Key.passwordUnlock]: "Unlock",
 	[Key.passwordUnlocking]: "Unlocking...",
 	[Key.passwordIncorrect]: "Incorrect password, please try again",
