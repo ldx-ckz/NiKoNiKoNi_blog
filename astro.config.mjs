@@ -22,6 +22,7 @@ import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.
 import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
+import { remarkLabeledCallouts } from "./src/plugins/remark-labeled-callouts.mjs";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
 import { remarkObsidianCallouts } from "./src/plugins/remark-obsidian-callouts.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
@@ -132,6 +133,7 @@ export default defineConfig({
 			remarkReadingTime,
 			remarkExcerpt,
 			remarkObsidianCallouts,
+			remarkLabeledCallouts,
 			remarkDirective,
 			remarkSectionize,
 			parseDirectiveNode,

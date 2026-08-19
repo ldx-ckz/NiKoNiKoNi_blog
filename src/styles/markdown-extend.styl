@@ -1,11 +1,36 @@
 .custom-md
 
   blockquote.admonition
+    --admonition-accent: var(--admonitions-color-note)
+    position: relative
+    overflow: hidden
+    margin: 1.5rem 0
+    padding: 1rem 1.15rem 1rem 1.25rem
+    border: 1px solid unquote("color-mix(in oklch, var(--admonition-accent) 32%, transparent)")
+    border-radius: .85rem
+    background: unquote("color-mix(in oklch, var(--admonition-accent) 10%, var(--card-bg))")
+    box-shadow: 0 .35rem 1.2rem unquote("color-mix(in oklch, var(--admonition-accent) 9%, transparent)")
+
+    &:before
+      left: 0
+      top: 0
+      width: .3rem
+      height: 100%
+      border-radius: 0
+      background: var(--admonition-accent)
+
+    > :last-child
+      margin-bottom: 0
+
     .bdm-title
       display: flex
       align-items: center
-      margin-bottom: -.9rem
+      margin-bottom: .65rem
       font-weight: bold
+      line-height: 1.5
+
+      > *
+        margin: 0
 
       &:before
         content: ' '
@@ -21,6 +46,8 @@
         mask-repeat: no-repeat
         transform: translateY(-0.0625rem)
     &.bdm-tip
+      --admonition-accent: var(--admonitions-color-tip)
+
       .bdm-title
         color: var(--admonitions-color-tip)
 
@@ -31,6 +58,8 @@
       &:before
         background: var(--admonitions-color-tip)
     &.bdm-note
+      --admonition-accent: var(--admonitions-color-note)
+
       .bdm-title
         color: var(--admonitions-color-note)
 
@@ -41,6 +70,8 @@
       &:before
         background: var(--admonitions-color-note)
     &.bdm-important
+      --admonition-accent: var(--admonitions-color-important)
+
       .bdm-title
         color: var(--admonitions-color-important)
 
@@ -51,6 +82,8 @@
       &:before
         background: var(--admonitions-color-important)
     &.bdm-warning
+      --admonition-accent: var(--admonitions-color-warning)
+
       .bdm-title
         color: var(--admonitions-color-warning)
 
@@ -61,6 +94,8 @@
       &:before
         background: var(--admonitions-color-warning)
     &.bdm-caution
+      --admonition-accent: var(--admonitions-color-caution)
+
       .bdm-title
         color: var(--admonitions-color-caution)
 
