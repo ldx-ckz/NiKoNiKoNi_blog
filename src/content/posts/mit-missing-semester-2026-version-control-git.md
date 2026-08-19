@@ -4,7 +4,7 @@ image: /assets/post-card/post-card-26-v20260818.jpg
 cardImagePosition: center 35%
 published: 2026-08-17
 updated: 2026-08-18
-description: 从 blob、tree、commit 和 DAG 出发，系统理解 Git 的暂存区、分支、合并、远程同步、撤销操作与高级工具。
+description: 从 blob、tree、commit 和 DAG 出发，介绍 Git 的暂存区、分支、合并、远程同步、撤销操作与高级工具。
 tags:
   - Git
   - CLI
