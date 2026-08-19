@@ -18,7 +18,7 @@ import utc from "dayjs/plugin/utc";
 import { licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
-import { profileConfig, siteConfig } from "../../config";
+import { commentConfig, profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 import type { CollectionEntry } from "astro:content";
 
@@ -67,6 +67,9 @@ let authenticationTag = "";
 const encryptionIterations = 120_000;
 const protectedContentMarker = "nikonikoni-protected-post:v1\n";
 const isPasswordRequired = entry.data.passwordRequired;
+const twikooStatsEnabled = Boolean(
+	commentConfig.enable && commentConfig.twikoo?.envId,
+);
 
 if (isPasswordRequired) {
 	const password = getPostPassword(entry.id);
@@ -221,6 +224,22 @@ const jsonLd = {
                     category={entry.data.category || undefined}
                     id={entry.id}
                 />
+                {twikooStatsEnabled && (
+                    <div class="post-engagement-stats mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+                        <div class="flex items-center gap-2">
+                            <Icon name="material-symbols:visibility-outline-rounded" class="text-xl" />
+                            <span id="twikoo_visitors">0</span>
+                            <span class="ui-lang-zh">次浏览</span>
+                            <span class="ui-lang-en">views</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Icon name="material-symbols:mode-comment-outline-rounded" class="text-xl" />
+                            <span id="twikoo-comments-count">0</span>
+                            <span class="ui-lang-zh">条评论</span>
+                            <span class="ui-lang-en">comments</span>
+                        </div>
+                    </div>
+                )}
                 {
                     !entry.data.image && (
                         <div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
@@ -238,7 +257,7 @@ const jsonLd = {
                             id="post-cover"
                             src={entry.data.image}
                             basePath={getFileDirFromPath(entry.filePath || '')}
-                            class="mb-8 rounded-xl banner-container onload-animation"
+                            class="post-detail-cover mb-8 rounded-xl banner-container onload-animation"
                         />
                     </>
                 )
@@ -418,3 +437,30 @@ const jsonLd = {
         </a>
     </div>
 </MainGridLayout>
+
+<style>
+    :global(#post-cover.post-detail-cover) {
+        width: min(82%, 52rem);
+        height: auto !important;
+        aspect-ratio: 16 / 9;
+        margin-left: auto;
+        box-shadow:
+            -3rem 2rem 4.5rem -2.5rem rgb(73 52 52 / 42%),
+            0 0.75rem 1.5rem -0.75rem rgb(0 0 0 / 18%);
+    }
+
+    :global(.dark #post-cover.post-detail-cover) {
+        box-shadow:
+            -3rem 2rem 4.5rem -2.5rem rgb(0 0 0 / 70%),
+            0 0.75rem 1.5rem -0.75rem rgb(0 0 0 / 45%);
+    }
+
+    @media (max-width: 768px) {
+        :global(#post-cover.post-detail-cover) {
+            width: 92%;
+            box-shadow:
+                -1.5rem 1.25rem 3rem -2rem rgb(73 52 52 / 38%),
+                0 0.5rem 1rem -0.75rem rgb(0 0 0 / 18%);
+        }
+    }
+</style>

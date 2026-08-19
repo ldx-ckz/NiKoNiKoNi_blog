@@ -27,8 +27,29 @@ const config = {
     return {
       ...config,
       path: getCurrentPath(),
-      el: '#tcomment'
+      el: '#tcomment',
+      onCommentLoaded: updateCommentCount
     };
+  }
+
+  async function updateCommentCount() {
+    const countEl = document.getElementById('twikoo-comments-count');
+    if (!countEl || typeof twikoo === 'undefined') return;
+
+    try {
+      const currentPath = getCurrentPath();
+      const result = await twikoo.getCommentsCount({
+        envId: config.envId,
+        region: config.region,
+        urls: [currentPath],
+        includeReply: false
+      });
+      const current = result.find((item) => item.url === currentPath) || result[0];
+      countEl.textContent = String(current?.count ?? 0);
+    } catch (error) {
+      console.error('[Twikoo] 获取评论数失败:', error);
+      countEl.textContent = '—';
+    }
   }
   
   // 初始化 Twikoo
@@ -37,6 +58,7 @@ const config = {
       const commentEl = document.getElementById('tcomment');
       if (commentEl) {
         commentEl.innerHTML = '';
+        updateCommentCount();
         
         const dynamicConfig = createTwikooConfig();
         console.log('[Twikoo] 初始化配置:', dynamicConfig);
