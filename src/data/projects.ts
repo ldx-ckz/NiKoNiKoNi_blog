@@ -31,7 +31,6 @@ export const projectsData: Project[] = [
 		sourceCode: "https://github.com/ldx-ckz/copy-as-markdown", // 更改为GitHub链接
 		startDate: "2025-11-29",
 		endDate: "2025-11-30",
-		featured: true,
 		tags: ["Extensions Documentation","Open Source"],
 	},
 	{
@@ -45,6 +44,7 @@ export const projectsData: Project[] = [
 		sourceCode: "https://github.com/ldx-ckz/NiKoNiKoNi_blog",
 		startDate: "2025-11-22",
 		visitUrl: "https://miku.nikonikoni.blog",
+		featured: true,
 	},
 ];
 
