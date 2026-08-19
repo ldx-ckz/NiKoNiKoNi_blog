@@ -18,7 +18,7 @@ import utc from "dayjs/plugin/utc";
 import { licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
-import { commentConfig, profileConfig, siteConfig } from "../../config";
+import { commentConfig, pageviewCounterConfig, profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 import type { CollectionEntry } from "astro:content";
 
@@ -70,6 +70,7 @@ const isPasswordRequired = entry.data.passwordRequired;
 const twikooStatsEnabled = Boolean(
 	commentConfig.enable && commentConfig.twikoo?.envId,
 );
+const postViewStatsEnabled = Boolean(pageviewCounterConfig.enabled);
 
 if (isPasswordRequired) {
 	const password = getPostPassword(entry.id);
@@ -220,20 +221,24 @@ const jsonLd = {
                     category={entry.data.category || undefined}
                     id={entry.id}
                 />
-                {twikooStatsEnabled && (
+                {(postViewStatsEnabled || twikooStatsEnabled) && (
                     <div class="post-engagement-stats mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400">
-                        <div class="flex items-center gap-2">
-                            <Icon name="material-symbols:visibility-outline-rounded" class="text-xl" />
-                            <span id="twikoo_visitors">0</span>
-                            <span class="ui-lang-zh">次浏览</span>
-                            <span class="ui-lang-en">views</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <Icon name="material-symbols:mode-comment-outline-rounded" class="text-xl" />
-                            <span id="twikoo-comments-count">0</span>
-                            <span class="ui-lang-zh">条评论</span>
-                            <span class="ui-lang-en">comments</span>
-                        </div>
+                        {postViewStatsEnabled && (
+                            <div class="flex items-center gap-2">
+                                <Icon name="material-symbols:visibility-outline-rounded" class="text-xl" />
+                                <span data-post-view-count>—</span>
+                                <span class="ui-lang-zh">次浏览</span>
+                                <span class="ui-lang-en">views</span>
+                            </div>
+                        )}
+                        {twikooStatsEnabled && (
+                            <div class="flex items-center gap-2">
+                                <Icon name="material-symbols:mode-comment-outline-rounded" class="text-xl" />
+                                <span id="twikoo-comments-count">0</span>
+                                <span class="ui-lang-zh">条评论</span>
+                                <span class="ui-lang-en">comments</span>
+                            </div>
+                        )}
                     </div>
                 )}
                 {

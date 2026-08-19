@@ -300,15 +300,19 @@ if (siteConfig.font) {
 			>
 				(() => {
 					const state = window.__nikonikoniPageviewCounter ||= {
-						lastUrl: "",
+						lastPath: "",
 						swupBound: false,
 					};
+					const getCurrentPath = () => {
+						const path = location.pathname || "/";
+						return path.length > 1 ? path.replace(/\/+$/, "") : path;
+					};
 
-					const updateDisplayedCount = async () => {
+					const updateDisplayedCount = async (currentPath = getCurrentPath()) => {
 						const counter = document.querySelector("[data-pageview-count]");
-						if (!counter) return;
+						const postCounter = document.querySelector("[data-post-view-count]");
 
-						try {
+						if (counter) try {
 							const response = await fetch(`${pageviewCounterEndpoint}/api/count`, {
 								cache: "no-store",
 							});
@@ -322,21 +326,37 @@ if (siteConfig.font) {
 								}).format(count);
 							}
 						} catch {}
+
+						if (postCounter) try {
+							const response = await fetch(
+								`${pageviewCounterEndpoint}/api/count?path=${encodeURIComponent(currentPath)}`,
+								{ cache: "no-store" },
+							);
+							if (!response.ok) return;
+
+							const data = await response.json();
+							const count = Number(data.count);
+							if (data.path === currentPath && Number.isFinite(count)) {
+								postCounter.textContent = new Intl.NumberFormat("zh-CN").format(count);
+							}
+						} catch {}
 					};
 
 					const trackPageview = async () => {
-						const currentUrl = `${location.pathname}${location.search}`;
-						if (state.lastUrl === currentUrl) return;
-						state.lastUrl = currentUrl;
+						const currentPath = getCurrentPath();
+						if (state.lastPath === currentPath) return;
+						state.lastPath = currentPath;
 
 						try {
 							await fetch(`${pageviewCounterEndpoint}/api/view`, {
 								method: "POST",
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify({ path: currentPath }),
 								keepalive: true,
 							});
 						} catch {}
 
-						await updateDisplayedCount();
+						await updateDisplayedCount(currentPath);
 					};
 
 					const bindSwup = () => {
