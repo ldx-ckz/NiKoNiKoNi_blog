@@ -53,8 +53,7 @@ const fallbackCovers = [
 ];
 const cover = entry.data.image || fallbackCovers[index % fallbackCovers.length];
 const excerpt = entry.data.description || remarkPluginFrontmatter.excerpt;
-const words = Number(remarkPluginFrontmatter.words || 0);
-const readingMinutes = Math.max(1, Math.ceil(words / 300));
+const readingMinutes = Number(remarkPluginFrontmatter.minutes || 1);
 const publishedZh = new Intl.DateTimeFormat("zh-CN", {
 	year: "numeric",
 	month: "short",
