@@ -46,10 +46,18 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 const contributionStartDate = "2026-07-24";
 const contributionStart = new Date(`${contributionStartDate}T00:00:00+08:00`);
-const chartStart = new Date(`${contributionStartDate}T00:00:00`);
-chartStart.setDate(chartStart.getDate() - chartStart.getDay());
+const recordedChartStart = new Date(`${contributionStartDate}T00:00:00`);
+recordedChartStart.setDate(
+	recordedChartStart.getDate() - recordedChartStart.getDay(),
+);
 const chartEnd = new Date(today);
 chartEnd.setDate(chartEnd.getDate() + (6 - chartEnd.getDay()));
+const minimumChartStart = new Date(chartEnd);
+minimumChartStart.setDate(minimumChartStart.getDate() - 370);
+const chartStart =
+	recordedChartStart < minimumChartStart
+		? recordedChartStart
+		: minimumChartStart;
 const contributionCount = new Map<string, number>();
 const recordContribution = (date: string) => {
 	const key = new Date(date).toLocaleDateString("en-CA", {
@@ -486,14 +494,19 @@ if (
 	}
 
 	.activity-scroll {
+		--activity-cell-size: 9px;
+		--activity-cell-gap: 3px;
 		@apply overflow-x-auto pb-2;
 	}
 
 	.month-row,
 	.activity-grid {
 		display: grid;
-		grid-template-columns: repeat(var(--activity-weeks), 11px);
-		column-gap: 4px;
+		grid-template-columns: repeat(
+			var(--activity-weeks),
+			var(--activity-cell-size)
+		);
+		column-gap: var(--activity-cell-gap);
 		width: max-content;
 		min-width: 100%;
 	}
@@ -507,9 +520,15 @@ if (
 	}
 
 	.activity-grid {
-		grid-template-rows: repeat(7, 11px);
+		grid-template-rows: repeat(7, var(--activity-cell-size));
 		grid-auto-flow: column;
-		row-gap: 4px;
+		row-gap: var(--activity-cell-gap);
+	}
+
+	.activity-grid .activity-cell {
+		height: var(--activity-cell-size);
+		width: var(--activity-cell-size);
+		border-radius: 2px;
 	}
 
 	.activity-cell {
