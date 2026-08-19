@@ -148,7 +148,8 @@ const desktopShowSidebar =
 	!hideSidebar && widgetManager.shouldShowSidebar("desktop");
 
 // 检查是否为双侧边栏模式
-const isBothSidebarMode = sidebarLayoutConfig.position === "both";
+const isBothSidebarMode =
+	!hideSidebar && sidebarLayoutConfig.position === "both";
 
 // 检查右侧边栏是否有组件
 const hasRightSidebarComponents =

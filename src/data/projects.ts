@@ -34,6 +34,18 @@ export const projectsData: Project[] = [
 		featured: true,
 		tags: ["Extensions Documentation","Open Source"],
 	},
+	{
+		id: "nikonikoni-blog",
+		title: "nikonikoni_blog",
+		description: "基于 Astro 构建的个人博客，用于记录学习笔记、技术实践与日常生活。",
+		image: "",
+		category: "web",
+		techStack: ["Astro", "TypeScript", "Tailwind CSS", "Svelte"],
+		status: "in-progress",
+		sourceCode: "https://github.com/ldx-ckz/NiKoNiKoNi_blog",
+		startDate: "2025-11-22",
+		visitUrl: "https://miku.nikonikoni.blog",
+	},
 ];
 
 // Get project statistics
