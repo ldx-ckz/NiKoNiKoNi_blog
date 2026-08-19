@@ -121,7 +121,7 @@ const activityCells = Array.from({ length: 371 }, (_, index) => {
 		date,
 		count,
 		isFuture: date > today,
-		level: count === 0 ? 0 : Math.min(4, count),
+		level: count === 0 ? 0 : Math.min(4, Math.ceil(count / 10)),
 	};
 });
 const contributionTotal = activityCells.reduce(
