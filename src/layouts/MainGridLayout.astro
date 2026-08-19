@@ -10,6 +10,7 @@ import FullscreenWallpaper from "../components/misc/FullscreenWallpaper.astro";
 import IconifyLoader from "../components/misc/IconifyLoader.astro";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import TypewriterText from "../components/TypewriterText.astro";
+import UiText from "../components/UiText.astro";
 import TOC from "../components/widget/TOC.astro";
 import {
 	fullscreenWallpaperConfig,
@@ -119,6 +120,7 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 
 // 检查是否为首页
 const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+const isPostPage = Boolean(postSlug);
 const showHomeText = siteConfig.banner.homeText?.enable && isHomePage;
 // 计算主内容区域位置，考虑手机端非首页时banner被隐藏
 // 当默认模式为 banner 时，使用banner高度；否则使用顶栏高度
@@ -712,8 +714,8 @@ const transparentClass = shouldEnableTransparency
 <!-- Main content -->
 <div class={`absolute w-full z-30 pointer-events-none ${!isHomePage ? 'nonhome-main' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${isHomePage ? 'home-main-grid' : ''} ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
+    <div class={`relative max-w-[var(--page-width)] mx-auto pointer-events-auto ${isPostPage ? 'post-layout-shell' : ''}`}>
+        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${isHomePage ? 'home-main-grid' : ''} ${isPostPage ? 'post-main-grid' : ''} ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
              data-layout-mode={defaultPostListLayout}
         >
             <!-- Banner image credit -->
@@ -737,7 +739,7 @@ const transparentClass = shouldEnableTransparency
 
             <main
                 id="swup-container"
-                class={`${mainContentClass} transition-main`}
+                class={`${mainContentClass} transition-main ${isPostPage ? 'post-main-content' : ''}`}
                 data-ui-title-zh={pageTitle}
                 data-ui-title-en={pageTitleEn}
             >
@@ -750,6 +752,17 @@ const transparentClass = shouldEnableTransparency
                     </div>
                 </div>
             </main>
+
+            {isPostPage && siteConfig.toc.enable && (
+                <aside class="post-toc-column" aria-label="文章目录 / Table of Contents">
+                    <div class="post-toc-inner">
+                        <h2 class="post-toc-title">
+                            <UiText zh="目录" en="Table of Contents" />
+                        </h2>
+                        <TOC headings={headings}></TOC>
+                    </div>
+                </aside>
+            )}
 
             <div class="footer col-span-2 onload-animation block lg:hidden">
                 <Footer></Footer>
@@ -764,7 +777,7 @@ const transparentClass = shouldEnableTransparency
 <div class="absolute w-full z-0 hidden 2xl:block">
     <div class="relative max-w-[var(--page-width)] mx-auto">
         <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 w-[var(--toc-width)] items-center",
+        {!isPostPage && siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 w-[var(--toc-width)] items-center",
             "-right-[var(--toc-width)]",
             {"toc-hide": siteConfig.wallpaperMode.defaultMode === "banner"}]}
         >
@@ -1652,4 +1665,78 @@ body.enable-banner .absolute.w-full.z-30.nonhome-main {
 #banner-wrapper.home-banner,
 #main-grid.home-main-grid {
     transform: none !important;
+}
+
+/* 文章详情页桌面布局：正文严格居中并占视口一半，目录使用右侧剩余空间。 */
+.post-toc-column {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .post-layout-shell {
+        width: 100%;
+        max-width: none !important;
+    }
+
+    #main-grid.post-main-grid,
+    #main-grid.post-main-grid[data-layout-mode="grid"] {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 50vw) minmax(20rem, 1fr) !important;
+        grid-template-rows: auto !important;
+        gap: 0 !important;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    #main-grid.post-main-grid > #swup-container.post-main-content {
+        grid-column: 2 / 3 !important;
+        grid-row: 1 !important;
+        width: 50vw !important;
+        max-width: 50vw !important;
+        margin: 0 !important;
+    }
+
+    #main-grid.post-main-grid > #sidebar,
+    #main-grid.post-main-grid > .right-sidebar-container {
+        display: none !important;
+    }
+
+    .post-toc-column {
+        display: block;
+        grid-column: 3 / 4;
+        grid-row: 1;
+        min-width: 0;
+        padding: 0 clamp(1.5rem, 3vw, 4.5rem);
+    }
+
+    .post-toc-inner {
+        position: sticky;
+        top: 5.5rem;
+        width: 100%;
+        max-height: calc(100vh - 7rem);
+        overflow-y: auto;
+        padding: 1.25rem 0 2rem;
+    }
+
+    .post-toc-title {
+        margin: 0 0 0.75rem;
+        color: rgb(0 0 0 / 85%);
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    :global(.dark) .post-toc-title {
+        color: rgb(255 255 255 / 85%);
+    }
+
+    .post-toc-column :global(table-of-contents#toc a > div:last-child) {
+        min-width: 0;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+    }
+
+    #main-grid.post-main-grid > .footer {
+        grid-column: 2 / 3 !important;
+    }
 }

@@ -439,28 +439,46 @@ const jsonLd = {
 </MainGridLayout>
 
 <style>
-    :global(#post-cover.post-detail-cover) {
-        width: min(82%, 52rem);
-        height: auto !important;
-        aspect-ratio: 16 / 9;
-        margin-left: auto;
-        box-shadow:
-            -3rem 2rem 4.5rem -2.5rem rgb(73 52 52 / 42%),
-            0 0.75rem 1.5rem -0.75rem rgb(0 0 0 / 18%);
-    }
-
-    :global(.dark #post-cover.post-detail-cover) {
-        box-shadow:
-            -3rem 2rem 4.5rem -2.5rem rgb(0 0 0 / 70%),
-            0 0.75rem 1.5rem -0.75rem rgb(0 0 0 / 45%);
-    }
-
-    @media (max-width: 768px) {
+    @media (min-width: 1280px) {
         :global(#post-cover.post-detail-cover) {
-            width: 92%;
-            box-shadow:
-                -1.5rem 1.25rem 3rem -2rem rgb(73 52 52 / 38%),
-                0 0.5rem 1rem -0.75rem rgb(0 0 0 / 18%);
+            isolation: isolate;
+            width: 75%;
+            height: auto !important;
+            aspect-ratio: 16 / 9;
+            margin-right: auto;
+            margin-left: 0;
+            overflow: visible;
+            box-shadow: none;
+        }
+
+        :global(#post-cover.post-detail-cover::after) {
+            position: absolute;
+            z-index: 0;
+            top: 6%;
+            bottom: 6%;
+            left: 0;
+            width: 100%;
+            border-radius: inherit;
+            background: rgb(95 74 91 / 42%);
+            filter: blur(2.5rem);
+            transform: translateX(33.333%);
+            content: "";
+            pointer-events: none;
+        }
+
+        :global(.dark #post-cover.post-detail-cover::after) {
+            background: rgb(0 0 0 / 70%);
+        }
+
+        :global(#post-cover.post-detail-cover > div) {
+            z-index: 2;
+            border-radius: inherit;
+        }
+
+        :global(#post-cover.post-detail-cover > img) {
+            position: relative;
+            z-index: 1;
+            border-radius: inherit;
         }
     }
 </style>
