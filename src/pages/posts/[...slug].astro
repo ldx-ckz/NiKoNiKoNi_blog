@@ -147,10 +147,6 @@ const jsonLd = {
     headings={isPasswordRequired ? [] : headings}
 >
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../../scripts/right-sidebar-layout.js');
-  </script>
     <div
         class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
     >
