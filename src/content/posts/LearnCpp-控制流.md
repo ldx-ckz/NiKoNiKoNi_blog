@@ -1,7 +1,7 @@
 ---
 title: LearnCpp 控制流
 image: /assets/post-card/post-card-34-v20260819.jpg
-cardImagePosition: center 25%
+cardImagePosition: center 20%
 published: 2026-08-19
 updated: 2026-08-19
 description: LearnCpp 控制流笔记，介绍条件语句、switch、goto、while、do-while、for、break、continue 与提前返回。
