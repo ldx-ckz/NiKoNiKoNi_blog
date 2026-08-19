@@ -45,7 +45,7 @@ const { section, totalPosts, page } = Astro.props;
 const pageOffset = (page.currentPage - 1) * PAGE_SIZE;
 ---
 
-<MainGridLayout title={section.zh} titleEn={section.en} hideSidebar>
+<MainGridLayout title={section.zh} titleEn={section.en} hideSidebar standardContentWidth>
 	<header class="section-hero onload-animation">
 		<h1><UiText zh={section.zh} en={section.en} /></h1>
 		<span class="post-count">

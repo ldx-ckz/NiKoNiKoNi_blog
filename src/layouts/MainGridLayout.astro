@@ -36,6 +36,7 @@ interface Props {
 	postSlug?: string;
 	headings?: MarkdownHeading[];
 	hideSidebar?: boolean;
+	standardContentWidth?: boolean;
 }
 
 // 类型守卫函数
@@ -106,6 +107,7 @@ const {
 	postSlug,
 	headings = [],
 	hideSidebar = false,
+	standardContentWidth = false,
 } = Astro.props;
 const pageTitle = title
 	? `${title} - ${siteConfig.title}`
@@ -716,7 +718,7 @@ const transparentClass = shouldEnableTransparency
 <div id="swup-page-layout" class={`absolute w-full z-30 pointer-events-none ${!isHomePage ? 'nonhome-main' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class={`relative max-w-[var(--page-width)] mx-auto pointer-events-auto ${isPostPage ? 'post-layout-shell' : ''}`}>
-        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${isHomePage ? 'home-main-grid' : ''} ${isPostPage ? 'post-main-grid' : ''} ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
+        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${standardContentWidth ? 'max-w-5xl' : ''} ${isHomePage ? 'home-main-grid' : ''} ${isPostPage ? 'post-main-grid' : ''} ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
              data-layout-mode={defaultPostListLayout}
         >
             <!-- Banner image credit -->

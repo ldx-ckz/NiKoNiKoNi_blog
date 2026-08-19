@@ -19,7 +19,7 @@ const len = page.data.length;
 const isHome = page.currentPage === 1;
 ---
 
-<MainGridLayout hideSidebar={isHome}>
+<MainGridLayout hideSidebar={isHome} standardContentWidth={isHome}>
     {isHome ? (
         <HomeDashboard />
     ) : (
