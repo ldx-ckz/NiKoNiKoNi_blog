@@ -5,8 +5,615 @@
   <link href="https://miku.nikonikoni.blog/" rel="alternate" type="text/html"/>
   <link href="https://miku.nikonikoni.blog/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://miku.nikonikoni.blog/</id>
-  <updated>2026-08-20T11:02:36.768Z</updated>
+  <updated>2026-08-20T15:48:03.524Z</updated>
   <language>zh_CN</language>
+  <entry>
+    <title>LearnCpp 枚举和结构体</title>
+    <link href="https://miku.nikonikoni.blog/posts/learncpp-%E6%9E%9A%E4%B8%BE%E5%92%8C%E7%BB%93%E6%9E%84%E4%BD%93/" rel="alternate" type="text/html"/>
+    <id>https://miku.nikonikoni.blog/posts/learncpp-%E6%9E%9A%E4%B8%BE%E5%92%8C%E7%BB%93%E6%9E%84%E4%BD%93/</id>
+    <published>2026-08-20T00:00:00.000Z</published>
+    <updated>2026-08-20T00:00:00.000Z</updated>
+    <summary>LearnCpp 枚举和结构体笔记，系统介绍程序定义类型、枚举、结构体、I/O 运算符重载与类模板。</summary>
+    <content type="html"><![CDATA[<h1>LearnCpp 枚举和结构体</h1>
+<h2>13.1 程序定义类型简介</h2>
+<p>基本类型由 C++ 核心语言定义，<code>int</code>、<code>double</code> 等类型可以直接使用。函数、指针、引用和数组等简单扩展自基本类型的复合类型同样如此：语言已经知道这些类型名称和声明符号的含义，不需要程序另行提供类型定义。</p>
+<p>类型别名则会引入新的标识符，因此必须先定义后使用：</p>
+<pre><code>using Length = int;
+
+Length x { 5 };
+</code></pre>
+<p><code>using Length = int;</code> 不创建对象，只告诉编译器 <code>Length</code> 代表什么类型。</p>
+<h3>程序定义类型</h3>
+<p>C++ 允许程序定义核心语言没有预先提供的新类型。能够创建程序定义类型的复合类型分为两类：</p>
+<ul>
+<li>枚举类型，包括无作用域枚举和作用域枚举；</li>
+<li>类类型，包括结构体、类和联合体。</li>
+</ul>
+<p>程序定义类型必须先有名称和完整的类型定义，之后才能使用。其他复合类型本身不一定需要程序提供名称或定义。函数虽然也需要名称和定义，但被命名、定义的是函数本身，而不是函数类型，因此程序编写的函数称为“用户定义函数”，不属于“用户定义类型”。</p>
+<pre><code>struct Fraction
+{
+    int numerator {};
+    int denominator {};
+};
+
+int main()
+{
+    Fraction f { 3, 4 };
+}
+</code></pre>
+<p><code>struct Fraction { ... };</code> 只描述 <code>Fraction</code> 类型的结构，不分配对象内存；<code>Fraction f { 3, 4 };</code> 才实例化并初始化对象。程序定义类型的定义必须以分号结束。漏写分号时，编译器可能在定义之后的代码行报错，使错误位置不直观。</p>
+<h3>命名和多文件定义</h3>
+<p>程序定义类型按惯例以大写字母开头，并且不附加 <code>_t</code> 等后缀，例如使用 <code>Fraction</code>，而不是 <code>fraction</code>、<code>fraction_t</code> 或 <code>Fraction_t</code>。<code>Fraction fraction {};</code> 中的前一个名称是类型，后一个名称是变量；C++ 区分大小写，因此二者不冲突。</p>
+<p>每个使用程序定义类型的翻译单元都必须在使用前看到完整定义。只有前向声明通常不足以定义该类型的对象，因为编译器需要完整布局来确定对象占用多少内存。</p>
+<ul>
+<li>只在一个源文件使用的类型，应定义在该文件中，并尽量靠近首次使用处。</li>
+<li>在多个源文件使用的类型，通常定义在与类型同名的头文件中，再由需要它的源文件 <code>#include</code>。例如 <code>Fraction</code> 通常定义在 <code>Fraction.h</code>。</li>
+<li>头文件应使用头文件保护，避免同一翻译单元内出现重复定义。</li>
+</ul>
+<p>类型定义部分豁免于单一定义规则：同一类型可以在多个翻译单元中定义，因此完整类型定义可以放在头文件中。但这种豁免有两个限制：同一翻译单元中仍然只能出现一个该类型定义；程序中该类型的每份定义必须完全相同，否则行为未定义。</p>
+<h3>相关术语</h3>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基本类型</td>
+<td>C++ 核心语言直接提供的基础类型</td>
+<td><code>int</code>、<code>std::nullptr_t</code></td>
+</tr>
+<tr>
+<td>复合类型</td>
+<td>根据其他类型构成的类型</td>
+<td><code>int&amp;</code>、<code>double*</code>、<code>std::string</code>、<code>Fraction</code></td>
+</tr>
+<tr>
+<td>用户定义类型</td>
+<td>标准术语中的任意类类型或枚举类型，包括标准库和实现定义的类型</td>
+<td><code>std::string</code>、<code>Fraction</code></td>
+</tr>
+<tr>
+<td>程序定义类型</td>
+<td>排除核心语言、标准库和实现所提供的类型，由程序或第三方代码定义的类类型或枚举类型</td>
+<td><code>Fraction</code></td>
+</tr>
+</tbody>
+</table>
+<p>“用户定义类型”在日常交流中经常被用来表示程序自己定义的类型，但 C++ 标准中的范围更宽，连标准库定义的 <code>std::string</code> 也属于用户定义类型。C++20 的“程序定义类型”术语能更精确地表示程序或第三方库定义的类类型和枚举类型。</p>
+<h2>13.2 无作用域枚举</h2>
+<p>用普通整数表示一组有限状态会产生魔数，例如约定 <code>0</code> 表示红色、<code>1</code> 表示绿色。改用符号常量虽然改善可读性，但变量与常量集合之间的关系仍然只存在于程序员的理解中。类型别名也不提供新的类型约束：</p>
+<pre><code>using Color = int;
+
+constexpr Color red { 0 };
+constexpr Color green { 1 };
+constexpr Color blue { 2 };
+
+Color eyeColor { 8 }; // 语法有效，但没有约定的语义
+</code></pre>
+<p>调试这类对象时通常只能看到整数，而不是对应的符号含义。</p>
+<h3>枚举与枚举项</h3>
+<p>枚举是一种复合数据类型，其值限制为一组命名的符号常量，这些常量称为枚举项。C++ 支持无作用域枚举和作用域枚举。枚举属于程序定义类型，必须在使用前完整定义。</p>
+<p>无作用域枚举使用 <code>enum</code> 定义：</p>
+<pre><code>enum Color
+{
+    red,
+    green,
+    blue,
+};
+</code></pre>
+<ul>
+<li><code>Color</code> 是枚举类型；<code>red</code>、<code>green</code> 和 <code>blue</code> 是属于该类型的枚举项。</li>
+<li>枚举项之间用逗号而不是分号分隔。最后一个枚举项之后的尾随逗号可选，但建议保留。</li>
+<li>整个枚举定义以分号结束。</li>
+<li>枚举项是隐式 <code>constexpr</code> 常量，也就是语言规则中的隐式 constexpr 常量。</li>
+<li>正常初始化枚举对象时，初始化器必须是属于该枚举的枚举项；不存在的枚举项或普通整数不能直接使用。</li>
+</ul>
+<p>枚举类型名按程序定义类型惯例以大写字母开头。枚举可以没有类型名，但现代 C++ 应避免匿名枚举。枚举项没有统一命名标准；较稳妥的约定是小写字母开头。全大写名称通常留给预处理器宏，容易发生冲突；大写字母开头的名称通常留给程序定义类型。</p>
+<h3>枚举是独立类型</h3>
+<p>每个枚举都是独立类型，编译器可以区分不同枚举；这与不创建独立类型的 <code>typedef</code> 或类型别名不同。一个枚举中的枚举项不能用于初始化另一个枚举类型的对象：</p>
+<pre><code>enum Pet { cat, dog, pig, whale };
+enum Color { black, red, blue };
+
+Pet pet { black }; // 错误：black 不属于 Pet
+</code></pre>
+<p>枚举适合表示规模较小、彼此相关，并且对象在任一时刻只保存其中一个值的常量集合。典型用途包括星期、方向、扑克牌花色、函数状态码或错误码、游戏中的物品或地形、函数的选项参数，以及 <code>std::bitset</code> 中一组相关位标志的位置。枚举通常很小且复制成本低，按值传递和返回是合适的。布尔值在概念上类似只有两个值的枚举，但 C++ 的 <code>true</code> 和 <code>false</code> 是关键字，不是枚举项。</p>
+<h3>无作用域枚举的作用域</h3>
+<p>无作用域枚举会把枚举项放入枚举定义所在的作用域。全局定义的枚举会把枚举项放进全局命名空间，增加名称冲突的可能；同一作用域中的两个枚举不能声明同名枚举项。</p>
+<p>无作用域枚举同时也为枚举项提供以枚举类型名命名的作用域，因此下面两种形式都有效：</p>
+<pre><code>Color apple { red };
+Color raspberry { Color::red };
+</code></pre>
+<p>无作用域枚举项通常不加限定名。减少名称冲突的方法包括：</p>
+<ul>
+<li>为枚举项添加类型名前缀，例如 <code>color_red</code>；这种方式仍会污染外层作用域，只是降低碰撞概率。</li>
+<li>把枚举放入命名空间；访问时使用命名空间限定名。</li>
+<li>与类紧密相关时，把枚举定义在类的作用域中。</li>
+<li>使用作用域枚举。</li>
+<li>仅在单个函数中使用时，把枚举定义在函数体内；局部枚举项只在函数内可见，并会遮蔽同名全局枚举项。</li>
+</ul>
+<p>无作用域枚举最好位于命名空间、类或函数等命名作用域中，避免枚举项污染全局命名空间。枚举对象可以用 <code>==</code> 和 <code>!=</code> 与属于同一枚举的枚举项比较。</p>
+<h2>13.3 无作用域枚举项与整数转换</h2>
+<p>每个枚举项都关联一个整数值。默认情况下，第一个枚举项的值是 <code>0</code>，之后每个枚举项比前一个大 <code>1</code>。</p>
+<pre><code>enum Color
+{
+    black, // 0
+    red,   // 1
+    blue,  // 2
+};
+</code></pre>
+<p>枚举值可以显式指定为正数或负数；没有显式值的枚举项仍取前一个值加 <code>1</code>。多个枚举项可以拥有相同值，但此时这些枚举项不再能通过存储值区分，使用上基本可以互换。语言允许重复值，通常应避免。显式枚举值必须是整数常量表达式，可以引用先前的枚举项，不能使用浮点值或非常量值。默认编号通常已经合适，不应无理由手工指定值。</p>
+<pre><code>enum Animal
+{
+    cat = -3,
+    dog,         // -2
+    pig,         // -1
+    horse = 5,
+    giraffe = 5, // 与 horse 相同
+    chicken,     // 6
+};
+</code></pre>
+<h3>值初始化</h3>
+<p>枚举进行零初始化时，存储值一定是 <code>0</code>，即使没有任何枚举项代表 <code>0</code>。因此：</p>
+<ul>
+<li>若存在值为 <code>0</code> 的枚举项，它应表示最合理的默认状态。</li>
+<li>若没有合理的默认状态，应增加 <code>unknown</code> 或 <code>invalid</code> 等值为 <code>0</code> 的枚举项，使这种状态有明确名称并能被显式处理。</li>
+<li>若既没有值为 <code>0</code> 的枚举项，也没有无效状态枚举项，值初始化会产生语义上无效、但底层值仍为 <code>0</code> 的枚举对象。</li>
+</ul>
+<h3>枚举到整数</h3>
+<p>枚举保存整数值，但枚举本身不是整数类型，而是复合类型。无作用域枚举可以隐式转换为整数；枚举项是编译期常量，因此该转换可以出现在常量表达式中。</p>
+<p>当枚举参与函数调用或运算符表达式时，编译器先寻找直接接受枚举类型的重载；若没有匹配，再考虑无作用域枚举到整数的转换。例如没有 <code>Color</code> 专用输出重载时，<code>std::cout &lt;&lt; color</code> 会使用整数输出重载并打印底层值。</p>
+<h3>底层类型和大小</h3>
+<p>保存枚举项值的整数类型称为枚举的底层类型或基类型。无作用域枚举未显式指定底层类型时，具体选择由实现决定。多数实现会在所有枚举值都能容纳时选择 <code>int</code>，需要时选择更大的整数类型；代码不应假定所有平台都使用 <code>int</code>。</p>
+<p>底层类型可以显式指定，而且必须是整数类型：</p>
+<pre><code>#include &lt;cstdint&gt;
+
+enum Color : std::int8_t
+{
+    black,
+    red,
+    blue,
+};
+</code></pre>
+<p>显式指定较小底层类型可用于网络传输等对存储或带宽敏感的场景，但只应在确有必要时使用。<code>std::int8_t</code> 和 <code>std::uint8_t</code> 通常是字符类型的别名；以它们为底层类型后，流输出底层值时很可能按字符而不是数字处理。</p>
+<h3>整数到无作用域枚举</h3>
+<p>整数不会隐式转换为无作用域枚举。可以使用 <code>static_cast&lt;Enum&gt;(value)</code> 显式转换，但应先验证外部输入：</p>
+<ul>
+<li>转换为枚举中实际存在的枚举值是安全的。</li>
+<li>整数只要位于目标枚举允许的范围内，即使没有对应的命名枚举项，转换本身仍安全，但会产生没有符号名称的状态。</li>
+<li>超出枚举允许范围的转换会产生未定义行为。</li>
+</ul>
+<p>显式指定底层类型时，枚举允许范围等于底层类型的完整范围。未显式指定底层类型时，安全范围由能够容纳全部枚举项值的最小位数决定。例如，枚举值为 <code>2</code>、<code>9</code>、<code>12</code> 时，最少需要无符号 4 位，安全范围为 <code>0</code> 到 <code>15</code>；枚举值为 <code>-28</code>、<code>2</code>、<code>6</code> 时，最少需要有符号 6 位，安全范围为 <code>-32</code> 到 <code>31</code>。</p>
+<p>C++17 起，显式指定底层类型的无作用域枚举可用整数进行花括号列表初始化：</p>
+<pre><code>enum Pet : int { cat, dog, pig, whale };
+
+Pet pet1 { 2 }; // C++17：有效
+Pet pet2(2);    // 错误：圆括号直接初始化未放宽
+Pet pet3 = 2;   // 错误：复制初始化未放宽
+
+pet1 = 3;       // 错误：整数赋值未放宽
+</code></pre>
+<h2>13.4 枚举与字符串之间的转换</h2>
+<p>C++ 没有自动把枚举项名称转换成字符串的内建机制。无作用域枚举直接送入普通输出流时，通常只会打印底层整数。</p>
+<h3>从枚举取得名称</h3>
+<p>常见实现是编写一个 <code>constexpr</code> 函数，用 <code>switch</code> 把每个枚举项映射到字符串：</p>
+<pre><code>#include &lt;string_view&gt;
+
+enum Color { black, red, blue };
+
+constexpr std::string_view getColorName(Color color)
+{
+    switch (color)
+    {
+    case black: return "black";
+    case red:   return "red";
+    case blue:  return "blue";
+    default:    return "???";
+    }
+}
+</code></pre>
+<p><code>default</code> 处理意外值或没有命名枚举项对应的值。返回查看字符串字面量的 <code>std::string_view</code> 是安全的，因为字符串字面量具有静态存储期，在整个程序运行期间存在。函数声明为 <code>constexpr</code> 后，返回的名称也可以用于常量表达式。另一种常见映射方式是使用数组。</p>
+<h3>数字输入</h3>
+<p>输入流不知道如何直接读入程序定义的枚举类型。数值输入可以先读入 <code>int</code>，检查它是否位于允许的语义范围内，再执行 <code>static_cast&lt;Enum&gt;(input)</code>。校验必须发生在转换之前。</p>
+<h3>从字符串取得枚举</h3>
+<p><code>switch</code> 不能作用于字符串，简单的字符串解析可以使用一系列 <code>if</code> 比较。无效输入可以用额外的 <code>invalid</code> 枚举项表达，但返回 <code>std::optional&lt;Enum&gt;</code> 能更直接地表示“没有匹配值”：</p>
+<pre><code>#include &lt;optional&gt;
+#include &lt;string_view&gt;
+
+enum Pet { cat, dog, pig, whale };
+
+constexpr std::optional&lt;Pet&gt; getPetFromString(std::string_view sv)
+{
+    if (sv == "cat")   return cat;
+    if (sv == "dog")   return dog;
+    if (sv == "pig")   return pig;
+    if (sv == "whale") return whale;
+
+    return {};
+}
+</code></pre>
+<p>这个实现只匹配小写输入。ASCII 式的大小写无关匹配可以先用 <code>std::transform</code> 和 <code>std::tolower</code> 逐字符转换。传给 <code>std::tolower</code> 的 <code>char</code> 应先转换为 <code>unsigned char</code>，结果再转换回 <code>char</code>，以满足函数的有效输入范围。这种简单函数只支持 1:1 字符映射，不能处理所有语言环境中的复杂大小写变换。</p>
+<h2>13.5 I/O 运算符重载简介</h2>
+<p>每次输出枚举都显式调用 <code>getColorName(color)</code> 会要求调用者记住辅助函数名称，也会增加表达式噪声。运算符重载允许为现有运算符定义适用于程序定义类型的新重载。</p>
+<p>基本规则如下：</p>
+<ul>
+<li>函数名由 <code>operator</code> 和运算符符号组成。</li>
+<li>按从左到右的操作数顺序声明参数。</li>
+<li>至少一个参数必须是用户定义类型，即类类型或枚举类型。</li>
+<li>返回类型应符合运算的语义，并返回运算结果。</li>
+</ul>
+<p>编译器遇到 <code>x + y</code> 时，会使用重载决议寻找可调用的 <code>operator+(x, y)</code>。运算符也可以重载为最左操作数类型的成员函数。</p>
+<h3>重载输出运算符</h3>
+<p><code>std::cout &lt;&lt; 5</code> 本质上会调用接受 <code>std::ostream</code> 和 <code>int</code> 的 <code>operator&lt;&lt;</code> 重载。输出运算符按惯例返回左操作数，使连续输出能够链式执行。</p>
+<pre><code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Color color)
+{
+    out &lt;&lt; getColorName(color);
+    return out;
+}
+</code></pre>
+<p><code>std::ostream</code> 以非常量引用传入，因为流对象不能复制，输出也会修改流状态。枚举对象很小，可以按值传递。实现必须写入参数 <code>out</code>，不能固定写入 <code>std::cout</code>；这样同一重载才能用于 <code>std::cout</code>、<code>std::cerr</code> 或其他输出流。返回 <code>out</code> 后，<code>std::cout &lt;&lt; color &lt;&lt; '\n'</code> 可以继续链式输出。</p>
+<h3>重载输入运算符</h3>
+<pre><code>std::istream&amp; operator&gt;&gt;(std::istream&amp; in, Pet&amp; pet)
+{
+    std::string input {};
+    in &gt;&gt; input;
+
+    if (auto match { getPetFromString(input) })
+        pet = *match;
+    else
+        in.setstate(std::ios_base::failbit);
+
+    return in;
+}
+</code></pre>
+<p>输入流参数和返回值使用 <code>std::istream&amp;</code>。右操作数 <code>pet</code> 是非常量引用，因为它是输出参数，解析成功后需要修改调用者的对象；若按值传递，只会修改副本。</p>
+<p>实现可以先利用已有重载读取 <code>std::string</code>，再映射成枚举。匹配失败时应设置 <code>std::ios_base::failbit</code>，让失败反映到输入流状态。标准提取失败时会将基本类型零初始化；自定义枚举输入是否也执行 <code>pet = {};</code> 是接口设计选择。</p>
+<p>调用者可以测试输入流是否有效。失败后可调用 <code>clear()</code> 恢复流状态，再用 <code>ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n')</code> 丢弃错误输入的剩余部分。基于数组的统一映射可以减少输入、输出转换之间的重复，并降低新增枚举项后漏改映射代码的风险。</p>
+<h2>13.6 作用域枚举（枚举类）</h2>
+<p>无作用域枚举虽然是独立类型，但不是完全类型安全的。两个不同枚举都可以隐式转换成整数，因此比较不同枚举对象时，编译器可能把二者转成整数并得出语义上无意义的相等结果。无作用域枚举还会把枚举项注入外层作用域。</p>
+<p>作用域枚举使用 <code>enum class</code> 定义：</p>
+<pre><code>enum class Color
+{
+    red,
+    blue,
+};
+
+Color shirt { Color::red };
+</code></pre>
+<p>作用域枚举有两个核心区别：</p>
+<ul>
+<li>不隐式转换为整数；</li>
+<li>枚举项只存在于枚举自身的作用域中，必须用 <code>Color::red</code> 等限定名访问。</li>
+</ul>
+<p>不同作用域枚举类型之间不能直接比较，同一作用域枚举的值仍可正常使用 <code>==</code> 等运算符比较。作用域枚举已经提供自己的命名作用域，通常无需再包入额外命名空间。</p>
+<p><code>enum class</code> 中的 <code>class</code> 不代表这种枚举属于类类型；类类型仍专指结构体、类和联合体。<code>enum struct</code> 与 <code>enum class</code> 的行为相同，但不是惯用写法，应避免使用。</p>
+<h3>显式转换</h3>
+<p>需要底层整数时，可以使用 <code>static_cast&lt;int&gt;(value)</code>。C++23 起，<code>&lt;utility&gt;</code> 中的 <code>std::to_underlying(value)</code> 会返回枚举底层类型的值，比固定转换到 <code>int</code> 更准确。整数也可以用 <code>static_cast&lt;Enum&gt;(integer)</code> 显式转换成作用域枚举，但外部输入仍应先验证语义范围。</p>
+<p>C++17 起，作用域枚举可以直接用整数进行花括号列表初始化，而且不要求显式指定底层类型：</p>
+<pre><code>enum class Pet { cat, dog, pig, whale };
+
+Pet pet { 1 }; // C++17
+</code></pre>
+<p>作用域枚举通常优于无作用域枚举。确实需要频繁隐式转换为 <code>int</code>，并且不需要额外命名作用域时，无作用域枚举仍可能更方便。</p>
+<h3>简化到底层类型的转换</h3>
+<p>需要频繁、但仍希望保持显式转换时，可以重载一元 <code>operator+</code>：</p>
+<pre><code>#include &lt;type_traits&gt;
+
+template &lt;typename T&gt;
+constexpr auto operator+(T value) noexcept
+{
+    return static_cast&lt;std::underlying_type_t&lt;T&gt;&gt;(value);
+}
+</code></pre>
+<p>此后 <code>+Color::red</code> 会得到底层整数值。该做法保留“默认不隐式转换”的保护，同时提供简洁的显式请求。C++23 的实现可以改用 <code>std::to_underlying()</code>。</p>
+<p>C++20 的 <code>using enum EnumType;</code> 会把指定枚举的全部枚举项引入当前作用域。它特别适合局部 <code>switch</code>：可以省略重复的 <code>Color::</code> 前缀，同时把名称缩短的影响限制在局部作用域。</p>
+<h2>13.7 结构体、成员与成员选择</h2>
+<p>用许多独立变量描述一个对象会隐藏变量之间的关系；函数需要庞大且顺序敏感的参数列表；新增属性时要修改大量声明、定义和调用；表示多个同类对象时，变量数量和命名还会迅速膨胀。结构体把多个相关变量组合成一个程序定义类型。</p>
+<p>结构体属于类类型，适用于类类型的一般规则也适用于结构体。</p>
+<pre><code>struct Employee
+{
+    int id {};
+    int age {};
+    double wage {};
+};
+</code></pre>
+<p>结构体内声明的变量称为数据成员或成员变量。更一般地，C++ 中的“成员”是属于结构体或类，并在其定义内部声明的变量、函数或类型。成员声明后的 <code>{}</code> 是默认成员初始化器，使成员在适用时进行值初始化。</p>
+<p>类型定义以分号结束，而且本身不创建对象。<code>Employee joe {};</code> 才实例化一个 <code>Employee</code> 对象；空花括号使对象值初始化。同一结构体类型可以创建多个独立对象，它们共享相同的成员名称。</p>
+<p>对象使用成员选择运算符 <code>.</code> 访问成员：</p>
+<pre><code>Employee joe {};
+
+joe.age = 32;
+joe.wage = 60000.0;
+++joe.age;
+</code></pre>
+<p>成员变量与普通变量一样，可以赋值、参与算术和比较或执行自增等操作。结构体只需为每个对象创建一个外部名称，成员名由类型统一提供，因此多个同类对象的代码更一致，也更容易看出数据归属。</p>
+<h2>13.8 结构体的聚合初始化</h2>
+<p>数据成员与普通局部变量类似，没有初始化器时默认不会自动初始化。如果结构体对象本身也没有初始化器，未初始化成员会持有不确定值；读取它们会产生未定义行为。</p>
+<h3>聚合类型</h3>
+<p>一般编程语境中的聚合是能够包含多个数据成员的类型。C++ 标准的定义更严格。简化而言，C++ 聚合是 C 风格数组，或者满足以下条件的类类型：</p>
+<ul>
+<li>没有用户声明的构造函数；</li>
+<li>没有私有或受保护的非静态数据成员；</li>
+<li>没有虚函数。</li>
+</ul>
+<p><code>std::array</code> 也是聚合。只包含数据成员的普通结构体通常是聚合。</p>
+<h3>聚合初始化规则</h3>
+<p>聚合初始化通过花括号内的逗号分隔列表直接初始化成员：</p>
+<pre><code>struct Employee
+{
+    int id {};
+    int age {};
+    double wage {};
+};
+
+Employee frank = { 1, 32, 60000.0 }; // 复制列表初始化
+Employee joe { 2, 28, 45000.0 };     // 列表初始化，优先
+</code></pre>
+<p>初始化严格按成员声明顺序逐成员进行。初始化聚合时应优先使用非复制的花括号列表形式。</p>
+<p>C++20 允许某些聚合用圆括号列表直接初始化，但应尽量避免，因为这种形式不能正确覆盖依赖花括号省略的聚合，典型例子是 <code>std::array</code>。</p>
+<p>初始化器少于成员数时，缺失成员按以下规则处理：</p>
+<ol>
+<li>成员有默认成员初始化器时，使用该初始化器。</li>
+<li>否则从空初始化器列表进行复制初始化，通常会值初始化该成员；若成员是类类型，可能调用默认构造函数，即使该类型还有列表构造函数。</li>
+</ol>
+<p>因此 <code>Employee joe {};</code> 通常可以值初始化全部没有显式值的成员。</p>
+<h3>输出和常量结构体</h3>
+<p>结构体可以重载 <code>operator&lt;&lt;</code>。结构体可能包含多个值，通常以 <code>const Struct&amp;</code> 传入以避免复制。输出格式由程序决定，包含字段名称的描述性格式往往比连续输出裸值更清楚。</p>
+<p>结构体对象可以声明为 <code>const</code> 或 <code>constexpr</code>；与其他常量对象一样，它们必须初始化。</p>
+<h3>指定初始化器（C++20）</h3>
+<p>位置初始化依赖成员声明顺序。在已有结构体定义中间插入成员，可能使原有初始化值整体错位，而语法仍然有效。C++20 的指定初始化器显式说明值对应哪个成员：</p>
+<pre><code>struct Foo
+{
+    int a {};
+    int b {};
+    int c {};
+};
+
+Foo f1 { .a{ 1 }, .c{ 3 } };
+Foo f2 { .a = 1, .c = 3 };
+Foo f3 { .b{ 2 }, .a{ 1 } }; // 错误：顺序不符合声明顺序
+</code></pre>
+<p>指定成员必须按照结构体中的声明顺序出现，否则会产生警告或错误；未指定成员仍按缺失初始化器规则初始化。Clang 可能对使用花括号指定单个标量值错误地报告 <code>braces around scalar initializer</code>，这是实现问题。</p>
+<p>指定初始化器增强自说明性，但也明显增加语法噪声，不能保证项目中所有初始化都一致采用这种形式。向已有聚合增加成员时，把新成员追加到定义末尾最安全，可以降低旧位置初始化器发生偏移的风险。</p>
+<h3>使用初始化器列表赋值</h3>
+<p>结构体可以用初始化器列表整体赋值，执行逐成员赋值：</p>
+<pre><code>Employee joe { 1, 32, 60000.0 };
+joe = { joe.id, 33, 66000.0 };
+</code></pre>
+<p>希望保留的前置成员仍需提供当前值作为占位。C++20 的指定初始化器也能用于列表赋值，但未指定成员不会自动保留旧值，而会被赋予聚合初始化时应得到的默认值或值初始化值。</p>
+<p>同类型结构体之间可以使用普通的复制初始化、直接初始化或直接列表初始化：</p>
+<pre><code>Foo foo { 1, 2, 3 };
+Foo x = foo;
+Foo y(foo);
+Foo z { foo };
+</code></pre>
+<p>这里是用同类型对象初始化新对象，不是把 <code>foo</code> 当成第一个成员的聚合位置初始化。这种形式常用于用返回同类型结构体的函数结果初始化对象。</p>
+<h2>13.9 默认成员初始化</h2>
+<p>结构体或类定义可以为非静态成员提供默认初始化值，这个值称为默认成员初始化器：</p>
+<pre><code>struct Something
+{
+    int x;       // 没有默认初始化器
+    int y {};    // 默认值初始化为 0
+    int z { 2 }; // 默认初始化为 2
+};
+</code></pre>
+<p>默认成员初始化器使对象即使没有对象级显式初始化器也能自初始化。类模板实参推导（CTAD）不能用于非静态成员初始化。</p>
+<p>显式初始化值始终优先于默认成员初始化器。完整规则取决于对象是否提供初始化器列表：</p>
+<table>
+<thead>
+<tr>
+<th>对象定义方式</th>
+<th>成员情况</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>有初始化器列表</td>
+<td>有对应的显式值</td>
+<td>使用显式值</td>
+</tr>
+<tr>
+<td>有初始化器列表</td>
+<td>缺少显式值，但有默认成员初始化器</td>
+<td>使用默认值</td>
+</tr>
+<tr>
+<td>有初始化器列表</td>
+<td>缺少显式值，也没有默认成员初始化器</td>
+<td>值初始化</td>
+</tr>
+<tr>
+<td>完全没有初始化器列表</td>
+<td>有默认成员初始化器</td>
+<td>使用默认值</td>
+</tr>
+<tr>
+<td>完全没有初始化器列表</td>
+<td>没有默认成员初始化器</td>
+<td>保持未初始化</td>
+</tr>
+</tbody>
+</table>
+<p>成员始终按照声明顺序初始化。应为每个成员提供默认值，可以使用 <code>{}</code> 或合理的明确值。例如分数的分子可默认为 <code>0</code>，分母默认为 <code>1</code>，使默认对象具有有效语义。</p>
+<p>当所有成员都有默认初始化器时，<code>Fraction f;</code> 和 <code>Fraction f {};</code> 可能得到相同结果，但空花括号更安全：若遗漏某个成员的默认初始化器，该成员仍会被值初始化；这种写法也与其他类型的初始化保持一致。因此聚合对象应优先使用空花括号值初始化，而不是无花括号默认初始化。</p>
+<p>类类型代码中仍常见无花括号默认初始化，一部分是历史原因，另一部分是某些非聚合类的默认初始化可能比值初始化更高效；这种差异与构造函数行为有关，不改变聚合的上述安全建议。</p>
+<h2>13.10 结构体的传递与返回</h2>
+<p>把相关数据组织为结构体后，函数只需接收一个对象，而不必维护庞大且顺序敏感的参数列表。以后增加结构体成员时，接收整个结构体的函数声明和调用通常不需要修改。</p>
+<h3>传递结构体</h3>
+<p>结构体通常按引用传递，一般使用常量左值引用来避免复制：</p>
+<pre><code>void printEmployee(const Employee&amp; employee)
+{
+    std::cout &lt;&lt; employee.id &lt;&lt; ' '
+              &lt;&lt; employee.age &lt;&lt; ' '
+              &lt;&lt; employee.wage &lt;&lt; '\n';
+}
+</code></pre>
+<p>对象足够小且复制便宜时也可以按值传递；需要修改调用者对象时则使用适合修改语义的引用。</p>
+<p>只使用一次的对象可以直接构造为临时对象：</p>
+<pre><code>printEmployee(Employee { 14, 32, 24.15 }); // 显式写出类型，优先
+printEmployee({ 15, 28, 18.27 });          // 从形参推断目标类型
+</code></pre>
+<p>省略类型名的第二种形式属于隐式转换，在只允许显式转换的上下文中不可用。显式写出类型能更清楚地表达要创建哪种临时对象，也不易被误解。</p>
+<p>临时对象在表达式中的创建点构造和初始化，在所属完整表达式结束时销毁；对临时对象求值会产生右值。作为函数实参时，它可以绑定到按值或常量引用形参，不能绑定到非常量左值引用，也不能作为要求命名对象地址的地址参数。</p>
+<h3>返回结构体</h3>
+<p>函数可以把多个相关结果放入一个结构体并作为单一返回值返回。函数内部创建的结构体对象通常按值返回，避免把指向局部对象的悬空引用交给调用者。</p>
+<pre><code>struct Point3d
+{
+    double x { 0.0 };
+    double y { 0.0 };
+    double z { 0.0 };
+};
+
+Point3d getZeroPoint()
+{
+    return Point3d { 0.0, 0.0, 0.0 };
+}
+</code></pre>
+<p>没有必要只为返回值创建一个没有说明价值的局部变量，可以直接返回临时对象。函数已经声明明确返回类型时，还可以省略返回表达式中的类型名：</p>
+<pre><code>Point3d getZeroPoint()
+{
+    return { 0.0, 0.0, 0.0 }; // 到 Point3d 的隐式转换
+}
+</code></pre>
+<p>所有成员都需要值初始化时，可以直接 <code>return {};</code>。结构体的数据成员、成员选择和默认成员初始化也是类与面向对象程序设计的基础。</p>
+<h2>13.11 结构体的其他事项</h2>
+<h3>程序定义类型成员与嵌套类型</h3>
+<p>结构体或类的成员可以是其他程序定义类型。先在外层定义 <code>Employee</code>，再让 <code>Company</code> 包含一个 <code>Employee</code> 成员时，可以用嵌套初始化器列表初始化，多层成员用连续的 <code>.</code> 访问，例如 <code>company.CEO.wage</code>。</p>
+<p>类型本身也可以定义在另一个类型内部：</p>
+<pre><code>struct Company
+{
+    struct Employee
+    {
+        int id {};
+        double wage {};
+    };
+
+    Employee CEO {};
+};
+
+Company::Employee employee {};
+</code></pre>
+<p>外部引用嵌套类型时使用 <code>Company::Employee</code>。</p>
+<h3>拥有型结构体</h3>
+<p>所有者管理自己的数据并控制其生命周期；查看者只引用其他对象的数据，不控制被查看对象何时改变或销毁。多数结构体和类应拥有所包含的数据。让每个成员都使用拥有型类型，是让结构体整体成为所有者的最简单方式。</p>
+<p>查看者、指针或引用成员可能比被查看对象活得更久，从而成为悬空成员；访问悬空成员会产生未定义行为。因此字符串数据成员通常使用拥有数据的 <code>std::string</code>，而不是只查看数据的 <code>std::string_view</code>。</p>
+<pre><code>struct Owner
+{
+    std::string name {};
+};
+
+struct Viewer
+{
+    std::string_view name {};
+};
+</code></pre>
+<p>若函数返回临时 <code>std::string</code>，用它初始化 <code>Owner::name</code> 时，成员会保存自己的字符串数据；临时值在完整表达式末尾销毁后，成员仍然有效。用同一临时值初始化 <code>Viewer::name</code> 时，<code>string_view</code> 只查看临时字符串；临时值销毁后成员立即悬空。</p>
+<h3>结构体大小、对齐与填充</h3>
+<p>结构体大小至少足以容纳全部成员，但可能大于成员大小之和。可以用 <code>sizeof</code> 检查类型或对象的大小；编译器会为数据对齐和访问性能在成员之间或对象末尾插入填充字节。</p>
+<p>例如，某个平台上 <code>short</code>、<code>int</code>、<code>double</code> 的大小合计可能是 14 字节，而包含它们的结构体是 16 字节。这只是特定实现结果，不是跨平台定律。成员集合相同但声明顺序不同，也可能产生显著不同的结构体大小。</p>
+<p>编译器不能自行重排成员。需要减小填充时，通常可以按成员类型大小从大到小声明。但内存布局优化可能降低可读性或破坏逻辑分组，只有结构体尺寸确实重要时才值得优先处理。</p>
+<h2>13.12 通过引用和指针选择成员</h2>
+<p>结构体对象使用 <code>.</code> 选择成员。对象引用的行为类似对象本身，也使用 <code>.</code>：</p>
+<pre><code>const Employee&amp; employee { joe };
+std::cout &lt;&lt; employee.id;
+</code></pre>
+<p>指针保存对象地址，不能直接使用 <code>.</code>。可以先解引用再选择成员：</p>
+<pre><code>Employee* ptr { &amp;joe };
+std::cout &lt;&lt; (*ptr).id;
+</code></pre>
+<p>这里必须为 <code>*ptr</code> 加括号，使解引用先于成员选择。更清楚的写法是使用指针成员选择运算符 <code>-&gt;</code>，也称 <code>operator-&gt;</code> 或箭头运算符：</p>
+<pre><code>std::cout &lt;&lt; ptr-&gt;id;
+</code></pre>
+<p><code>ptr-&gt;id</code> 严格等价于 <code>(*ptr).id</code>，但隐式完成解引用，减少括号和优先级错误。通过指针访问成员时应使用 <code>-&gt;</code>。</p>
+<p>若通过 <code>-&gt;</code> 选出的成员本身又是指向类类型的指针，可以继续使用 <code>-&gt;</code>，例如 <code>trianglePtr-&gt;c-&gt;y</code>。访问链混合指针成员和普通对象成员时，每一步都根据当前子表达式的类型选择运算符：当前值是指针时使用 <code>-&gt;</code>，当前值是对象或引用时使用 <code>.</code>。</p>
+<pre><code>std::cout &lt;&lt; ptr-&gt;paw.claws;
+</code></pre>
+<p>这里 <code>ptr</code> 是指针，所以先用 <code>-&gt;</code> 得到普通对象成员 <code>paw</code>；<code>paw</code> 不是指针，所以再用 <code>.</code> 取得 <code>claws</code>。<code>.</code> 和 <code>-&gt;</code> 都按从左到右结合；写成 <code>(ptr-&gt;paw).claws</code> 的括号不是语法必需，但有时能改善可读性。多个箭头连续出现时，适当空格也可帮助区分成员和运算符。</p>
+<h2>13.13 类模板</h2>
+<p>函数模板解决“算法相同、类型不同”导致的函数重载重复。聚合类型也会遇到同一问题：类型定义不能像函数一样重载，同一作用域不能同时定义整数版和浮点版 <code>Pair</code>；函数重载也不能只依靠返回类型区分，因此两个仅返回类型不同的 <code>max(Pair)</code> 仍然冲突。为每种类型分别命名 <code>PairInt</code>、<code>PairDouble</code> 会增加命名负担和重复代码。</p>
+<h3>类模板定义与实例化</h3>
+<p>类模板是用于实例化类类型的模板定义。类类型包括结构体、类和联合体，因此类模板同样适用于三者。</p>
+<pre><code>template &lt;typename T&gt;
+struct Pair
+{
+    T first {};
+    T second {};
+};
+
+Pair&lt;int&gt; p1 { 5, 6 };
+Pair&lt;double&gt; p2 { 1.2, 3.4 };
+</code></pre>
+<p>模板参数声明以 <code>template</code> 开始，在尖括号内声明类型参数。类型参数可写成 <code>typename T</code> 或 <code>class T</code>，通常优先使用 <code>typename</code>。模板类型可以出现在成员类型以及类型定义中的其他合适位置。</p>
+<p>首次需要 <code>Pair&lt;int&gt;</code> 时，编译器用模板生成 <code>T</code> 被 <code>int</code> 替换的类类型；首次需要 <code>Pair&lt;double&gt;</code> 时生成另一个类类型。二者是不同类型。以后再次使用同一具体类型时，编译器复用相同的实例化定义。可以用显式类模板特化写出概念上等价的生成结果，但类模板特化本身是更高级的机制。</p>
+<h3>类模板与函数模板组合</h3>
+<p>不同的 <code>Pair&lt;T&gt;</code> 可以由函数模板统一处理：</p>
+<pre><code>template &lt;typename T&gt;
+constexpr T max(Pair&lt;T&gt; pair)
+{
+    return pair.first &lt; pair.second ? pair.second : pair.first;
+}
+</code></pre>
+<p>函数模板必须声明 <code>T</code>，才能把它用于返回类型和 <code>Pair&lt;T&gt;</code> 形参。调用可以显式写成 <code>max&lt;int&gt;(p1)</code>，也可以让编译器从 <code>Pair&lt;int&gt;</code> 实参推导 <code>T</code>；能够推导时，通常优先省略显式模板实参。</p>
+<p>类模板的成员不必全部依赖模板类型：</p>
+<pre><code>template &lt;typename T&gt;
+struct Foo
+{
+    T first {};
+    int second {};
+};
+</code></pre>
+<h3>多个模板类型</h3>
+<p>多个模板参数用逗号分隔，实际类型可以相同或不同：</p>
+<pre><code>template &lt;typename T, typename U&gt;
+struct Pair
+{
+    T first {};
+    U second {};
+};
+
+Pair&lt;int, double&gt; p1 { 1, 2.3 };
+Pair&lt;double, int&gt; p2 { 4.5, 6 };
+Pair&lt;int, int&gt; p3 { 7, 8 };
+</code></pre>
+<p>函数形参写成 <code>Pair&lt;T, U&gt;</code> 时，只有该类模板的实例或能转换成它的对象能够匹配。若函数模板形参只是普通类型参数 <code>T value</code>，它可以匹配任意类型；只有实例化函数体时，才要求该类型提供函数体使用的 <code>first</code>、<code>second</code> 等成员。</p>
+<pre><code>template &lt;typename T&gt;
+void print(T value)
+{
+    std::cout &lt;&lt; '[' &lt;&lt; value.first &lt;&lt; ", " &lt;&lt; value.second &lt;&lt; ']';
+}
+</code></pre>
+<p>把模板参数命名为 <code>Pair</code> 不会限制实参必须是 <code>Pair</code> 类。<code>template &lt;typename Pair&gt;</code> 中的 <code>Pair</code> 是一个能匹配任意类型的模板参数名，而且会遮蔽外层同名类模板。模板参数宜使用简单且不易遮蔽类型名的惯用名称，例如 <code>T</code>、<code>U</code>、<code>N</code>。</p>
+<h3><code>std::pair</code> 与多文件使用</h3>
+<p>标准库 <code>&lt;utility&gt;</code> 提供 <code>std::pair&lt;T, U&gt;</code>，成员名为 <code>first</code> 和 <code>second</code>。通用二元组应优先使用 <code>std::pair</code>，而不是重复实现自己的 <code>Pair</code>。</p>
+<p>类模板和函数模板通常完整定义在头文件中，使每个需要实例化它们的翻译单元都能看到定义。模板定义和类型定义都可以在多个翻译单元中保持相同定义，因此把完整模板定义放在头文件中不违反单一定义规则。</p>
+<h2>参考来源</h2>
+<ul>
+<li><a href="https://www.learncpp.com/cpp-tutorial/introduction-to-program-defined-user-defined-types/">13.1 — Introduction to program-defined (user-defined) types</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/unscoped-enumerations/">13.2 — Unscoped enumerations</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/unscoped-enumerator-integral-conversions/">13.3 — Unscoped enumerator integral conversions</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/converting-an-enumeration-to-and-from-a-string/">13.4 — Converting an enumeration to and from a string</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/introduction-to-overloading-the-i-o-operators/">13.5 — Introduction to overloading the I/O operators</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/scoped-enumerations-enum-classes/">13.6 — Scoped enumerations (enum classes)</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/introduction-to-structs-members-and-member-selection/">13.7 — Introduction to structs, members, and member selection</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/struct-aggregate-initialization/">13.8 — Struct aggregate initialization</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/default-member-initialization/">13.9 — Default member initialization</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/passing-and-returning-structs/">13.10 — Passing and returning structs</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/struct-miscellany/">13.11 — Struct miscellany</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/member-selection-with-pointers-and-references/">13.12 — Member selection with pointers and references</a></li>
+<li><a href="https://www.learncpp.com/cpp-tutorial/class-templates/">13.13 — Class templates</a></li>
+</ul>
+<p>访问日期：2026-08-20。</p>
+]]></content>
+    <author>
+      <name>nikonikoni</name>
+    </author>
+    <category term="LearnCpp"></category>
+    <category term="Tutorial"></category>
+  </entry>
   <entry>
     <title>LearnCpp 类型转换</title>
     <link href="https://miku.nikonikoni.blog/posts/learncpp-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" rel="alternate" type="text/html"/>
