@@ -96,6 +96,18 @@ validation. For a bug fix, use matching existing test infrastructure to add or a
 fails before the fix and passes after it; otherwise record a reproducible behavioral check. For a refactor,
 verify relevant behavior before and after. Do not add a test framework solely to satisfy this rule.
 
+## Sol-Luna Delegation
+
+Keep requirements, decisions, risks, and final outcomes in the main Sol thread. Put search output, test logs,
+and intermediate exploration in bounded subagent threads when delegation is useful. Read-heavy independent
+tasks may run in parallel; tasks that modify the same file or code region must run serially. Without isolated
+worktrees, never allow multiple subagents to edit overlapping areas concurrently.
+
+Luna completes execution but does not accept its own work. Sol must review the returned evidence, actual diff,
+and completed validation before accepting, requesting rework, adding tests, or rolling back. A test command
+starting is not evidence that it passed. Key conclusions must cite files, symbols, commands, or test results.
+Keep every delegated change minimal and do not refactor unrelated code.
+
 ## Verification
 
 Run `git diff --check` for every change and inspect `git status --short` before hand-off.
