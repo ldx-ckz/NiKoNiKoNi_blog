@@ -45,6 +45,9 @@ jobs:
           
           # 其他环境变量
           UMAMI_API_KEY: ${{ secrets.UMAMI_API_KEY }}
+
+      - name: Preserve Vercel branch configuration
+        run: cp vercel.json dist/vercel.json
       
       - name: Deploy to pages branch
         uses: JamesIves/github-pages-deploy-action@v4
