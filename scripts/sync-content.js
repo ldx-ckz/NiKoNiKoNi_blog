@@ -29,7 +29,7 @@ if (fs.existsSync(envPath)) {
 }
 
 // 从环境变量读取配置
-const ENABLE_CONTENT_SYNC = process.env.ENABLE_CONTENT_SYNC !== 'false'; // 默认启用
+const ENABLE_CONTENT_SYNC = process.env.ENABLE_CONTENT_SYNC === 'true'; // 默认禁用
 const CONTENT_REPO_URL = process.env.CONTENT_REPO_URL || '';
 const CONTENT_DIR = process.env.CONTENT_DIR || path.join(rootDir, 'content');
 

@@ -20,6 +20,11 @@ pnpm-debug.log*
 # local post passwords
 post-passwords.local.json
 
+# Obsidian local workspace state
+src/content/posts/.obsidian/workspace.json
+src/content/posts/.obsidian/workspace-mobile.json
+src/content/posts/.obsidian/graph.json
+
 # content repository (independent mode)
 /content/
 *.backup

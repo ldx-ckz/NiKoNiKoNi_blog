@@ -18,7 +18,7 @@ pnpm build
 pnpm preview
 ```
 
-若不使用外部内容仓库，运行前明确设置：
+若不使用外部内容仓库，无需设置内容同步变量；默认就会使用仓库内内容。需要在 `.env` 中显式说明时可写：
 
 ```dotenv
 ENABLE_CONTENT_SYNC=false
@@ -28,7 +28,7 @@ ENABLE_CONTENT_SYNC=false
 
 | 变量 | 必需 | 说明 |
 | --- | --- | --- |
-| `ENABLE_CONTENT_SYNC` | 建议显式设置 | `false` 使用仓库内内容；`true` 启用外部内容同步 |
+| `ENABLE_CONTENT_SYNC` | 否 | 默认 `false`，使用仓库内内容；仅设为 `true` 时启用外部内容同步 |
 | `CONTENT_REPO_URL` | 条件必需 | 启用内容同步时的 Git 仓库地址 |
 | `CONTENT_DIR` | 否 | 外部内容本地目录，默认 `./content` |
 | `UMAMI_API_KEY` | 否 | 构建首页统计时使用的 Umami API 密钥 |

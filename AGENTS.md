@@ -38,6 +38,26 @@ settings, or perform destructive cleanup unless explicitly requested. Adding a d
 `pnpm-lock.yaml`, CI, deployment configuration, or an environment-variable contract requires a separately
 stated item in an approved plan.
 
+## Direct Master Publishing
+
+This is a single-maintainer repository. When the user explicitly asks to sync, commit, upload, or push
+local work, use the direct `master` workflow by default:
+
+```powershell
+git status
+npm.cmd run build
+git add .
+git commit -m "Describe the change"
+git pull --rebase origin master
+git push origin master
+git status
+```
+
+Do not create a feature branch or pull request unless the user explicitly requests one, or direct pushes
+to `master` are rejected by repository protection. Run `git status` before `git add .` and preserve any
+unrelated changes. The repository ignores only known Obsidian runtime-state files; do not broaden that
+ignore rule to `.obsidian/` as a whole.
+
 ## Content And Secret Boundaries
 
 Treat `src/content/**`, `src/data/**`, and personal assets in `public/images/**` as user-owned content.
@@ -51,24 +71,24 @@ If sensitive data is already committed, immediately alert the user with the affe
 
 ## Content Sync Safety
 
-`scripts/sync-content.js` is enabled by default unless `ENABLE_CONTENT_SYNC=false`. It can clone or pull
-an external repository and replace, link, or copy `src/content/posts`, `src/content/spec`, `src/data`,
-and `public/images`; treat it as an external, content-mutating operation.
+`scripts/sync-content.js` is disabled by default and runs only when `ENABLE_CONTENT_SYNC=true`. When
+enabled, it can clone or pull an external repository and replace, link, or copy `src/content/posts`,
+`src/content/spec`, `src/data`, and `public/images`; treat it as an external, content-mutating operation.
 
-For ordinary local development and verification, explicitly disable content sync:
+For ordinary local development and verification, run the normal commands without enabling content sync:
 
 ```powershell
-$env:ENABLE_CONTENT_SYNC = "false"
 pnpm build
 ```
 
 ```sh
-ENABLE_CONTENT_SYNC=false pnpm build
+pnpm build
 ```
 
-Apply the same setting before `pnpm dev`, `pnpm check`, or commands that may run lifecycle scripts.
-Enable external content sync only as an approved task requirement. A successful `pnpm dev` or `pnpm build`
-does not prove synchronization succeeded: `predev` and `prebuild` allow sync failures with `|| true`.
+Enable external content sync only as an approved task requirement by setting
+`ENABLE_CONTENT_SYNC=true` before `pnpm dev`, `pnpm check`, `pnpm build`, or commands that may run lifecycle
+scripts. A successful `pnpm dev` or `pnpm build` does not prove synchronization succeeded: `predev` and
+`prebuild` allow sync failures with `|| true`.
 
 ## Editing Discipline
 
