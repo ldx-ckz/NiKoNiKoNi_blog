@@ -1,0 +1,49 @@
+# 架构说明
+
+## 定位
+
+nikonikoni blog 是个人网站，而不是可直接发布的通用主题。代码、个人内容和静态资源目前位于同一仓库；内容同步功能是可选能力。
+
+## 请求与构建流程
+
+```text
+src/config.ts
+      │
+      ├── 页面和组件配置
+      │
+src/content/ + src/data/ + public/
+      │
+      ▼
+ Astro 构建（src/pages/）
+      │
+      ├── RSS / Atom / sitemap / robots.txt
+      ├── 静态 HTML、CSS、JS
+      ▼
+ Pagefind 搜索索引
+      │
+      ▼
+ dist/
+```
+
+## 目录职责
+
+- `src/config.ts`：站点身份、导航、功能开关和第三方服务配置。
+- `src/pages/`：路由入口，不用于存放大段个人数据。
+- `src/components/`：页面和交互组件。
+- `src/content/posts/`：Markdown 文章。
+- `src/content/spec/`：关于页、友链等 Markdown 内容。
+- `src/data/`：项目、设备、日记等结构化个人数据。
+- `public/`：无需 Astro 转换的公开资源。
+- `scripts/`：内容同步、文章创建和字体处理工具。
+
+## 首页与内容分区
+
+首页由 `HomeDashboard.astro` 汇总内容统计和文章活动。`/blog/[section]/` 根据文章分类提供 Notes、Technical、Daily Life 分区；分类、标签、归档和站点地图提供横向浏览入口。
+
+## 配置边界
+
+对站点名称、导航、功能开关和服务地址的修改应优先进入 `src/config.ts`。页面数据进入 `src/data/`，文章进入 `src/content/`。只有显示或交互行为发生变化时才修改组件。
+
+## 上游关系
+
+项目最初基于 [LyraVoid/Mizuki](https://github.com/LyraVoid/Mizuki)。上游链接只保留在 README、页脚、架构/迁移记录和许可证/第三方声明中。内部兼容标识不因品牌迁移而强制改名，除非有独立的重构和回归测试任务。

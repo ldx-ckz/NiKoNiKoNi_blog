@@ -1,10 +1,9 @@
 name: Deploy to Pages Branch
 
 on:
-  # 每次推送到 `main` 分支时触发这个"工作流程"
-  # 如果你使用了别的分支名，请按需将 `main` 替换成你的分支名
+  # 每次推送到默认分支时触发部署
   push:
-    branches: [ main ]
+    branches: [ master ]
   # 允许你在 GitHub 上的 Actions 标签中手动触发此"工作流程"
   workflow_dispatch:
 
@@ -25,16 +24,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.14.4
+          version: 10.22.0
           run_install: false
           
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       
       - name: Build site
         run: pnpm run build

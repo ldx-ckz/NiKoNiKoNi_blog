@@ -1,11 +1,21 @@
-name: Custom Issue
-description: Describe your issue here.
-title: "[Other]: "
+name: 内容勘误
+description: 报告文章中的错字、失效链接或事实错误
+title: "[Content]: "
+labels: ["documentation"]
+assignees:
+  - ldx-ckz
 body:
-  - type: textarea
-    id: issue-description
+  - type: input
+    id: page
     attributes:
-      label: Issue Description
-      description: Please describe your issue.
+      label: 文章或页面链接
+      placeholder: https://miku.nikonikoni.blog/...
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: 需要修正的内容
+      description: 请给出原文位置和建议修改方式。
     validations:
       required: true

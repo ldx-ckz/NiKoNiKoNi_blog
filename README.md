@@ -1,309 +1,105 @@
-# 🌸 Mizuki  
-![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
-![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-![Astro](https://img.shields.io/badge/Astro-5.15.3-orange)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+# nikonikoni blog
 
-![Mizuki Preview](./README.webp)
+我的个人博客与数字花园，用来沉淀技术学习、项目实践与日常记录。
 
-<table>
-  <tr>
-    <td><img alt="" src="docs/image/1.webp"></td>
-    <td><img alt="" src="docs/image/2.webp"></td>
-    <td><img alt="" src="docs/image/3.webp"></td>
-  <tr>
-  <tr>
-    <td><img alt="" src="docs/image/4.webp"></td>
-    <td><img alt="" src="docs/image/5.webp"></td>
-    <td><img alt="" src="docs/image/6.webp"></td>
-  <tr>
-</table>
+[访问博客](https://miku.nikonikoni.blog/) · [English](./README.en.md) · [问题反馈](https://github.com/ldx-ckz/NiKoNiKoNi_blog/issues)
 
+![nikonikoni blog 首页](./docs/images/nikonikoni-home.png)
 
-A modern, feature-rich static blog template built with [Astro](https://astro.build), featuring advanced functionality and beautiful design.
+![nikonikoni blog 首页内容区](./docs/images/nikonikoni-home-content.png)
 
-[**🖥️ Live Demo**](https://mizuki.mysqil.com/)
-[**📝 Documentation**](https://docs.mizuki.mysqil.com/)
+> [!NOTE]
+> 这是个人网站源码，而不是通用博客模板。仓库会随着我的学习、写作和站点需求持续演进。
 
-🌏 README Languages
-[**English**](./README.md) /
-[**中文**](./README.zh.md) /
-[**日本語**](./docs/README.ja.md) /
-[**中文繁体**](./docs/README.tw.md) /
+## 这个仓库是什么
 
-![Configuration](configuration.svg)
+`nikonikoni blog` 是一个基于 [Astro](https://astro.build/) 的静态个人网站。它同时承担三种用途：
 
-### 🔧 Component Configuration System Restructuring
-- **Unified Configuration Architecture:** Brand new modular component configuration system, supporting dynamic component management and order configuration
-- **Configuration-Driven Component Loading:** Restructured SideBar component, implementing fully configuration-based component loading mechanism
-- **Unified Control Switches:** Removed independent enable switches for music player and announcement components, unified control through sidebarLayoutConfig
-- **Responsive Layout Adaptation:** Components support responsive layouts, automatically adjusting display based on device type
+- 发布技术文章、课程笔记和生活记录；
+- 展示项目、设备、相册等结构化个人内容；
+- 作为我学习前端工程、内容组织和自动化部署的长期实验场。
 
-### 📐 Layout System Optimization
-- **Dynamic Sidebar Position Adjustment:** Support for left/right sidebar switching, with automatic layout adaptation
-- **Intelligent Article Directory Positioning:** When sidebar is on the right, article navigation automatically moves to the left, providing a better reading experience
-- **Grid Layout Improvements:** Optimized CSS Grid layout, resolving container width anomaly issues
+## 主要改造
 
-### 🎛️ Configuration File Format Standardization
-- **Standardized Configuration Format:** Created unified component configuration file format specifications
-- **Type Safety:** Comprehensive TypeScript type definitions ensuring configuration type safety
-- **Extensibility:** Support for custom component types and configuration options
+这个项目最初从 Mizuki 演化而来，目前包含一系列面向个人使用的改造：
 
-### 🧹 Code Optimization
-- **Test File Cleanup:** Removed unused test configurations and dependencies, reducing project size
-- **Code Structure Optimization:** Improved component architecture, enhancing code maintainability
-- **Performance Improvement:** Optimized component loading logic, improving page rendering performance
+- 首页仪表盘与文章活动视图；
+- Notes、Technical、Daily Life 内容分区；
+- 自定义文章卡片、分类、标签、归档与站点地图；
+- 项目、设备、相册、日记和追番等结构化页面；
+- Codex × Obsidian 知识库资源；
+- Pagefind 搜索、RSS/Atom、评论、访问统计与文章加密；
+- 可选的代码—内容仓库分离工作流。
 
----
+## 技术栈
 
-## ✨ Features
+- [Astro](https://astro.build/) + TypeScript
+- Svelte + Tailwind CSS
+- Pagefind
+- Expressive Code、KaTeX、Mermaid
+- pnpm
 
-### 🎨 Design & Interface
-- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [x] Smooth animations and page transitions using [Swup](https://swup.js.org/)
-- [x] Light/dark theme switching with system preference detection
-- [x] Customizable theme colors and dynamic banner carousel
-- [x] Fullscreen background images with carousel, opacity, and blur effects
-- [x] Fully responsive design for all devices
-- [x] Beautiful typography with JetBrains Mono font
+## 本地开发
 
-### 🔍 Content & Search
-- [x] Advanced search functionality based on [Pagefind](https://pagefind.app/)
-- [x] [Enhanced Markdown features](#-markdown-extensions) with syntax highlighting
-- [x] Interactive table of contents with auto-scrolling
-- [x] RSS feed generation
-- [x] Reading time estimation
-- [x] Article categorization and tagging system
-
-
-
-### 📱 Special Pages
-- [x] **Anime Tracking Page** - Track anime watching progress and ratings
-- [x] **Friends Page** - Beautiful cards showcasing friend websites
-- [x] **Diary Page** - Share life moments, similar to social media
-- [x] **Archive Page** - Organized timeline view of articles
-- [x] **About Page** - Customizable personal introduction
-
-### 🛠 Technical Features
-- [x] **Enhanced code blocks** based on [Expressive Code](https://expressive-code.com/)
-- [x] **Math formula support** with KaTeX rendering
-- [x] **Image optimization** with PhotoSwipe gallery integration
-- [x] **SEO optimization** including sitemaps and meta tags
-- [x] **Performance optimization** with lazy loading and caching
-- [x] **Comment system** with Twikoo integration
-
-## 🚀 Quick Start
-
-### 📦 Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/matsuzaka-yuki/mizuki.git
-   cd mizuki
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   # Install pnpm if not already installed
-   npm install -g pnpm
-   
-   # Install project dependencies
-   pnpm install
-   ```
-
-3. **Configure your blog:**
-   - Edit `src/config.ts` to customize blog settings
-   - Update site information, theme colors, banner images, and social links
-   - Configure feature page functionality
-
-4. **Start the development server:**
-   ```bash
-   pnpm dev
-   ```
-   Your blog will be available at `http://localhost:4321`
-
-### 📝 Content Management
-
-- **Create new posts:** `pnpm new-post <filename>`
-- **Edit posts:** Modify files in `src/content/posts/`
-- **Customize special pages:** Edit files in `src/content/spec/`
-- **Add images:** Place images in `src/assets/` or `public/`
-
-### 🚀 Deployment
-
-Deploy your blog to any static hosting platform:
-
-- **Vercel:** Connect your GitHub repository to Vercel
-- **Netlify:** Deploy directly from GitHub
-- **GitHub Pages:** Use the included GitHub Actions workflow
-- **Cloudflare Pages:** Connect your repository
-
-- **Environment Variable Configuration (Optional):** Configure in `.env` file or deployment platform
+要求：Node.js 24 LTS 或更高版本、pnpm 10。
 
 ```bash
-# Umami API key for accessing Umami analytics data
-# If Umami is enabled in config.ts, it's recommended to configure the API key here
-UMAMI_API_KEY=your_umami_api_key_here
-# bcrypt salt rounds (10-14 recommended, default 12)
-BCRYPT_SALT_ROUNDS=12
+corepack enable
+pnpm install
+pnpm dev
 ```
 
-Before deployment, update the `siteURL` in `src/config.ts`.
-**Not recommended** to commit the `.env` file to Git. The `.env` file should only be used for local debugging or building. For cloud platform deployment, it's recommended to configure via the platform's `environment variables` settings.
+开发服务器默认运行在 `http://localhost:4321`。
 
-## 📝 Post Frontmatter Format
+常用命令：
 
-```yaml
----
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new blog.
-image: ./cover.jpg
-tags: [tag1, tag2]
-category: Frontend
-draft: false
-pinned: false
-lang: en      # Only set when article language differs from site language in config.ts
----
+| 命令 | 用途 |
+| --- | --- |
+| `pnpm dev` | 启动开发服务器 |
+| `pnpm check` | 运行 Astro 检查 |
+| `pnpm type-check` | 运行 TypeScript 检查 |
+| `pnpm build` | 构建站点并生成搜索索引 |
+| `pnpm preview` | 本地预览生产构建 |
+| `pnpm new-post -- <name>` | 创建文章 |
+
+## 项目结构
+
+```text
+src/components/   页面与交互组件
+src/content/      文章和介绍内容
+src/data/         项目、设备、相册等结构化数据
+src/pages/        Astro 页面与路由
+public/           图片、字体、音乐和其他静态资源
+scripts/          内容同步、文章创建和字体压缩脚本
+docs/             架构、部署与维护文档
 ```
 
-### Frontmatter Field Descriptions
+站点基础信息和功能开关位于 [`src/config.ts`](./src/config.ts)。文章保存在 `src/content/posts/`，结构化页面数据保存在 `src/data/`。
 
-- **title**: Article title (required)
-- **published**: Publication date (required)
-- **description**: Article description for SEO and previews
-- **image**: Cover image path (relative to article file)
-- **tags**: Array of tags for categorization
-- **category**: Article category
-- **draft**: Set to `true` to hide article in production
-- **pinned**: Set to `true` to pin article to top
-- **lang**: Article language (only set when different from site default)
+## 部署
 
-### Pinned Articles Feature
+生产站点部署在 <https://miku.nikonikoni.blog/>。构建命令为 `pnpm build`，输出目录为 `dist/`。
 
-The `pinned` field allows you to pin important articles to the top of your blog list. Pinned articles will always appear before regular articles regardless of their publication date.
+部署前需要：
 
-**Usage:**
-```yaml
-pinned: true  # Pin this article to the top
-pinned: false # Regular article (default)
-```
+1. 将 `ENABLE_CONTENT_SYNC` 明确设置为 `false`，或配置内容仓库地址；
+2. 在托管平台中配置所需密钥，不要提交 `.env`；
+3. 确认 `src/config.ts` 中的 `siteURL` 与正式域名一致。
 
-**Sorting Rules:**
-1. Pinned articles appear first, sorted by publication date (newest first)
-2. Regular articles follow, sorted by publication date (newest first)
+详细说明见 [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md)。
 
-## 🧩 Markdown Extensions
+## 来源与致谢
 
-Mizuki supports enhanced features beyond standard GitHub Flavored Markdown:
+本项目最初基于 [LyraVoid/Mizuki](https://github.com/LyraVoid/Mizuki) 构建，之后针对个人内容组织、首页体验、站点功能和维护流程进行了持续修改。Mizuki 又基于 [Fuwari](https://github.com/saicaca/fuwari) 演化而来。
 
-### 📝 Enhanced Writing
-- **Callouts:** Create beautiful annotation boxes using `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, etc.
-- **Math Formulas:** Write LaTeX math formulas using `$inline$` and `$$block$$` syntax
-- **Code Highlighting:** Advanced syntax highlighting with line numbers and copy buttons
-- **GitHub Cards:** Embed repository cards using `::github{repo="user/repo"}`
+完整的第三方来源和许可证信息见 [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)。
 
-### 🎨 Visual Elements
-- **Image Gallery:** Automatic PhotoSwipe integration for image viewing
-- **Collapsible Sections:** Create expandable content blocks
-- **Custom Components:** Enhance content with special directives
+## 许可证
 
-### 📊 Content Organization
-- **Table of Contents:** Automatically generated from headings with smooth scrolling
-- **Reading Time:** Automatically calculated and displayed
-- **Article Metadata:** Rich frontmatter support with categories and tags
+- 网站代码遵循 [`LICENSE`](./LICENSE) 中的 Apache License 2.0，并保留上游 MIT 许可证 [`LICENSE.MIT`](./LICENSE.MIT)；
+- 原创文章默认采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)，文章另有声明时以文章声明为准；
+- 图片、字体、音乐和其他第三方素材分别遵循其权利人的许可，不因代码许可证而自动获得再授权。
 
-## ⚡ Commands
+## 维护记录
 
-All commands are run from the project root:
-
-| Command                    | Action                                   |
-|:---------------------------|:-----------------------------------------|
-| `pnpm install`             | Install dependencies                     |
-| `pnpm dev`                 | Start local dev server at `localhost:4321` |
-| `pnpm build`               | Build production site to `./dist/`       |
-| `pnpm preview`             | Preview build locally before deployment  |
-| `pnpm check`               | Run Astro error checking                 |
-| `pnpm format`              | Format code with Biome                   |
-| `pnpm lint`                | Check and fix code issues                |
-| `pnpm new-post <filename>` | Create a new blog post                   |
-| `pnpm astro ...`           | Run Astro CLI commands                   |
-
-## 🎯 Configuration Guide
-
-### 🔧 Basic Configuration
-
-Edit `src/config.ts` to customize your blog:
-
-```typescript
-export const siteConfig: SiteConfig = {
-  title: "Your Blog Name",
-  subtitle: "Your Blog Description",
-  lang: "en", // or "zh-CN", "ja", etc.
-  themeColor: {
-    hue: 210, // 0-360, theme hue
-    fixed: false, // Hide theme color picker
-  },
-  banner: {
-    enable: true,
-    src: ["assets/banner/1.webp"], // Banner images
-    carousel: {
-      enable: true,
-      interval: 0.8, // seconds
-    },
-  },
-};
-```
-
-### 📱 Feature Page Configuration
-
-- **Anime Page:** Edit anime list in `src/pages/anime.astro`
-- **Friends Page:** Edit friend data in `src/content/spec/friends.md`
-- **Diary Page:** Edit moments in `src/pages/diary.astro`
-- **About Page:** Edit content in `src/content/spec/about.md`
-
-## ✏️ Contributing
-
-Contributions are welcome! Feel free to submit issues and pull requests.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-### Original Project License
-
-This project is based on [Fuwari](https://github.com/saicaca/fuwari), which is licensed under the MIT License. The original copyright notice and permission notice are included in the LICENSE.MIT file in accordance with the MIT License requirements.
-
-## 🙏 Acknowledgements
-
-- Based on the original [Fuwari](https://github.com/saicaca/fuwari) template
-- Inspired by [Yukina](https://github.com/WhitePaper233/yukina) - a beautiful and elegant blog template
-- Some designs are inspired by [Firefly](https://github.com/CuteLeaf/Firefly) template
-- Uses [Pio](https://github.com/Dreamer-Paul/Pio) to implement the adorable Live2D mascot plugin
-- Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- Icons from [Iconify](https://iconify.design/)
-
-### Special Thanks
-
-- **[Fuwari](https://github.com/saicaca/fuwari)** by saicaca - The original template that this project is based on. Thank you for creating such a beautiful and functional template.
-- **[Yukina](https://github.com/WhitePaper233/yukina)** - Thanks for providing design inspiration and creativity that helped shape this project. Yukina is an elegant blog template that demonstrates excellent design principles and user experience.
-- **[Firefly](https://github.com/CuteLeaf/Firefly)** - Thanks for providing excellent layout design ideas. The dual sidebar layout, article dual-column grid layout, and some widget designs and implementations have enriched Mizuki's interface.
-
-## 🍀 Contributors
-
-Thanks to all contributors for their contributions to this project. If you have any questions or suggestions, please submit an [Issue](https://github.com/matsuzaka-yuki/Mizuki/issues) or [Pull Request](https://github.com/matsuzaka-yuki/Mizuki/pulls).
-
-<a href="https://github.com/matsuzaka-yuki/Mizuki/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=matsuzaka-yuki/Mizuki" />
-</a>
-
----
-
-⭐ If you find this project helpful, please consider giving it a star!
+仓库从 Mizuki 身份迁移为 nikonikoni 个人项目的过程与验证记录见 [`docs/REPOSITORY_IDENTITY_MIGRATION.md`](./docs/REPOSITORY_IDENTITY_MIGRATION.md)。

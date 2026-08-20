@@ -13,4 +13,4 @@ This blog covers three directions:
 
 
 
-This site is built with Astro and Mizuki. I update it whenever I make progress.
+This site is built with Astro. I update it as I learn, build, and live.

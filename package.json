@@ -1,7 +1,17 @@
 {
-	"name": "mizuki",
+	"name": "nikonikoni-blog",
+	"private": true,
 	"type": "module",
-	"version": "7.5.0",
+	"description": "Personal Astro blog and digital garden for learning notes, projects, and everyday records.",
+	"homepage": "https://miku.nikonikoni.blog/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ldx-ckz/NiKoNiKoNi_blog.git"
+	},
+	"license": "Apache-2.0",
+	"engines": {
+		"node": ">=24"
+	},
 	"scripts": {
 		"sync-content": "node scripts/sync-content.js",
 		"init-content": "node scripts/init-content-repo.js",

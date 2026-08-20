@@ -3,7 +3,7 @@ import type { DARK_MODE, LIGHT_MODE, WALLPAPER_BANNER, WALLPAPER_FULLSCREEN, WAL
 export type SiteConfig = {
 	title: string;
 	subtitle: string;
-	siteURL: string; // 站点URL，以斜杠结尾，例如：https://mizuki.mysqil.com/
+	siteURL: string; // 站点URL，以斜杠结尾，例如：https://example.com/
 	keywords?: string[]; // 站点关键词，用于生成 <meta name="keywords">
 	siteStartDate?: string; // 站点开始日期，格式：YYYY-MM-DD，用于计算运行天数
 

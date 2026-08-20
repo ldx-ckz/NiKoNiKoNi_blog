@@ -1,59 +1,48 @@
-name: Bug Report
-description: Create a report to help us improve
+name: Bug 报告
+description: 报告博客页面、内容或构建流程中的可复现问题
 title: "[Bug]: "
 labels: ["bug"]
 assignees:
-  - L4Ph
-  - saicaca
+  - ldx-ckz
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
+      value: 感谢反馈。请尽量提供可以复现问题的最小信息。
   - type: textarea
-    id: bug-description
+    id: description
     attributes:
-      label: Describe the bug
-      description: A clear and concise description of what the bug is.
+      label: 问题描述
+      description: 实际发生了什么？
     validations:
       required: true
   - type: textarea
-    id: to-reproduce
+    id: reproduce
     attributes:
-      label: To Reproduce
-      description: Steps to reproduce the behavior.
+      label: 复现步骤
       placeholder: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+        1. 打开……
+        2. 点击……
+        3. 观察到……
     validations:
       required: true
   - type: textarea
-    id: expected-behavior
+    id: expected
     attributes:
-      label: Expected behavior
-      description: A clear and concise description of what you expected to happen.
+      label: 预期行为
     validations:
       required: true
-  - type: dropdown
-    id: os
-    attributes:
-      label: OS
-      multiple: true
-      options:
-        - Windows
-        - macOS
-        - Linux
-        - Android
-        - iOS
   - type: input
-    id: browser
+    id: page
     attributes:
-      label: Browser
-      placeholder: e.g. chrome, safari
+      label: 相关页面
+      placeholder: https://miku.nikonikoni.blog/...
+  - type: input
+    id: environment
+    attributes:
+      label: 浏览器与设备
+      placeholder: 例如 Chrome / Windows 11 / 桌面端
   - type: textarea
     id: additional-context
     attributes:
-      label: Additional context
-      description: Add any other context about the problem here.
+      label: 补充信息
+      description: 可附上截图、控制台错误或其他线索。

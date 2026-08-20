@@ -130,9 +130,25 @@ const activityCells = Array.from({ length: activityDayCount }, (_, index) => {
 		date,
 		count,
 		isFuture: date > today,
-		level: count === 0 ? 0 : Math.min(4, Math.ceil(count / 10)),
+		level: 0,
 	};
 });
+const nonZeroContributionCounts = activityCells
+	.map((cell) => cell.count)
+	.filter((count) => count > 0)
+	.sort((a, b) => a - b);
+const quartileThresholds = [0.25, 0.5, 0.75].map((percentile) => {
+	if (nonZeroContributionCounts.length === 0) return 0;
+	const index = Math.ceil(nonZeroContributionCounts.length * percentile) - 1;
+	return nonZeroContributionCounts[index];
+});
+for (const cell of activityCells) {
+	if (cell.count === 0) continue;
+	const quartile = quartileThresholds.findIndex(
+		(threshold) => cell.count <= threshold,
+	);
+	cell.level = quartile === -1 ? 4 : quartile + 1;
+}
 const contributionTotal = activityCells.reduce(
 	(total, cell) => total + cell.count,
 	0,

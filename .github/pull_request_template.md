@@ -1,37 +1,25 @@
-## Type of change
+## 修改目的
 
-- [ ] Bug fix (a non-breaking change that fixes an issue)
-- [ ] New feature (a non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Other (please describe):
+<!-- 说明这次修改解决什么问题，以及为什么需要修改。 -->
 
-## Checklist
+## 修改内容
 
-- [ ] I have read the [**CONTRIBUTING**](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) document.
-- [ ] I have checked to ensure that this Pull Request is not for personal changes.
-- [ ] I have performed a self-review of my own code.
-- [ ] My changes generate no new warnings.
+<!-- 列出与目标直接相关的改动。 -->
 
-## Related Issue
+## 验证方式
 
-<!-- Please link to the issue that this pull request addresses. e.g. #123 -->
+<!-- 写明运行过的命令和人工验证步骤。 -->
 
+- [ ] `pnpm check`
+- [ ] `pnpm build`
+- [ ] 已检查桌面端和移动端界面（涉及 UI 时）
+- [ ] 没有提交密钥、`.env` 或其他私有数据
+- [ ] 修改范围仅覆盖本次目标
 
-## Changes
+## 截图
 
-<!-- Please describe the changes you made in this pull request. -->
+<!-- 涉及可见界面时提供修改前后截图。 -->
 
+## 关联问题
 
-## How To Test
-
-<!-- Please describe how you tested your changes. -->
-
-
-## Screenshots (if applicable)
-
-<!-- If you made any UI changes, please include screenshots. -->
-
-
-## Additional Notes
-
-<!-- Any additional information that you want to share with the reviewer. -->
+<!-- 例如：Closes #123 -->
