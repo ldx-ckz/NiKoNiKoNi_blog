@@ -1,6 +1,6 @@
 # nikonikoni blog
 
-我的个人博客与数字花园，用来沉淀技术学习、项目实践与日常记录。
+我的个人博客，用来记录技术学习、项目实践与日常随笔。
 
 [访问博客](https://miku.nikonikoni.blog/) · [English](./README.en.md) · [问题反馈](https://github.com/ldx-ckz/NiKoNiKoNi_blog/issues)
 
@@ -13,11 +13,10 @@
 
 ## 这个仓库是什么
 
-`nikonikoni blog` 是一个基于 [Astro](https://astro.build/) 的静态个人网站。它同时承担三种用途：
+`nikonikoni blog` 是一个基于 [Astro](https://astro.build/) 的静态个人网站。它同时承担两种用途：
 
 - 发布技术文章、课程笔记和生活记录；
-- 展示项目、设备、相册等结构化个人内容；
-- 作为我学习前端工程、内容组织和自动化部署的长期实验场。
+- 展示项目内容。
 
 ## 主要改造
 
@@ -27,7 +26,6 @@
 - Notes、Technical、Daily Life 内容分区；
 - 自定义文章卡片、分类、标签、归档与站点地图；
 - 项目、设备、相册、日记和追番等结构化页面；
-- Codex × Obsidian 知识库资源；
 - Pagefind 搜索、RSS/Atom、评论、访问统计与文章加密；
 - 可选的代码—内容仓库分离工作流。
 

@@ -1,6 +1,6 @@
 # nikonikoni blog
 
-My personal blog and digital garden for technical notes, projects, and everyday records.
+My personal blog for documenting technical learning, project work, and everyday thoughts.
 
 [Live site](https://miku.nikonikoni.blog/) · [中文](./README.md) · [Issues](https://github.com/ldx-ckz/NiKoNiKoNi_blog/issues)
 
@@ -9,22 +9,35 @@ My personal blog and digital garden for technical notes, projects, and everyday 
 ![nikonikoni blog home-page content](./docs/images/nikonikoni-home-content.png)
 
 > [!NOTE]
-> This repository contains a personal website, not a general-purpose blog template.
+> This repository contains the source code for a personal website, not a general-purpose blog template. It will continue to evolve alongside my learning, writing, and site requirements.
 
-## About
+## What this repository is
 
-`nikonikoni blog` is an Astro-powered personal website used to publish learning notes, document projects, and experiment with content organization and frontend engineering.
+`nikonikoni blog` is a static personal website built with [Astro](https://astro.build/). It serves two purposes:
 
-Notable customizations include:
+- publishing technical articles, course notes, and everyday records;
+- showcasing project work.
 
-- a dashboard-style home page and activity view;
+## Major customizations
+
+This project originally evolved from Mizuki and now includes a range of changes made for personal use:
+
+- a dashboard-style home page and article activity view;
 - Notes, Technical, and Daily Life content sections;
 - custom post cards, categories, tags, archives, and sitemap pages;
 - structured project, device, album, diary, and anime pages;
-- a Codex × Obsidian knowledge-base resource;
-- Pagefind search, RSS/Atom feeds, comments, analytics, and optional content synchronization.
+- Pagefind search, RSS/Atom feeds, comments, analytics, and post encryption;
+- an optional workflow that separates the code and content repositories.
 
-## Development
+## Technology stack
+
+- [Astro](https://astro.build/) + TypeScript
+- Svelte + Tailwind CSS
+- Pagefind
+- Expressive Code, KaTeX, and Mermaid
+- pnpm
+
+## Local development
 
 Requirements: Node.js 24 LTS or newer and pnpm 10.
 
@@ -34,20 +47,57 @@ pnpm install
 pnpm dev
 ```
 
+The development server runs at `http://localhost:4321` by default.
+
 Common commands:
 
 | Command | Purpose |
 | --- | --- |
 | `pnpm dev` | Start the development server |
-| `pnpm check` | Run Astro diagnostics |
+| `pnpm check` | Run Astro checks |
 | `pnpm type-check` | Run TypeScript checks |
-| `pnpm build` | Build the site and search index |
+| `pnpm build` | Build the site and generate the search index |
+| `pnpm preview` | Preview the production build locally |
 | `pnpm new-post -- <name>` | Create a post |
 
-The main configuration lives in [`src/config.ts`](./src/config.ts). Posts live in `src/content/posts/`, while structured page data lives in `src/data/`.
+## Project structure
 
-## Origin and licensing
+```text
+src/components/   Page and interaction components
+src/content/      Posts and introductory content
+src/data/         Structured data for projects, devices, albums, and more
+src/pages/        Astro pages and routes
+public/           Images, fonts, music, and other static assets
+scripts/          Content sync, post creation, and font compression scripts
+docs/             Architecture, deployment, and maintenance documentation
+```
 
-This project was originally built from [LyraVoid/Mizuki](https://github.com/LyraVoid/Mizuki) and has since evolved around my own content structure, home-page experience, features, and maintenance workflow. Mizuki itself is derived from [Fuwari](https://github.com/saicaca/fuwari).
+Basic site information and feature switches live in [`src/config.ts`](./src/config.ts). Posts are stored in `src/content/posts/`, while structured page data is stored in `src/data/`.
 
-See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md), [`LICENSE`](./LICENSE), and [`LICENSE.MIT`](./LICENSE.MIT) for attribution and licensing details. Original articles are generally published under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) unless a post states otherwise.
+## Deployment
+
+The production site is deployed at <https://miku.nikonikoni.blog/>. The build command is `pnpm build`, and the output directory is `dist/`.
+
+Before deploying:
+
+1. explicitly set `ENABLE_CONTENT_SYNC` to `false`, or configure the content repository URL;
+2. configure required secrets on the hosting platform and never commit `.env`;
+3. confirm that `siteURL` in `src/config.ts` matches the production domain.
+
+See [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for details.
+
+## Origin and acknowledgements
+
+This project was originally built from [LyraVoid/Mizuki](https://github.com/LyraVoid/Mizuki) and has since been continuously modified around my own content organization, home-page experience, site features, and maintenance workflow. Mizuki itself evolved from [Fuwari](https://github.com/saicaca/fuwari).
+
+See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for complete third-party attribution and licensing information.
+
+## License
+
+- The site code follows the Apache License 2.0 in [`LICENSE`](./LICENSE), with the upstream MIT license retained in [`LICENSE.MIT`](./LICENSE.MIT).
+- Original articles are published under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) by default unless an article states otherwise.
+- Images, fonts, music, and other third-party assets remain subject to their respective owners' licenses and are not automatically relicensed by the code license.
+
+## Maintenance record
+
+See [`docs/REPOSITORY_IDENTITY_MIGRATION.md`](./docs/REPOSITORY_IDENTITY_MIGRATION.md) for the migration record from the Mizuki identity to the nikonikoni personal project.
